@@ -1,15 +1,15 @@
-service: sensors-riskmapUs
+service: cognicity-sensors-etl
 
 custom:
-  projectName: riskmapUs
+  projectName: us-dev
 
 provider:
   name: aws
   runtime: nodejs6.10
   stage: dev
-  region: us-east-1
+  region: ${file(./env.yml):region}
   stackTags:
-    area: "US"
+    area: ${file(./env.yml):areatag}
   vpc:
     securityGroupIds:
       - ${file(./env.yml):securitygroupids}
@@ -30,88 +30,7 @@ package:
 
 # Add one function for each Lambda
 functions:
-  getSensors:
-    handler: bin/functions/metadata/fetch/index.getSensors
+  addGWSensor:
+    handler: bin/functions/add-sensor/usgs-gw.addGWSensor
     environment:
-      PG_USER: ${file(./env.yml):pguser}
-      PG_DATABASE: ${file(./env.yml):pgdatabase}
-      PG_PASSWORD: ${file(./env.yml):pgpassword}
-      PG_HOST: ${file(./env.yml):pghost}
-      PG_PORT: ${file(./env.yml):pgport}
-      PG_MAX_CLIENTS: ${file(./env.yml):pgmaxclients}
-      PG_IDLE_TIMEOUT: ${file(./env.yml):pgidletimeout}
-      TABLE_NAME: sensor.metadata
-    events:
-      - http:
-          path: sensors/properties/{id}
-          method: GET
-          integration: lambda
-          request:
-            parameters:
-              paths: # Optional param id, if specified, return properties for sensor with matching id
-                id: false
-  addSensor:
-    handler: bin/functions/metadata/insert/index.addSensor
-    environment:
-      PG_USER: ${file(./env.yml):pguser}
-      PG_DATABASE: ${file(./env.yml):pgdatabase}
-      PG_PASSWORD: ${file(./env.yml):pgpassword}
-      PG_HOST: ${file(./env.yml):pghost}
-      PG_PORT: ${file(./env.yml):pgport}
-      PG_MAX_CLIENTS: ${file(./env.yml):pgmaxclients}
-      PG_IDLE_TIMEOUT: ${file(./env.yml):pgidletimeout}
-      TABLE_NAME: sensor.metadata
-    events:
-      - http:
-          path: sensors/add
-          method: POST
-          integration: lambda
-  getSensorData:
-    handler: bin/functions/data/fetch/index.getSensorData
-    environment:
-      PG_USER: ${file(./env.yml):pguser}
-      PG_DATABASE: ${file(./env.yml):pgdatabase}
-      PG_PASSWORD: ${file(./env.yml):pgpassword}
-      PG_HOST: ${file(./env.yml):pghost}
-      PG_PORT: ${file(./env.yml):pgport}
-      PG_MAX_CLIENTS: ${file(./env.yml):pgmaxclients}
-      PG_IDLE_TIMEOUT: ${file(./env.yml):pgidletimeout}
-      TABLE_NAME: sensor.data
-    events:
-      - http:
-          path: sensors/data/{id}
-          method: GET
-          integration: lambda
-          request:
-            parameters:
-              paths: # Required parameter id
-                id: true
-  # insertPumpsData: # Create one function for each sensor type, with appropriate triggers
-  #   handler: bin/functions/data/insert/index.insertSensorData
-  #   environment:
-  #     SENSOR_TYPE: pumps
-  #     PG_USER: ${file(./env.yml):pguser}
-  #     PG_DATABASE: ${file(./env.yml):pgdatabase}
-  #     PG_PASSWORD: ${file(./env.yml):pgpassword}
-  #     PG_HOST: ${file(./env.yml):pghost}
-  #     PG_PORT: ${file(./env.yml):pgport}
-  #     PG_MAX_CLIENTS: ${file(./env.yml):pgmaxclients}
-  #     PG_IDLE_TIMEOUT: ${file(./env.yml):pgidletimeout}
-  #     TABLE_NAME: sensor.data
-  #   events:
-  #     - schedule: rate(12 hours)
-  # insertWellsData: # Create one function for each sensor type, with appropriate triggers
-  #   handler: bin/functions/data/insert/index.insertSensorData
-  #   environment:
-  #     SENSOR_TYPE: wells
-  #     PG_USER: ${file(./env.yml):pguser}
-  #     PG_DATABASE: ${file(./env.yml):pgdatabase}
-  #     PG_PASSWORD: ${file(./env.yml):pgpassword}
-  #     PG_HOST: ${file(./env.yml):pghost}
-  #     PG_PORT: ${file(./env.yml):pgport}
-  #     PG_MAX_CLIENTS: ${file(./env.yml):pgmaxclients}
-  #     PG_IDLE_TIMEOUT: ${file(./env.yml):pgidletimeout}
-  #     TABLE_NAME: sensor.data
-  #   events:
-  #     - schedule: rate(12 hours)
-  #     # - stream: arn:aws:dynamodb:region:XXXXXX:table/foo/stream/1970-01-01T00:00:00.000
+      API_KEY: ${file(./env.yml):apikey}
