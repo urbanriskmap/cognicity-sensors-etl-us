@@ -17,6 +17,7 @@ const tableName = process.env.TABLE_NAME;
 // TODO: Refer http://blog.rowanudell.com/database-connections-in-lambda/
 // for optimizing repetitive function invocations
 exports.getSensors = (event, context, callback) => {
+  console.log('Received ' + event.method + ' request');
   // Construct psql query
   let sensorId = event.id;
   let queryString = 'SELECT * FROM ' + tableName;
@@ -32,6 +33,7 @@ exports.getSensors = (event, context, callback) => {
   });
 
   pool.connect((err, client, done) => {
+    console.log('Connected to DB');
     if (err) {
       console.error('Database connection error');
       // Close DB connection
@@ -60,8 +62,20 @@ exports.getSensors = (event, context, callback) => {
           // Return error
           callback(err);
         }
-        console.info('Sensors data sent');
-        callback(null, output);
+        console.info('Sending sensors data');
+        // Close DB connection
+        done();
+
+        // Construct response
+        const response = {
+          statusCode: 200,
+          headers: {
+            'Access-Control-Allow-Origin': '*', // Required for CORS
+            'Access-Control-Allow-Credentials': true,
+          },
+          body: JSON.stringify(output),
+        };
+        callback(null, response);
       });
     });
   });
