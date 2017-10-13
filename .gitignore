@@ -11,6 +11,7 @@ node_modules/
 .env
 env.yml
 
+# Serverless packages
 .serverless
 
 # System files
@@ -18,3 +19,6 @@ env.yml
 
 # Build scripts
 bin/
+
+# ESDocs
+esdoc/

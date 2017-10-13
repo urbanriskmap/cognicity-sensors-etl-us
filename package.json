@@ -15,9 +15,18 @@
   "esdoc": {
     "source": "./src",
     "destination": "./esdoc/",
+    "plugins": [
+      {
+        "name": "esdoc-standard-plugin"
+      }
+    ],
     "option": {
-      "lint": {"enable": true},
-      "coverage": {"enable": true}
+      "lint": {
+        "enable": true
+      },
+      "coverage": {
+        "enable": true
+      }
     }
   },
   "scripts": {
@@ -33,6 +42,7 @@
     "babel-plugin-istanbul": "^4.1.4",
     "babel-preset-es2015": "^6.24.1",
     "esdoc": "^1.0.3",
+    "esdoc-standard-plugin": "^1.0.0",
     "eslint": "^4.8.0",
     "eslint-config-google": "^0.9.1",
     "mocha": "^4.0.1",

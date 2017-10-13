@@ -3,7 +3,19 @@ import config from '../../../config';
 const request = require('request');
 request.debug = config.DEBUG_HTTP_REQUESTS;
 
+/**
+ * Extract available sensors by querying usgs api
+ * @function extractUsgsSensors
+ * @external {XMLHttpRequest}
+ * @return {Promise}
+ */
 exports.etl = {
+  /**
+   * This method gets existing sensors via getSensors lambda
+   * @function getExistingSensors
+   * @external {XMLHttpRequest}
+   * @return {Promise}
+   */
   getExistingSensors() {
     let self = this;
     return new Promise(function(resolve, reject) {
@@ -34,6 +46,12 @@ exports.etl = {
     });
   },
 
+  /**
+   * This method extracts available sensors by querying USGS API
+   * @function extractUsgsSensors
+   * @external {XMLHttpRequest}
+   * @return {Promise}
+   */
   extractUsgsSensors() {
     let self = this;
     self.sensorsToLoad = [];
@@ -73,6 +91,11 @@ exports.etl = {
     });
   },
 
+  /**
+   * This method posts extracted sensor metadata via addSensor lambda
+   * @function transformAndLoad
+   * @external {XMLHttpRequest}
+   */
   transformAndLoad() {
     for (let sensor of this.sensorsToLoad) {
       const uid = sensor.sourceInfo.siteCode[0].value;
@@ -116,6 +139,14 @@ exports.etl = {
     }
   },
 
+  /**
+   * Extract available sensors by querying usgs api
+   * @function logResponse
+   * @param {object} error - error object for failed request
+   * @param {object} response - response object
+   * @param {object} body - response body, sensor metadata as geojson
+   * @throws {error} throw error if request or database insert fails
+   */
   logResponse(error, response, body) {
     if (error) {
       console.log('Error adding sensor');
