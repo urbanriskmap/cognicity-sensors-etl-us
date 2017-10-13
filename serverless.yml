@@ -10,13 +10,6 @@ provider:
   region: ${file(./env.yml):region}
   stackTags:
     area: ${file(./env.yml):areatag}
-  vpc:
-    securityGroupIds:
-      - ${file(./env.yml):securitygroupids}
-    subnetIds:
-      - ${file(./env.yml):subnetid1}
-      - ${file(./env.yml):subnetid2}
-      - ${file(./env.yml):subnetid3}
 
 package:
   exclude: # Specify the directories and files which should be excluded in the deployment package

@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "./node_modules/.bin/babel src -d bin"
+    "build": "rm -rf ./bin && ./node_modules/.bin/babel src -d bin",
+    "deploy": "rm -rf ./bin && ./node_modules/.bin/babel src -d bin && serverless deploy -v"
   },
   "repository": {
     "type": "git",
@@ -18,20 +19,16 @@
     "url": "https://github.com/urbanriskmap/sensor-lambda-us/issues"
   },
   "homepage": "https://github.com/urbanriskmap/sensor-lambda-us#readme",
-  "dependencies": {
+  "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-plugin-istanbul": "^4.1.4",
     "babel-preset-es2015": "^6.24.1",
-    "body-parser": "^1.17.1",
-    "celebrate": "^4.0.1",
-    "cors": "^2.8.1",
-    "dbgeo_gen": "0.0.7",
-    "dotenv": "^4.0.0",
     "eslint": "^4.8.0",
-    "eslint-config-google": "^0.9.1",
-    "express": "^4.15.0",
-    "joi": "^10.2.2",
-    "pg": "^6.1.3",
+    "eslint-config-google": "^0.9.1"
+  },
+  "dependencies": {
+    "cors": "^2.8.1",
+    "dotenv": "^4.0.0",
     "request": "^2.83.0"
   }
 }
