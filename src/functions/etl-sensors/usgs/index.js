@@ -1,10 +1,19 @@
-import etlUsgsSensors from './model';
+import {etl} from './model';
 
 exports.handler = (event, context, callback) => {
-  etlUsgsSensors(callback)
-  .getExistingSensors
-  .extractUsgsSensors
-  .transformAndLoad;
+  etl.getExistingSensors()
+  .then(() => {
+    etl.extractUsgsSensors()
+    .then(() => {
+      etl.transformAndLoad();
+    })
+    .catch((error) => {
+      callback(error);
+    });
+  })
+  .catch((error) => {
+    callback(error);
+  });
 
   callback(null, 'ETL process complete');
 };
