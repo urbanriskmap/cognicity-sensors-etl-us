@@ -55,3 +55,9 @@ functions:
       API_KEY: ${file(./env.yml):apikey}
       SENSOR_TYPE: ST
       SENSOR_CODE: 00045
+  etlGroundwaterData:
+    handler: bin/functions/etl-data/usgs.handler
+    environment:
+      API_KEY: ${file(./env.yml):apikey}
+      RECORDS_PERIOD: P1D
+      RECORDS_INTERVAL: PT1H

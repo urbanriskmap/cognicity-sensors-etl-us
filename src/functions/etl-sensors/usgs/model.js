@@ -1,4 +1,6 @@
 import config from '../../../config';
+import getSensors from '../../../services/getSensors';
+import postSensors from '../../../services/postSensors';
 
 const request = require('request');
 request.debug = config.DEBUG_HTTP_REQUESTS;
@@ -9,7 +11,7 @@ request.debug = config.DEBUG_HTTP_REQUESTS;
  * @external {XMLHttpRequest}
  * @return {Promise}
  */
-exports.etl = {
+export default {
   /**
    * This method gets existing sensors via getSensors lambda
    * @function getExistingSensors
@@ -18,31 +20,27 @@ exports.etl = {
    */
   getExistingSensors() {
     let self = this;
-    return new Promise(function(resolve, reject) {
-      request({
-          url: config.SERVER_ENDPOINT,
-          method: 'GET',
-          json: true,
-        }, (error, response, body) => {
-          if (error) {
-            reject(error);
-          } else {
-            self.existingSensorUids = [];
-            const features = body.body.features;
+    return new Promise((resolve, reject) => {
+      getSensors()
+      .then((body) => {
+        self.existingSensorUids = [];
+        const features = body.body.features;
 
-            // store uid's from sensors in metadata table
-            // filtered by sensor type
-            for (let feature of features) {
-              const properties = feature.properties.properties;
-              if (properties.hasOwnProperty('uid')
-              && properties.hasOwnProperty('type')
-              && properties.type === config.SENSOR_TYPE) {
-                self.existingSensorUids.push(properties.uid);
-              }
-            }
-            resolve();
+        // store uid's from sensors in metadata table
+        // filtered by sensor type
+        for (let feature of features) {
+          const properties = feature.properties.properties;
+          if (properties.hasOwnProperty('uid')
+          && properties.hasOwnProperty('class')
+          && properties.class === config.SENSOR_CODE) {
+            self.existingSensorUids.push(properties.uid);
           }
-        });
+        }
+        resolve();
+      })
+      .catch((error) => {
+        reject(error);
+      });
     });
   },
 
@@ -55,12 +53,12 @@ exports.etl = {
   extractUsgsSensors() {
     let self = this;
     self.sensorsToLoad = [];
-    return new Promise(function(resolve, reject) {
-      const usgsQuery = config.USGS_BASE_URL
-      + '&countyCd=' + config.USGS_COUNTY_CODE
-      + '&parameterCd=' + config.SENSOR_CODE
-      + '&siteStatus=' + config.USGS_SITE_STATUS;
+    const usgsQuery = config.USGS_BASE_URL
+    + '&countyCd=' + config.USGS_COUNTY_CODE
+    + '&parameterCd=' + config.SENSOR_CODE
+    + '&siteStatus=' + config.USGS_SITE_STATUS;
 
+    return new Promise((resolve, reject) => {
       // Get sensors metadata from USGS source
       request({
         url: usgsQuery,
@@ -99,6 +97,7 @@ exports.etl = {
   transformAndLoad() {
     for (let sensor of this.sensorsToLoad) {
       const uid = sensor.sourceInfo.siteCode[0].value;
+      const units = sensor.variable.unit.unitCode;
       let sensorType;
       for (let property of sensor.sourceInfo.siteProperty) {
         if (property.name === 'siteTypeCd') {
@@ -111,12 +110,8 @@ exports.etl = {
         properties: {
           uid: uid,
           type: sensorType,
-          query_parameters: {
-            cb_62610: 'on',
-            format: 'rdb',
-            site_no: uid,
-            period: 2,
-          },
+          class: config.SENSOR_CODE,
+          units: units,
         },
         location: {
           lat: sensor.sourceInfo.geoLocation.geogLocation.latitude,
@@ -124,18 +119,8 @@ exports.etl = {
         },
       };
 
-      const requestOptions = {
-        url: config.SERVER_ENDPOINT,
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': config.API_KEY,
-        },
-        method: 'POST',
-        // Parse object.body as json
-        json: sensorMetadata,
-      };
-
-      request(requestOptions, this.logResponse);
+      // Load sensors
+      postSensors('', sensorMetadata, this.logResponse);
     }
   },
 
@@ -153,7 +138,7 @@ exports.etl = {
       console.error(error);
     } else if (body.statusCode !== 200) {
       console.log('Error adding sensor');
-      console.error(error);
+      console.error(body);
     } else {
       const sensorID = body.body.features[0].properties.id;
       console.log('Sensor added with id = ' + sensorID);

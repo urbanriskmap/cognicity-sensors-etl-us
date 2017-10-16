@@ -1,4 +1,4 @@
-import {etl} from './model';
+import etl from './model';
 
 /**
  * ETL script for adding sensors
