@@ -19,24 +19,29 @@ export default {
    * @return {Promise}
    */
   getExistingSensors() {
-    let self = this;
     return new Promise((resolve, reject) => {
       getSensors()
       .then((body) => {
-        self.existingSensorUids = [];
+        let existingSensorUids = [];
         const features = body.body.features;
 
-        // store uid's from sensors in metadata table
-        // filtered by sensor type
-        for (let feature of features) {
-          const properties = feature.properties.properties;
-          if (properties.hasOwnProperty('uid')
-          && properties.hasOwnProperty('class')
-          && properties.class === config.SENSOR_CODE) {
-            self.existingSensorUids.push(properties.uid);
+        if (!features.length) {
+          console.log('No existing sensors found');
+          resolve(existingSensorUids);
+        } else {
+          console.log('Received ' + features.length + ' stored sensors');
+          // store uid's from sensors in metadata table
+          // filtered by sensor type
+          for (let feature of features) {
+            const properties = feature.properties.properties;
+            if (properties.hasOwnProperty('uid')
+            && properties.hasOwnProperty('class')
+            && properties.class === config.SENSOR_CODE) {
+              existingSensorUids.push(properties.uid);
+            }
           }
+          resolve(existingSensorUids);
         }
-        resolve();
       })
       .catch((error) => {
         reject(error);
@@ -47,12 +52,12 @@ export default {
   /**
    * This method extracts available sensors by querying USGS API
    * @function extractUsgsSensors
+   * @param {string[]} uids - list of sensor uid's in metadata
    * @external {XMLHttpRequest}
-   * @return {Promise}
+   * @abstract
+   * @return {Promise} Promise object
    */
-  extractUsgsSensors() {
-    let self = this;
-    self.sensorsToLoad = [];
+  extractUsgsSensors(uids) {
     const usgsQuery = config.USGS_BASE_URL
     + '&countyCd=' + config.USGS_COUNTY_CODE
     + '&parameterCd=' + config.SENSOR_CODE
@@ -68,34 +73,50 @@ export default {
         if (error) {
           reject(error);
         } else {
-          const sensors = body.value.timeSeries;
-
-          for (let sensor of sensors) {
-            let sensorExists = false;
-            const uidExtracted = sensor.sourceInfo.siteCode[0].value;
-            for (let uidExisting of self.existingSensorUids) {
-              if (uidExtracted === uidExisting) {
-                sensorExists = true;
-              }
-            }
-            if (!sensorExists) {
-              self.sensorsToLoad.push(sensor);
-            }
-          }
-
-          resolve();
+          console.log('Received ' + body.value.timeSeries.length
+          + ' USGS sensors');
+          const sensorsToCompare = {
+            existingSensorUids: uids,
+            usgsSensors: body.value.timeSeries,
+          };
+          resolve(sensorsToCompare);
         }
       });
     });
   },
 
+  compareSensors({existingSensorUids, usgsSensors}) {
+    const self = this;
+    let sensorsToLoad = [];
+    for (let sensor of usgsSensors) {
+      let sensorExists = false;
+      const uidExtracted = sensor.sourceInfo.siteCode[0].value;
+      if (existingSensorUids.length) {
+        for (let uidExisting of existingSensorUids) {
+          if (uidExtracted === uidExisting) {
+            sensorExists = true;
+          }
+        }
+        if (!sensorExists) {
+          sensorsToLoad.push(self.loadSensor(self.transform(sensor)));
+        } else {
+          console.log('Sensor ' + uidExtracted + ' already exists');
+        }
+      } else {
+        sensorsToLoad.push(self.loadSensor(self.transform(sensor)));
+      }
+    }
+    return sensorsToLoad;
+  },
+
   /**
    * This method posts extracted sensor metadata via addSensor lambda
    * @function transformAndLoad
-   * @external {XMLHttpRequest}
+   * @param {object} sensor - Sensor properties returned from USGS query
+   * @return {object}
    */
-  transformAndLoad() {
-    for (let sensor of this.sensorsToLoad) {
+  transform(sensor) {
+    if (sensor) {
       const uid = sensor.sourceInfo.siteCode[0].value;
       const units = sensor.variable.unit.unitCode;
       let sensorType;
@@ -119,29 +140,25 @@ export default {
         },
       };
 
-      // Load sensors
-      postSensors('', sensorMetadata, this.logResponse);
+      return sensorMetadata;
     }
   },
 
-  /**
-   * Extract available sensors by querying usgs api
-   * @function logResponse
-   * @param {object} error - error object for failed request
-   * @param {object} response - response object
-   * @param {object} body - response body, sensor metadata as geojson
-   * @throws {error} throw error if request or database insert fails
-   */
-  logResponse(error, response, body) {
-    if (error) {
-      console.log('Error adding sensor');
-      console.error(error);
-    } else if (body.statusCode !== 200) {
-      console.log('Error adding sensor');
-      console.error(body);
-    } else {
-      const sensorID = body.body.features[0].properties.id;
-      console.log('Sensor added with id = ' + sensorID);
-    }
+  loadSensor(metadata) {
+    return new Promise((resolve, reject) => {
+      // Load sensors
+      postSensors('', metadata)
+      .then((body) => {
+        if (body.statusCode !== 200) {
+          reject(new Error(body));
+        } else {
+          const sensorID = body.body.features[0].properties.id;
+          resolve({msg: 'Added sensor with id ' + sensorID});
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+    });
   },
 };

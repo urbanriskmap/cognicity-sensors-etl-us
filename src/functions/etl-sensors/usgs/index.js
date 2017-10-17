@@ -11,10 +11,16 @@ import etl from './model';
  */
 exports.handler = (event, context, callback) => {
   etl.getExistingSensors()
-  .then(() => {
-    etl.extractUsgsSensors()
-    .then(() => {
-      etl.transformAndLoad();
+  .then(etl.extractUsgsSensors)
+  .then((sensorsToCompare) => {
+    Promise.all(etl.compareSensors(sensorsToCompare))
+    .then((addedSensorUids) => {
+      console.log(addedSensorUids.length
+      + ((addedSensorUids.length === 0 || addedSensorUids.length === 1)
+      ? ' sensor'
+      : ' sensors')
+      + ' added');
+      callback(null, 'ETL process complete');
     })
     .catch((error) => {
       callback(error);
@@ -23,6 +29,4 @@ exports.handler = (event, context, callback) => {
   .catch((error) => {
     callback(error);
   });
-
-  callback(null, 'ETL process complete');
 };

@@ -1,11 +1,11 @@
-import config from '../../../config';
+import config from '../config';
 
 const request = require('request');
 request.debug = config.DEBUG_HTTP_REQUESTS;
 
-export default (id, data, callback) => {
+export default (id, data) => {
   const requestOptions = {
-    url: config.SERVER_ENDPOINT + id,
+    url: id ? config.SERVER_ENDPOINT + id : config.SERVER_ENDPOINT,
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': config.API_KEY,
@@ -15,6 +15,12 @@ export default (id, data, callback) => {
     json: data,
   };
   return new Promise((resolve, reject) => {
-    request(requestOptions, callback);
+    request(requestOptions, (error, response, body) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(body);
+      }
+    });
   });
 };

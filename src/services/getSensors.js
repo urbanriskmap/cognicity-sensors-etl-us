@@ -1,4 +1,4 @@
-import config from '../../../config';
+import config from '../config';
 
 const request = require('request');
 request.debug = config.DEBUG_HTTP_REQUESTS;
@@ -6,7 +6,7 @@ request.debug = config.DEBUG_HTTP_REQUESTS;
 export default (id) => {
   return new Promise((resolve, reject) => {
     request({
-        url: config.SERVER_ENDPOINT + id,
+        url: id ? config.SERVER_ENDPOINT + id : config.SERVER_ENDPOINT,
         method: 'GET',
         json: true,
       }, (error, response, body) => {
