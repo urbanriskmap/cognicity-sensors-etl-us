@@ -1,20 +1,7 @@
 import etl from './model';
 
 exports.handler = (event, context, callback) => {
-  let resultMessages = [];
-  let recordResult = (result) => {
-    if (result.hasOwnProperty('log')) {
-      resultMessages.push(new Promise((resolve, reject) => {
-        resolve(result.log);
-      }));
-    } else if (resultMessages.hasOwnProperty('success')) {
-      resultMessages.push(new Promise((resolve, reject) => {
-        resolve(result.success);
-      }));
-    }
-
-    return resultMessages;
-  };
+  let processEtl = [];
 
   etl.filterSensors()
   .then((filteredSensorList) => {
@@ -22,21 +9,38 @@ exports.handler = (event, context, callback) => {
       callback('No sensors exist');
     } else {
       for (let sensor of filteredSensorList) {
-        etl.getStoredObservations(sensor.pkey, sensor.uid)
-        .then(etl.extractSensorObservations)
-        .then(etl.compareSensorObservations)
-        .then(etl.loadObservations)
-        .then(recordResult)
-        .catch((error) => {
-          callback(error);
-        });
+        processEtl.push(
+          new Promise((resolve, reject) => {
+            etl.getStoredObservations(sensor.pkey, sensor.uid)
+            .then(etl.extractSensorObservations)
+            .then(etl.compareSensorObservations)
+            .then(etl.loadObservations)
+            .then((result) => {
+              if (result.hasOwnProperty('log')) {
+                console.log('# ' + result.log);
+                resolve(result.log);
+              } else if (result.hasOwnProperty('success')) {
+                console.log('# ' + result.success);
+                resolve(result.success);
+              }
+            })
+            .catch((error) => {
+              reject(error);
+            });
+          })
+        );
       }
-      Promise.all(resultMessages)
-      .then(() => {
-        console.log(resultMessages);
+
+      console.log('* ' + processEtl.length + ' promises');
+      Promise.all(processEtl)
+      .then((messages) => {
+        console.log('* SUCCESS');
         callback(null, 'ETL process complete');
       })
-      .catch((error) => callback(error));
+      .catch((error) => {
+        console.log('* ERROR');
+        callback(error);
+      });
     }
   })
   .catch((error) => {

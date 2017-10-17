@@ -13,7 +13,7 @@ export default {
       getSensors()
       .then((body) => {
         const features = body.body.features;
-        console.log('Received ' + features.length + ' stored sensors');
+        console.log('* Received ' + features.length + ' stored sensors');
 
         for (let feature of features) {
           const properties = feature.properties.properties;
@@ -42,7 +42,6 @@ export default {
         let lastStoredObservation;
         if (body.body.properties
         && body.body.properties.hasOwnProperty('observations')) {
-          console.log('Sensor ' + pkey + ' has stored observations');
           storedObservations = body.body.properties.observations;
           lastStoredObservation = storedObservations[
             storedObservations.length - 1].dateTime;
@@ -53,7 +52,6 @@ export default {
             lastStoredObservation: lastStoredObservation,
           });
         } else {
-          console.log('Sensor ' + pkey + ' has no stored observations');
           resolve({
             uid: uid,
             pkey: pkey,
@@ -73,6 +71,11 @@ export default {
     + '&sites=' + sensor.uid
     + '&period=' + config.RECORDS_PERIOD;
     + '&modifiedSince=' + config.RECORDS_INTERVAL;
+    const logMessage = {
+      log: sensor.pkey
+      + ': Sensor is inactive or has no new observations in past '
+      + config.RECORDS_INTERVAL.slice(2, -1) + ' hour(s).',
+    };
 
     return new Promise((resolve, reject) => {
       // Get sensor observations from USGS source
@@ -86,24 +89,25 @@ export default {
         } else {
           if (body.value.timeSeries.length) {
             const observations = body.value.timeSeries[0].values[0].value;
-            for (let observation of observations) {
-              sensorDataToLoad.push({
-                dateTime: observation.dateTime,
-                value: observation.value,
+            if (observations.length) {
+              for (let observation of observations) {
+                sensorDataToLoad.push({
+                  dateTime: observation.dateTime,
+                  value: observation.value,
+                });
+              }
+              resolve({
+                pkey: sensor.pkey,
+                data: sensorDataToLoad,
+                lastStoredObservation: sensor.hasStoredObservations
+                  ? sensor.lastStoredObservation
+                  : null,
               });
+            } else {
+              resolve(logMessage);
             }
-            console.log('Extracted data for sensor ' + sensor.pkey);
-            resolve({
-              pkey: sensor.pkey,
-              data: sensorDataToLoad,
-              lastStoredObservation: sensor.hasStoredObservations
-                ? sensor.lastStoredObservation
-                : null,
-            });
           } else {
-            resolve({log: 'Sensor id: ' + sensor.pkey +
-            ' is inactive or has no new observations in past ' +
-            config.RECORDS_INTERVAL.slice(2, -1) + ' hour(s).'});
+            resolve(logMessage);
           }
         }
       });
@@ -111,7 +115,10 @@ export default {
   },
 
   compareSensorObservations(sensor) {
-    console.log('Comparing sensor id ' + sensor.pkey);
+    const logMessage = {
+      log: sensor.pkey
+      + ': Sensor has no new observations',
+    };
     return new Promise((resolve, reject) => {
       if (sensor.hasOwnProperty('log')) {
         resolve(sensor);
@@ -123,8 +130,7 @@ export default {
             sensor.data.length - 1].dateTime;
 
           if (lastExtractedObservation === sensor.lastStoredObservation) {
-            resolve({log: 'Sensor id: ' + sensor.pkey +
-              ' has no new observations'});
+            resolve(logMessage);
           } else {
             resolve(sensor);
           }
@@ -145,10 +151,11 @@ export default {
         })
         .then((body) => {
           if (body.statusCode !== 200) {
+            console.log(sensor.pkey + ': Error ' + body.statusCode);
             reject(new Error(body));
           } else {
             const sensorID = body.body[0].sensor_id;
-            resolve({success: 'Sensor data added for id = ' + sensorID});
+            resolve({success: sensorID + ': Data for sensor updated'});
           }
         })
         .catch((error) => {
