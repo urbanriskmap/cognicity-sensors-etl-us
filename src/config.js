@@ -16,6 +16,7 @@ export default {
 
   RECORDS_PERIOD: process.env.RECORDS_PERIOD,
   RECORDS_INTERVAL: process.env.RECORDS_INTERVAL,
+  RECORDS_LAG: process.env.RECORDS_LAG,
 
   DEBUG_HTTP_REQUESTS: false,
 

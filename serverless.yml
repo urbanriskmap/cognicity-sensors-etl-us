@@ -61,3 +61,4 @@ functions:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT1H
+      RECORDS_LAG: PT4H

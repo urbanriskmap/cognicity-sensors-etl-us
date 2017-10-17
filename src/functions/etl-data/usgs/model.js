@@ -8,33 +8,70 @@ request.debug = config.DEBUG_HTTP_REQUESTS;
 export default {
   filterSensors() {
     let filteredSensorList = [];
-    getSensors()
-    .then((body) => {
-      const features = body.body.features;
 
-      for (let feature of features) {
-        const properties = feature.properties.properties;
-        if (properties.hasOwnProperty('uid')
-        && properties.hasOwnProperty('class')
-        && properties.class === config.SENSOR_CODE) {
-          filteredSensorList.push({
-            pkey: feature.properties.id,
-            uid: properties.uid,
-          });
+    return new Promise((resolve, reject) => {
+      getSensors()
+      .then((body) => {
+        const features = body.body.features;
+        console.log('Received ' + features.length + ' stored sensors');
+
+        for (let feature of features) {
+          const properties = feature.properties.properties;
+          if (properties.hasOwnProperty('uid')
+          && properties.hasOwnProperty('class')
+          && properties.class === config.SENSOR_CODE) {
+            filteredSensorList.push({
+              pkey: feature.properties.id,
+              uid: properties.uid,
+            });
+          }
         }
-      }
-      return filteredSensorList;
-    })
-    .catch((error) => {
-      return filteredSensorList;
+        resolve(filteredSensorList);
+      })
+      .catch((error) => {
+        reject(error);
+      });
     });
   },
 
-  extractSensorObservations(pkey, uid) {
+  getStoredObservations(pkey, uid) {
+    return new Promise((resolve, reject) => {
+      getSensors(pkey)
+      .then((body) => {
+        let storedObservations;
+        let lastStoredObservation;
+        if (body.body.properties
+        && body.body.properties.hasOwnProperty('observations')) {
+          console.log('Sensor ' + pkey + ' has stored observations');
+          storedObservations = body.body.properties.observations;
+          lastStoredObservation = storedObservations[
+            storedObservations.length - 1].dateTime;
+          resolve({
+            uid: uid,
+            pkey: pkey,
+            hasStoredObservations: true,
+            lastStoredObservation: lastStoredObservation,
+          });
+        } else {
+          console.log('Sensor ' + pkey + ' has no stored observations');
+          resolve({
+            uid: uid,
+            pkey: pkey,
+            hasStoredObservations: false,
+          });
+        }
+      })
+      .catch((error) => {
+        reject(error);
+      });
+    });
+  },
+
+  extractSensorObservations(sensor) {
     let sensorDataToLoad = [];
-    const usgsQuery = config.USGS_BASE_URL
-    + '&sites=' + uid
-    + '&period=' + config.RECORDS_PERIOD
+    let usgsQuery = config.USGS_BASE_URL
+    + '&sites=' + sensor.uid
+    + '&period=' + config.RECORDS_PERIOD;
     + '&modifiedSince=' + config.RECORDS_INTERVAL;
 
     return new Promise((resolve, reject) => {
@@ -55,14 +92,18 @@ export default {
                 value: observation.value,
               });
             }
+            console.log('Extracted data for sensor ' + sensor.pkey);
             resolve({
-              id: pkey,
+              pkey: sensor.pkey,
               data: sensorDataToLoad,
+              lastStoredObservation: sensor.hasStoredObservations
+                ? sensor.lastStoredObservation
+                : null,
             });
           } else {
-            reject(new Error('Sensor id: ' + pkey +
+            resolve({log: 'Sensor id: ' + sensor.pkey +
             ' is inactive or has no new observations in past ' +
-            config.RECORDS_INTERVAL.slice(2, -1) + ' hour(s).'));
+            config.RECORDS_INTERVAL.slice(2, -1) + ' hour(s).'});
           }
         }
       });
@@ -70,52 +111,50 @@ export default {
   },
 
   compareSensorObservations(sensor) {
-    const pkey = sensor.id;
-    const lastExtractedObservation = sensor.data[
-      sensor.data.length - 1
-    ].dateTime;
-
+    console.log('Comparing sensor id ' + sensor.pkey);
     return new Promise((resolve, reject) => {
-      getSensors(pkey)
-      .then((body) => {
-        const storedObservations = body.body.properties.observations;
-        const lastStoredObservation = storedObservations[
-          storedObservations.length - 1
-        ].dateTime;
-
-        if (lastExtractedObservation === lastStoredObservation) {
+      if (sensor.hasOwnProperty('log')) {
+        resolve(sensor);
+      } else {
+        if (!sensor.lastStoredObservation) {
           resolve(sensor);
         } else {
-          resolve(null);
+          const lastExtractedObservation = sensor.data[
+            sensor.data.length - 1].dateTime;
+
+          if (lastExtractedObservation === sensor.lastStoredObservation) {
+            resolve({log: 'Sensor id: ' + sensor.pkey +
+              ' has no new observations'});
+          } else {
+            resolve(sensor);
+          }
         }
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      }
     });
   },
 
   loadObservations(sensor) {
-    let self = this;
     return new Promise((resolve, reject) => {
-      postSensors(
-        sensor.id,
-        sensor.data,
-        self.logResponse
-      );
+      if (sensor.hasOwnProperty('log')) {
+        resolve(sensor);
+      } else {
+        postSensors(sensor.pkey, {
+          properties: {
+            observations: sensor.data,
+          },
+        })
+        .then((body) => {
+          if (body.statusCode !== 200) {
+            reject(new Error(body));
+          } else {
+            const sensorID = body.body[0].sensor_id;
+            resolve({success: 'Sensor data added for id = ' + sensorID});
+          }
+        })
+        .catch((error) => {
+          reject(error);
+        });
+      }
     });
-  },
-
-  logResponse(error, response, body) {
-    if (error) {
-      console.log('Error loading observations');
-      console.error(error);
-    } else if (body.statusCode !== 200) {
-      console.log('Error loading observations');
-      console.error(body);
-    } else {
-      const sensorID = body.body.features[0].properties.id;
-      console.log('Sensor added with id = ' + sensorID);
-    }
   },
 };

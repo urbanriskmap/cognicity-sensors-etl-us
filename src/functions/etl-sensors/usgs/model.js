@@ -111,7 +111,7 @@ export default {
 
   /**
    * This method posts extracted sensor metadata via addSensor lambda
-   * @function transformAndLoad
+   * @function transform
    * @param {object} sensor - Sensor properties returned from USGS query
    * @return {object}
    */
