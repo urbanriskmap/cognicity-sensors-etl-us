@@ -2,6 +2,7 @@ import etl from './model';
 
 exports.handler = (event, context, callback) => {
   let processEtl = [];
+  let updateCount = 0;
 
   etl.filterSensors()
   .then((filteredSensorList) => {
@@ -21,6 +22,7 @@ exports.handler = (event, context, callback) => {
                 resolve(result.log);
               } else if (result.hasOwnProperty('success')) {
                 console.log('# ' + result.success);
+                updateCount += 1;
                 resolve(result.success);
               }
             })
@@ -31,14 +33,15 @@ exports.handler = (event, context, callback) => {
         );
       }
 
-      console.log('* ' + processEtl.length + ' promises');
       Promise.all(processEtl)
       .then((messages) => {
-        console.log('* SUCCESS');
-        callback(null, 'ETL process complete');
+        let result = {
+          sensors_updated: updateCount,
+          logs: messages,
+        };
+        callback(null, result);
       })
       .catch((error) => {
-        console.log('* ERROR');
         callback(error);
       });
     }

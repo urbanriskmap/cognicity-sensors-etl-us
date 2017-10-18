@@ -13,7 +13,6 @@ export default {
       getSensors()
       .then((body) => {
         const features = body.body.features;
-        console.log('* Received ' + features.length + ' stored sensors');
 
         for (let feature of features) {
           const properties = feature.properties.properties;
