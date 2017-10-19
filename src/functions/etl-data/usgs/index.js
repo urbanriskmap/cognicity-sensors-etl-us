@@ -1,5 +1,14 @@
 import etl from './model';
 
+/**
+ * ETL script for adding sensor data
+ * @function etl-data-usgs
+ * @param {Object} event - AWS Lambda event object
+ * @param {Object} context - AWS Lambda context object
+ * @param {Object} callback - Callback (HTTP response)
+ * @abstract
+ * @return {Object} error / response passed to callback
+ */
 exports.handler = (event, context, callback) => {
   let processEtl = [];
   let updateCount = 0;
@@ -14,6 +23,7 @@ exports.handler = (event, context, callback) => {
           new Promise((resolve, reject) => {
             etl.getStoredObservations(sensor.pkey, sensor.uid)
             .then(etl.extractSensorObservations)
+            .then(etl.transform)
             .then(etl.compareSensorObservations)
             .then(etl.loadObservations)
             .then((result) => {

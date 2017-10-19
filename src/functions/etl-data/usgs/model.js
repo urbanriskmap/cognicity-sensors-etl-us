@@ -38,23 +38,28 @@ export default {
       getSensors(pkey)
       .then((body) => {
         let storedObservations;
-        let lastStoredObservation;
-        if (body.body.properties
-        && body.body.properties.hasOwnProperty('observations')) {
-          storedObservations = body.body.properties.observations;
-          lastStoredObservation = storedObservations[
-            storedObservations.length - 1].dateTime;
+        let lastUpdated;
+        let latestRow = body.body[body.body.length - 1];
+        if (latestRow.properties
+        && latestRow.properties.hasOwnProperty('observations')) {
+          storedObservations = latestRow.properties.observations;
+          if (config.SENSOR_CODE === '63160') {
+            lastUpdated = storedObservations.upstream[
+              storedObservations.upstream.length - 1].dateTime;
+          } else {
+            lastUpdated = storedObservations[
+              storedObservations.length - 1].dateTime;
+          }
           resolve({
             uid: uid,
             pkey: pkey,
-            hasStoredObservations: true,
-            lastStoredObservation: lastStoredObservation,
+            lastUpdated: lastUpdated,
           });
         } else {
           resolve({
             uid: uid,
             pkey: pkey,
-            hasStoredObservations: false,
+            lastUpdated: null,
           });
         }
       })
@@ -65,7 +70,6 @@ export default {
   },
 
   extractSensorObservations(sensor) {
-    let sensorDataToLoad = [];
     let usgsQuery = config.USGS_BASE_URL
     + '&sites=' + sensor.uid
     + '&period=' + config.RECORDS_PERIOD;
@@ -87,29 +91,76 @@ export default {
           reject(error);
         } else {
           if (body.value.timeSeries.length) {
-            const observations = body.value.timeSeries[0].values[0].value;
-            if (observations.length) {
-              for (let observation of observations) {
-                sensorDataToLoad.push({
-                  dateTime: observation.dateTime,
-                  value: observation.value,
-                });
-              }
-              resolve({
-                pkey: sensor.pkey,
-                data: sensorDataToLoad,
-                lastStoredObservation: sensor.hasStoredObservations
-                  ? sensor.lastStoredObservation
-                  : null,
-              });
-            } else {
-              resolve(logMessage);
-            }
+            resolve({
+              storedProperties: sensor,
+              usgsData: body.value.timeSeries,
+            });
           } else {
             resolve(logMessage);
           }
         }
       });
+    });
+  },
+
+  transform(data) {
+    let observations;
+    let transformedData;
+    return new Promise((resolve, reject) => {
+      if (data.hasOwnProperty('log')) {
+        resolve(data);
+      } else {
+        const sensor = data.storedProperties;
+        const sensorData = data.usgsData;
+        if (config.SENSOR_CODE === '63160') {
+          observations = {
+            upstream: sensorData[0].values[0].value,
+            downstream: sensorData[0].values[1].value,
+          };
+          transformedData = {
+            upstream: [],
+            downstream: [],
+          };
+          for (
+            let i = 0, j = 0;
+            i < observations.upstream.length
+            || j < observations.downstream.length;
+            i++, j++
+          ) {
+            if (observations.upstream[i].hasOwnProperty('value')) {
+              transformedData.upstream.push({
+                dateTime: observations.upstream[i].dateTime,
+                value: observations.upstream[i].value,
+              });
+            }
+            if (observations.downstream[j].hasOwnProperty('value')) {
+              transformedData.downstream.push({
+                dateTime: observations.downstream[j].dateTime,
+                value: observations.downstream[j].value,
+              });
+            }
+          }
+          resolve({
+            pkey: sensor.pkey,
+            data: transformedData,
+            lastUpdated: sensor.lastUpdated,
+          });
+        } else {
+          observations = sensorData[0].values[0].value;
+          transformedData = [];
+          for (let observation of observations) {
+            transformedData.push({
+              dateTime: observation.dateTime,
+              value: observation.value,
+            });
+          }
+          resolve({
+            pkey: sensor.pkey,
+            data: observations,
+            lastUpdated: sensor.lastUpdated,
+          });
+        }
+      }
     });
   },
 
@@ -122,13 +173,18 @@ export default {
       if (sensor.hasOwnProperty('log')) {
         resolve(sensor);
       } else {
-        if (!sensor.lastStoredObservation) {
+        if (!sensor.lastUpdated) {
           resolve(sensor);
         } else {
-          const lastExtractedObservation = sensor.data[
-            sensor.data.length - 1].dateTime;
-
-          if (lastExtractedObservation === sensor.lastStoredObservation) {
+          let lastExtractedObservation;
+          if (config.SENSOR_CODE === '63160') {
+            lastExtractedObservation = sensor.data.upstream[
+                sensor.data.upstream.length - 1].dateTime;
+          } else {
+            lastExtractedObservation = sensor.data[
+              sensor.data.length - 1].dateTime;
+          }
+          if (lastExtractedObservation === sensor.lastUpdated) {
             resolve(logMessage);
           } else {
             resolve(sensor);

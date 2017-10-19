@@ -5,12 +5,6 @@ import postSensors from '../../../services/postSensors';
 const request = require('request');
 request.debug = config.DEBUG_HTTP_REQUESTS;
 
-/**
- * Extract available sensors by querying usgs api
- * @function extractUsgsSensors
- * @external {XMLHttpRequest}
- * @return {Promise}
- */
 export default {
   /**
    * This method gets existing sensors via getSensors lambda
@@ -73,40 +67,47 @@ export default {
         if (error) {
           reject(error);
         } else {
-          console.log('Received ' + body.value.timeSeries.length
-          + ' USGS sensors');
-          const sensorsToCompare = {
-            existingSensorUids: uids,
-            usgsSensors: body.value.timeSeries,
-          };
-          resolve(sensorsToCompare);
+          if (body.value.timeSeries.length) {
+            resolve({
+              existingSensorUids: uids,
+              usgsSensors: body.value.timeSeries,
+            });
+          } else {
+            resolve({
+              log: 'No sensors received from USGS API',
+            });
+          }
         }
       });
     });
   },
 
-  compareSensors({existingSensorUids, usgsSensors}) {
-    const self = this;
-    let sensorsToLoad = [];
-    for (let sensor of usgsSensors) {
-      let sensorExists = false;
-      const uidExtracted = sensor.sourceInfo.siteCode[0].value;
-      if (existingSensorUids.length) {
-        for (let uidExisting of existingSensorUids) {
-          if (uidExtracted === uidExisting) {
-            sensorExists = true;
-          }
-        }
-        if (!sensorExists) {
-          sensorsToLoad.push(self.loadSensor(self.transform(sensor)));
-        } else {
-          console.log('Sensor ' + uidExtracted + ' already exists');
-        }
+  compareSensors(sensor, existingSensorUids) {
+    return new Promise((resolve, reject) => {
+      if (sensor.hasOwnProperty('log')) {
+        resolve(sensor);
       } else {
-        sensorsToLoad.push(self.loadSensor(self.transform(sensor)));
+        let sensorExists = false;
+        const uidExtracted = sensor.sourceInfo.siteCode[0].value;
+
+        if (existingSensorUids.length) {
+          for (let uidExisting of existingSensorUids) {
+            if (uidExtracted === uidExisting) {
+              sensorExists = true;
+            }
+          }
+          if (!sensorExists) {
+            resolve(sensor);
+          } else {
+            resolve({
+              log: uidExtracted + ': Sensor already exists',
+            });
+          }
+        } else {
+          resolve(sensor);
+        }
       }
-    }
-    return sensorsToLoad;
+    });
   },
 
   /**
@@ -116,49 +117,60 @@ export default {
    * @return {object}
    */
   transform(sensor) {
-    if (sensor) {
-      const uid = sensor.sourceInfo.siteCode[0].value;
-      const units = sensor.variable.unit.unitCode;
-      let sensorType;
-      for (let property of sensor.sourceInfo.siteProperty) {
-        if (property.name === 'siteTypeCd') {
-          sensorType = property.value;
+    return new Promise(function(resolve, reject) {
+      if (sensor) {
+        if (sensor.hasOwnProperty('log')) {
+          resolve(sensor);
+        } else {
+          const uid = sensor.sourceInfo.siteCode[0].value;
+          const units = sensor.variable.unit.unitCode;
+          let sensorType;
+          for (let property of sensor.sourceInfo.siteProperty) {
+            if (property.name === 'siteTypeCd') {
+              sensorType = property.value;
+            }
+          }
+
+          // Construct body for request
+          let sensorMetadata = {
+            properties: {
+              uid: uid,
+              type: sensorType,
+              class: config.SENSOR_CODE,
+              units: units,
+            },
+            location: {
+              lat: sensor.sourceInfo.geoLocation.geogLocation.latitude,
+              lng: sensor.sourceInfo.geoLocation.geogLocation.longitude,
+            },
+          };
+
+          resolve(sensorMetadata);
         }
       }
-
-      // Construct body for request
-      let sensorMetadata = {
-        properties: {
-          uid: uid,
-          type: sensorType,
-          class: config.SENSOR_CODE,
-          units: units,
-        },
-        location: {
-          lat: sensor.sourceInfo.geoLocation.geogLocation.latitude,
-          lng: sensor.sourceInfo.geoLocation.geogLocation.longitude,
-        },
-      };
-
-      return sensorMetadata;
-    }
+    });
   },
 
   loadSensor(metadata) {
     return new Promise((resolve, reject) => {
-      // Load sensors
-      postSensors('', metadata)
-      .then((body) => {
-        if (body.statusCode !== 200) {
-          reject(new Error(body));
-        } else {
-          const sensorID = body.body.features[0].properties.id;
-          resolve({msg: 'Added sensor with id ' + sensorID});
-        }
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      if (metadata.hasOwnProperty('log')) {
+        resolve(metadata);
+      } else {
+        // Load sensors
+        postSensors('', metadata)
+        .then((body) => {
+          if (body.statusCode !== 200) {
+            console.log('Error ' + body.statusCode);
+            reject(new Error(body));
+          } else {
+            const sensorID = body.body.features[0].properties.id;
+            resolve({success: sensorID + ': Added sensor'});
+          }
+        })
+        .catch((error) => {
+          reject(error);
+        });
+      }
     });
   },
 };
