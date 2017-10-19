@@ -47,6 +47,8 @@ export default () => {
           ],
         },
       })
+      .withArgs(404)
+      .throws(new Error('Something broke'))
       .withArgs(5)
       .resolves({
         body: [
@@ -96,10 +98,8 @@ export default () => {
             sensor_id: 3,
             properties: {
               observations: {
-                upstream: [
-                ],
-                downstream: [
-                ],
+                upstream: [],
+                downstream: [],
               },
             },
           },
@@ -128,6 +128,17 @@ export default () => {
       .done();
     });
 
+    it('Catches http request error', (done) => {
+      test.promise
+      .given(etl.getStoredObservations(404, 'uniqueId'))
+      .then()
+      .catch((error) => {
+        test.value(error).is(new Error('Something broke'));
+      })
+      .finally(done)
+      .done();
+    });
+
     it('Returns last updated dateTime for sensor data', (done) => {
       test.promise
       .given(etl.getStoredObservations(5, 'uniqueId'))
@@ -149,7 +160,7 @@ export default () => {
       .then((sensor) => {
         services.getSensors.called.should.be.equal(true);
         test.value(sensor)
-        .is({pkey: 5, uid: 'uniqueId', lastUpdated: null});
+        .is({pkey: 3, uid: 'uniqueId', lastUpdated: null});
       })
       .catch((error) => {
         test.fail(error.message);
