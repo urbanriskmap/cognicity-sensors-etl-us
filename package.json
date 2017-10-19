@@ -47,6 +47,7 @@
     "eslint-config-google": "^0.9.1",
     "mocha": "^4.0.1",
     "nyc": "^11.2.1",
+    "sinon": "^4.0.1",
     "unit.js": "^2.0.0"
   },
   "dependencies": {

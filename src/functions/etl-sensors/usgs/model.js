@@ -1,6 +1,5 @@
 import config from '../../../config';
-import getSensors from '../../../services/getSensors';
-import postSensors from '../../../services/postSensors';
+import services from '../../../services';
 
 const request = require('request');
 request.debug = config.DEBUG_HTTP_REQUESTS;
@@ -14,7 +13,7 @@ export default {
    */
   getExistingSensors() {
     return new Promise((resolve, reject) => {
-      getSensors()
+      services.getSensors()
       .then((body) => {
         let existingSensorUids = [];
         const features = body.body.features;
@@ -157,7 +156,7 @@ export default {
         resolve(metadata);
       } else {
         // Load sensors
-        postSensors('', metadata)
+        services.postSensors('', metadata)
         .then((body) => {
           if (body.statusCode !== 200) {
             console.log('Error ' + body.statusCode);

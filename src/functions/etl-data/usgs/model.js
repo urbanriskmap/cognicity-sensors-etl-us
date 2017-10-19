@@ -1,8 +1,6 @@
 import config from '../../../config';
-import getSensors from '../../../services/getSensors';
-import postSensors from '../../../services/postSensors';
-
-const request = require('request');
+import services from '../../../services';
+import request from 'request';
 request.debug = config.DEBUG_HTTP_REQUESTS;
 
 export default {
@@ -10,19 +8,21 @@ export default {
     let filteredSensorList = [];
 
     return new Promise((resolve, reject) => {
-      getSensors()
+      services.getSensors()
       .then((body) => {
         const features = body.body.features;
 
         for (let feature of features) {
-          const properties = feature.properties.properties;
-          if (properties.hasOwnProperty('uid')
-          && properties.hasOwnProperty('class')
-          && properties.class === config.SENSOR_CODE) {
-            filteredSensorList.push({
-              pkey: feature.properties.id,
-              uid: properties.uid,
-            });
+          if (feature.properties.hasOwnProperty('properties')) {
+            const properties = feature.properties.properties;
+            if (properties.hasOwnProperty('uid')
+            && properties.hasOwnProperty('class')
+            && properties.class === config.SENSOR_CODE) {
+              filteredSensorList.push({
+                pkey: feature.properties.id,
+                uid: properties.uid,
+              });
+            }
           }
         }
         resolve(filteredSensorList);
@@ -35,13 +35,15 @@ export default {
 
   getStoredObservations(pkey, uid) {
     return new Promise((resolve, reject) => {
-      getSensors(pkey)
+      services.getSensors(pkey)
       .then((body) => {
         let storedObservations;
         let lastUpdated;
         let latestRow = body.body[body.body.length - 1];
         if (latestRow.properties
-        && latestRow.properties.hasOwnProperty('observations')) {
+        && latestRow.properties.hasOwnProperty('observations')
+        && (latestRow.properties.observations.length
+          || latestRow.properties.observations.upstream.length)) {
           storedObservations = latestRow.properties.observations;
           if (config.SENSOR_CODE === '63160') {
             lastUpdated = storedObservations.upstream[
@@ -199,7 +201,7 @@ export default {
       if (sensor.hasOwnProperty('log')) {
         resolve(sensor);
       } else {
-        postSensors(sensor.pkey, {
+        services.postSensors(sensor.pkey, {
           properties: {
             observations: sensor.data,
           },
