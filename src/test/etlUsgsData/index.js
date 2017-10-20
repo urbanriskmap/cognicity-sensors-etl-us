@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import config from '../../config';
 import services from '../../services';
 import etl from '../../functions/etl-data/usgs/model';
+import testData from './test-data';
 
 export default () => {
   describe('Extract, transform & load usgs sensor data', () => {
@@ -10,112 +11,23 @@ export default () => {
       sinon.stub(config, 'SENSOR_CODE')
         .value('sensorCode');
 
-      sinon.stub(config, 'UP_DOWN_STREAM_VALUES')
+      sinon.stub(config, 'HAS_UPSTREAM_DOWNSTREAM')
         .value('true');
 
       sinon.stub(services, 'getSensors')
       .withArgs(null, config)
-      .resolves({
-        body: {
-          features: [
-            {
-              properties: {
-                id: 5,
-                properties: {
-                  uid: 'uniqueId',
-                  class: 'sensorCode',
-                },
-              },
-            },
-            {
-              properties: {
-                id: 6,
-                otherProperty: 'foo',
-              },
-            },
-            {
-              properties: {
-                id: 7,
-                properties: {
-                  noUid: 'foo',
-                },
-              },
-            },
-            {
-              properties: {
-                id: 8,
-                properties: {
-                  uid: 'foo',
-                  class: 'foo',
-                },
-              },
-            },
-          ],
-        },
-      })
+      .resolves(testData.getSensorsNoArgs())
       .withArgs(404, config)
       .throws(new Error('Something broke'))
       .withArgs(5, config)
-      .resolves({
-        body: [
-          {
-            id: 23,
-            sensor_id: 5,
-            properties: {
-              observations: {
-                upstream: [
-                  {
-                    dateTime: 'firstDateTime',
-                    value: 'up_v1',
-                  },
-                  {
-                    dateTime: 'secondDateTime',
-                    value: 'up_v2',
-                  },
-                  {
-                    dateTime: 'lastDateTime',
-                    value: 'up_v3',
-                  },
-                ],
-                downstream: [
-                  {
-                    dateTime: 'firstDateTime',
-                    value: 'down_v1',
-                  },
-                  {
-                    dateTime: 'secondDateTime',
-                    value: 'down_v2',
-                  },
-                  {
-                    dateTime: 'lastDateTime',
-                    value: 'down_v3',
-                  },
-                ],
-              },
-            },
-          },
-        ],
-      })
+      .resolves(testData.getDataWithObs())
       .withArgs(3, config)
-      .resolves({
-        body: [
-          {
-            id: 27,
-            sensor_id: 3,
-            properties: {
-              observations: {
-                upstream: [],
-                downstream: [],
-              },
-            },
-          },
-        ],
-      });
+      .resolves(testData.getDataNoObs());
     });
 
     after(() => {
       services.getSensors.restore();
-      // sinon.restore(config);
+      // config.restore();
     });
 
     it('Returns filtered list with valid uid and pkey', (done) => {

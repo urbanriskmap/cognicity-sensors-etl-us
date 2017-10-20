@@ -15,11 +15,15 @@ package:
   exclude: # Specify the directories and files which should be excluded in the deployment package
     - src/**
     - .git/**
-    - .gitignore
-    - README.md
-    - .eslintrc.js
-    - .babelrc
+    - .nyc_output/**
+    - coverage/**
     - esdoc/**
+    - .babelrc
+    - .env
+    - .eslintrc.js
+    - .gitignore
+    - .travis.yml
+    - README.md
   # include package.individually: true tag to optimize package sizes
 
 # Add one function for each Lambda
@@ -28,32 +32,27 @@ functions:
     handler: bin/functions/etl-sensors/usgs.handler
     environment:
       API_KEY: ${file(./env.yml):apikey}
-      SENSOR_TYPE: GW
       SENSOR_CODE: 62610
       SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
   etlGaugeHeightSensor:
     handler: bin/functions/etl-sensors/usgs.handler
     environment:
       API_KEY: ${file(./env.yml):apikey}
-      SENSOR_TYPE: ST
       SENSOR_CODE: 00065
   etlDischargeRateSensor:
     handler: bin/functions/etl-sensors/usgs.handler
     environment:
       API_KEY: ${file(./env.yml):apikey}
-      SENSOR_TYPE: ST-CA
       SENSOR_CODE: 00060
   etlStreamElevationSensor:
     handler: bin/functions/etl-sensors/usgs.handler
     environment:
       API_KEY: ${file(./env.yml):apikey}
-      SENSOR_TYPE: ST-CA
       SENSOR_CODE: 63160
   etlPrecipitationSensor:
     handler: bin/functions/etl-sensors/usgs.handler
     environment:
       API_KEY: ${file(./env.yml):apikey}
-      SENSOR_TYPE: ST
       SENSOR_CODE: 00045
   etlGroundwaterData:
     handler: bin/functions/etl-data/usgs.handler
@@ -61,3 +60,47 @@ functions:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
+      SENSOR_CODE: 62610
+      HAS_UPSTREAM_DOWNSTREAM: false
+    events:
+      - schedule: rate(15 minutes)
+  etlGaugeHeightData:
+    handler: bin/functions/etl-data/usgs.handler
+    environment:
+      API_KEY: ${file(./env.yml):apikey}
+      RECORDS_PERIOD: P1D
+      RECORDS_INTERVAL: PT15M
+      SENSOR_CODE: 00065
+      HAS_UPSTREAM_DOWNSTREAM: false
+    events:
+      - schedule: rate(15 minutes)
+  etlDischargeRateData:
+    handler: bin/functions/etl-data/usgs.handler
+    environment:
+      API_KEY: ${file(./env.yml):apikey}
+      RECORDS_PERIOD: P1D
+      RECORDS_INTERVAL: PT15M
+      SENSOR_CODE: 00060
+      HAS_UPSTREAM_DOWNSTREAM: false
+    events:
+      - schedule: rate(15 minutes)
+  etlStreamElevationData:
+    handler: bin/functions/etl-data/usgs.handler
+    environment:
+      API_KEY: ${file(./env.yml):apikey}
+      RECORDS_PERIOD: P1D
+      RECORDS_INTERVAL: PT15M
+      SENSOR_CODE: 63160
+      HAS_UPSTREAM_DOWNSTREAM: true
+    events:
+      - schedule: rate(15 minutes)
+  etlPrecipitationData:
+    handler: bin/functions/etl-data/usgs.handler
+    environment:
+      API_KEY: ${file(./env.yml):apikey}
+      RECORDS_PERIOD: P1D
+      RECORDS_INTERVAL: PT15M
+      SENSOR_CODE: 00045
+      HAS_UPSTREAM_DOWNSTREAM: false
+    events:
+      - schedule: rate(15 minutes)

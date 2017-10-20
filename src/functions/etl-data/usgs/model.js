@@ -45,7 +45,7 @@ export default {
         && (latestRow.properties.observations.length
           || latestRow.properties.observations.upstream.length)) {
           storedObservations = latestRow.properties.observations;
-          if (config.UP_DOWN_STREAM_VALUES) {
+          if (config.HAS_UPSTREAM_DOWNSTREAM) {
             lastUpdated = storedObservations.upstream[
               storedObservations.upstream.length - 1].dateTime;
           } else {
@@ -114,7 +114,7 @@ export default {
       } else {
         const sensor = data.storedProperties;
         const sensorData = data.usgsData;
-        if (config.UP_DOWN_STREAM_VALUES) {
+        if (config.HAS_UPSTREAM_DOWNSTREAM) {
           observations = {
             upstream: sensorData[0].values[0].value,
             downstream: sensorData[0].values[1].value,
@@ -179,7 +179,7 @@ export default {
           resolve(sensor);
         } else {
           let lastExtractedObservation;
-          if (config.UP_DOWN_STREAM_VALUES) {
+          if (config.HAS_UPSTREAM_DOWNSTREAM) {
             lastExtractedObservation = sensor.data.upstream[
                 sensor.data.upstream.length - 1].dateTime;
           } else {

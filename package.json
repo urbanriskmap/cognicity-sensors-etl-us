@@ -46,7 +46,7 @@
     "test": "npm run lint && npm run mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "rm -rf ./bin && ./node_modules/.bin/babel src -d bin",
-    "deploy": "rm -rf ./bin && ./node_modules/.bin/babel src -d bin && serverless deploy -v"
+    "deploy": "npm run build && serverless deploy -v"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -63,7 +63,6 @@
     "unit.js": "^2.0.0"
   },
   "dependencies": {
-    "cors": "^2.8.1",
     "dotenv": "^4.0.0",
     "request": "^2.83.0"
   }
