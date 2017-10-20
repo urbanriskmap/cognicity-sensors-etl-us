@@ -12,6 +12,16 @@
     "url": "https://github.com/urbanriskmap/cognicity-sensors-etl-us/issues"
   },
   "homepage": "https://github.com/urbanriskmap/cognicity-sensors-etl-us#readme",
+  "nyc": {
+    "sourceMap": false,
+    "instrument": false,
+    "exclude": [
+      "**/test/**",
+      "bin",
+      ".serverless",
+      "node_modules"
+    ]
+  },
   "esdoc": {
     "source": "./src",
     "destination": "./esdoc/",
@@ -34,6 +44,7 @@
     "docs": "node_modules/.bin/esdoc",
     "mocha": "nyc mocha --require babel-core/register src/test/index",
     "test": "npm run lint && npm run mocha",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "rm -rf ./bin && ./node_modules/.bin/babel src -d bin",
     "deploy": "rm -rf ./bin && ./node_modules/.bin/babel src -d bin && serverless deploy -v"
   },

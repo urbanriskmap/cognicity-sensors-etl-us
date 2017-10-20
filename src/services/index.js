@@ -1,12 +1,12 @@
-import config from '../config';
 import request from 'request';
-request.debug = config.DEBUG_HTTP_REQUESTS;
 
 export default {
-  getSensors(id) {
+  getSensors(id, config) {
     return new Promise((resolve, reject) => {
       request({
-          url: id ? config.SERVER_ENDPOINT + id : config.SERVER_ENDPOINT,
+          url: id
+            ? this.config.SERVER_ENDPOINT + id
+            : this.config.SERVER_ENDPOINT,
           method: 'GET',
           json: true,
         }, (error, response, body) => {
@@ -19,12 +19,14 @@ export default {
     });
   },
 
-  postSensors(id, data) {
+  postSensors(id, data, config) {
     const requestOptions = {
-      url: id ? config.SERVER_ENDPOINT + id : config.SERVER_ENDPOINT,
+      url: id
+        ? this.config.SERVER_ENDPOINT + id
+        : this.config.SERVER_ENDPOINT,
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': config.API_KEY,
+        'x-api-key': this.config.API_KEY,
       },
       method: 'POST',
       // Parse object.body as json

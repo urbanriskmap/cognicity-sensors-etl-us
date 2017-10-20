@@ -1,14 +1,20 @@
 import * as test from 'unit.js';
 import sinon from 'sinon';
-import services from '../services';
-import etl from '../functions/etl-data/usgs/model';
+import config from '../../config';
+import services from '../../services';
+import etl from '../../functions/etl-data/usgs/model';
 
 export default () => {
   describe('Extract, transform & load usgs sensor data', () => {
     before(() => {
-      // sinon.stub(config, 'SENSOR_CODE')
-      // .returns('sensorClass');
+      sinon.stub(config, 'SENSOR_CODE')
+        .value('sensorCode');
+
+      sinon.stub(config, 'UP_DOWN_STREAM_VALUES')
+        .value('true');
+
       sinon.stub(services, 'getSensors')
+      .withArgs(null, config)
       .resolves({
         body: {
           features: [
@@ -17,7 +23,7 @@ export default () => {
                 id: 5,
                 properties: {
                   uid: 'uniqueId',
-                  class: '63160',
+                  class: 'sensorCode',
                 },
               },
             },
@@ -47,9 +53,9 @@ export default () => {
           ],
         },
       })
-      .withArgs(404)
+      .withArgs(404, config)
       .throws(new Error('Something broke'))
-      .withArgs(5)
+      .withArgs(5, config)
       .resolves({
         body: [
           {
@@ -90,7 +96,7 @@ export default () => {
           },
         ],
       })
-      .withArgs(3)
+      .withArgs(3, config)
       .resolves({
         body: [
           {
@@ -109,7 +115,7 @@ export default () => {
 
     after(() => {
       services.getSensors.restore();
-      // config.restore();
+      // sinon.restore(config);
     });
 
     it('Returns filtered list with valid uid and pkey', (done) => {

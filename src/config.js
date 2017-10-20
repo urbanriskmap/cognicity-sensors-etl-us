@@ -13,6 +13,7 @@ export default {
   USGS_SITE_STATUS: 'all',
   SENSOR_TYPE: process.env.SENSOR_TYPE,
   SENSOR_CODE: process.env.SENSOR_CODE,
+  UP_DOWN_STREAM_VALUES: process.env.UP_DOWN_STREAM_VALUES,
 
   RECORDS_PERIOD: process.env.RECORDS_PERIOD,
   RECORDS_INTERVAL: process.env.RECORDS_INTERVAL,

@@ -1,5 +1,5 @@
-// import testEtlUsgsSensors from './testEtlUsgsSensors';
-import testEtlUsgsData from './testEtlUsgsData';
+// import testEtlUsgsSensors from './etlUsgsSensors';
+import testEtlUsgsData from './etlUsgsData';
 
 // testEtlUsgsSensors();
 testEtlUsgsData();

@@ -8,7 +8,7 @@ export default {
     let filteredSensorList = [];
 
     return new Promise((resolve, reject) => {
-      services.getSensors()
+      services.getSensors(null, config)
       .then((body) => {
         const features = body.body.features;
 
@@ -35,7 +35,7 @@ export default {
 
   getStoredObservations(pkey, uid) {
     return new Promise((resolve, reject) => {
-      services.getSensors(pkey)
+      services.getSensors(pkey, config)
       .then((body) => {
         let storedObservations;
         let lastUpdated;
@@ -45,7 +45,7 @@ export default {
         && (latestRow.properties.observations.length
           || latestRow.properties.observations.upstream.length)) {
           storedObservations = latestRow.properties.observations;
-          if (config.SENSOR_CODE === '63160') {
+          if (config.UP_DOWN_STREAM_VALUES) {
             lastUpdated = storedObservations.upstream[
               storedObservations.upstream.length - 1].dateTime;
           } else {
@@ -114,7 +114,7 @@ export default {
       } else {
         const sensor = data.storedProperties;
         const sensorData = data.usgsData;
-        if (config.SENSOR_CODE === '63160') {
+        if (config.UP_DOWN_STREAM_VALUES) {
           observations = {
             upstream: sensorData[0].values[0].value,
             downstream: sensorData[0].values[1].value,
@@ -179,7 +179,7 @@ export default {
           resolve(sensor);
         } else {
           let lastExtractedObservation;
-          if (config.SENSOR_CODE === '63160') {
+          if (config.UP_DOWN_STREAM_VALUES) {
             lastExtractedObservation = sensor.data.upstream[
                 sensor.data.upstream.length - 1].dateTime;
           } else {
@@ -205,7 +205,7 @@ export default {
           properties: {
             observations: sensor.data,
           },
-        })
+        }, config)
         .then((body) => {
           if (body.statusCode !== 200) {
             console.log(sensor.pkey + ': Error ' + body.statusCode);
