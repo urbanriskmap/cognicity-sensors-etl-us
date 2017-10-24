@@ -33,7 +33,7 @@ export class EtlSensors {
               const properties = feature.properties.properties;
               if (properties.hasOwnProperty('uid')
               && properties.hasOwnProperty('class')
-              && properties.class === self.config.SENSOR_CODE) {
+              && String(properties.class) === self.config.SENSOR_CODE) {
                 existingSensorUids.push(properties.uid);
               }
             }
@@ -150,7 +150,6 @@ export class EtlSensors {
               lng: sensor.sourceInfo.geoLocation.geogLocation.longitude,
             },
           };
-
           resolve(sensorMetadata);
         }
       }

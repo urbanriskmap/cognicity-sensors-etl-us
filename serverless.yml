@@ -33,106 +33,144 @@ functions:
   etlGroundwaterSensor:
     handler: bin/functions/etl-sensors/usgs.handler
     package:
-      include: bin/functions/etl-sensors/usgs/**
+      include:
+        - bin/functions/etl-sensors/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
-      SENSOR_CODE: 62610
+      SENSOR_CODE: '62610'
       SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
     events:
-      - schedule: rate(12 hours)
+      - schedule:
+        - rate: rate(12 hours)
+
   etlGaugeHeightSensor:
     handler: bin/functions/etl-sensors/usgs.handler
     package:
-      include: bin/functions/etl-sensors/usgs/**
+      include:
+        - bin/functions/etl-sensors/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
-      SENSOR_CODE: 00065
+      SENSOR_CODE: '00065'
+      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
     events:
-      - schedule: rate(12 hours)
+      - schedule:
+        - rate: rate(12 hours)
+
   etlDischargeRateSensor:
     handler: bin/functions/etl-sensors/usgs.handler
     package:
-      include: bin/functions/etl-sensors/usgs/**
+      include:
+        - bin/functions/etl-sensors/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
-      SENSOR_CODE: 00060
+      SENSOR_CODE: '00060'
+      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
     events:
-      - schedule: rate(12 hours)
+      - schedule:
+        - rate: rate(12 hours)
+
   etlStreamElevationSensor:
     handler: bin/functions/etl-sensors/usgs.handler
     package:
-      include: bin/functions/etl-sensors/usgs/**
+      include:
+        - bin/functions/etl-sensors/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
-      SENSOR_CODE: 63160
+      SENSOR_CODE: '63160'
+      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
     events:
-      - schedule: rate(12 hours)
+      - schedule:
+        - rate: rate(12 hours)
+
   etlPrecipitationSensor:
     handler: bin/functions/etl-sensors/usgs.handler
     package:
-      include: bin/functions/etl-sensors/usgs/**
+      include:
+        - bin/functions/etl-sensors/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
-      SENSOR_CODE: 00045
+      SENSOR_CODE: '00045'
+      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
     events:
-      - schedule: rate(12 hours)
+      - schedule:
+        - rate: rate(12 hours)
+
   etlGroundwaterData:
     handler: bin/functions/etl-data/usgs.handler
     package:
-      include: bin/functions/etl-data/usgs/**
+      include:
+        - bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
-      SENSOR_CODE: 62610
+      SENSOR_CODE: '62610'
+      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     events:
-      - schedule: rate(15 minutes)
+      - schedule:
+        - rate: rate(15 minutes)
+
   etlGaugeHeightData:
     handler: bin/functions/etl-data/usgs.handler
     package:
-      include: bin/functions/etl-data/usgs/**
+      include:
+        - bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
-      SENSOR_CODE: 00065
+      SENSOR_CODE: '00065'
+      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     events:
-      - schedule: rate(15 minutes)
+      - schedule:
+        - rate: rate(15 minutes)
+
   etlDischargeRateData:
     handler: bin/functions/etl-data/usgs.handler
     package:
-      include: bin/functions/etl-data/usgs/**
+      include:
+        - bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
-      SENSOR_CODE: 00060
+      SENSOR_CODE: '00060'
+      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     events:
-      - schedule: rate(15 minutes)
+      - schedule:
+        - rate: rate(15 minutes)
+
   etlStreamElevationData:
     handler: bin/functions/etl-data/usgs.handler
     package:
-      include: bin/functions/etl-data/usgs/**
+      include:
+        - bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
-      SENSOR_CODE: 63160
+      SENSOR_CODE: '63160'
+      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: true
     events:
-      - schedule: rate(15 minutes)
+      - schedule:
+        - rate: rate(15 minutes)
+
   etlPrecipitationData:
     handler: bin/functions/etl-data/usgs.handler
     package:
-      include: bin/functions/etl-data/usgs/**
+      include:
+        - bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
-      SENSOR_CODE: 00045
+      SENSOR_CODE: '00045'
+      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     events:
-      - schedule: rate(15 minutes)
+      - schedule:
+        - rate: rate(15 minutes)

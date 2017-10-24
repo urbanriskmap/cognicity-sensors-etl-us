@@ -9,7 +9,7 @@ require('dotenv').config({silent: true});
 export default {
   USGS_BASE_URL: 'https://waterservices.usgs.gov/nwis/iv/?format=json',
 
-  USGS_COUNTY_CODE: 12011,
+  USGS_COUNTY_CODE: '12011',
   USGS_SITE_STATUS: 'all',
   SENSOR_CODE: process.env.SENSOR_CODE,
   HAS_UPSTREAM_DOWNSTREAM: process.env.HAS_UPSTREAM_DOWNSTREAM,

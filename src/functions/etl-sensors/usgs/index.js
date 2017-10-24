@@ -16,38 +16,51 @@ exports.handler = (event, context, callback) => {
   let updateCount = 0;
 
   etl.getExistingSensors()
-  .then(etl.extractUsgsSensors)
-  .then(({existingSensorUids, usgsSensors}) => {
-    for (let sensor of usgsSensors) {
-      processEtl.push(
-        new Promise((resolve, reject) => {
-          etl.compareSensors(sensor, existingSensorUids)
-          .then(etl.transform)
-          .then(etl.loadSensor)
-          .then((result) => {
-            if (result.hasOwnProperty('log')) {
-              console.log('# ' + result.log);
-              resolve(result.log);
-            } else {
-              console.log('# ' + result.success);
-              updateCount += 1;
-              resolve(result.success);
-            }
+  .then((uids) => {
+    etl.extractUsgsSensors(uids)
+    .then(({existingSensorUids, usgsSensors}) => {
+      for (let sensor of usgsSensors) {
+        processEtl.push(
+          new Promise((resolve, reject) => {
+            etl.compareSensors(sensor, existingSensorUids)
+            .then((sensor) => {
+              etl.transform(sensor)
+              .then((sensor) => {
+                etl.loadSensor(sensor)
+                .then((result) => {
+                  if (result.hasOwnProperty('log')) {
+                    resolve(result.log);
+                  } else {
+                    updateCount += 1;
+                    resolve(result.success);
+                  }
+                })
+                .catch((error) => {
+                  reject(error);
+                });
+              })
+              .catch((error) => {
+                reject(error);
+              });
+            })
+            .catch((error) => {
+              reject(error);
+            });
           })
-          .catch((error) => {
-            reject(error);
-          });
-        })
-      );
-    }
+        );
+      }
 
-    Promise.all(processEtl)
-    .then((messages) => {
-      let result = {
-        sensors_updated: updateCount,
-        logs: messages,
-      };
-      callback(null, result);
+      Promise.all(processEtl)
+      .then((messages) => {
+        let result = {
+          sensors_updated: updateCount,
+          logs: messages,
+        };
+        callback(null, result);
+      })
+      .catch((error) => {
+        callback(error);
+      });
     })
     .catch((error) => {
       callback(error);

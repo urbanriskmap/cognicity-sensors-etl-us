@@ -24,19 +24,37 @@ exports.handler = (event, context, callback) => {
         processEtl.push(
           new Promise((resolve, reject) => {
             etl.getStoredObservations(sensor.pkey, sensor.uid)
-            .then(etl.extractSensorObservations)
-            .then(etl.transform)
-            .then(etl.compareSensorObservations)
-            .then(etl.loadObservations)
-            .then((result) => {
-              if (result.hasOwnProperty('log')) {
-                console.log('# ' + result.log);
-                resolve(result.log);
-              } else if (result.hasOwnProperty('success')) {
-                console.log('# ' + result.success);
-                updateCount += 1;
-                resolve(result.success);
-              }
+            .then((sensor) => {
+              etl.extractSensorObservations(sensor)
+              .then((data) => {
+                etl.transform(data)
+                .then((sensor) => {
+                  etl.compareSensorObservations(sensor)
+                  .then((sensor) => {
+                    etl.loadObservations(sensor)
+                    .then((result) => {
+                      if (result.hasOwnProperty('log')) {
+                        resolve(result.log);
+                      } else if (result.hasOwnProperty('success')) {
+                        updateCount += 1;
+                        resolve(result.success);
+                      }
+                    })
+                    .catch((error) => {
+                      reject(error);
+                    });
+                  })
+                  .catch((error) => {
+                    reject(error);
+                  });
+                })
+                .catch((error) => {
+                  reject(error);
+                });
+              })
+              .catch((error) => {
+                reject(error);
+              });
             })
             .catch((error) => {
               reject(error);
