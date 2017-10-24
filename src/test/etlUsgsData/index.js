@@ -7,7 +7,7 @@ import testData from './test-data';
 import testConfig from '../test-config';
 
 export default () => {
-  describe('Extract, transform & load usgs sensor data', () => {
+  describe('ETL USGS sensors data', () => {
     let etl;
     before(() => {
       sinon.stub(EtlData.prototype, 'constructor')
@@ -16,12 +16,12 @@ export default () => {
       etl = new EtlData(testConfig);
 
       sinon.stub(Service.prototype, 'getSensors')
-      .onFirstCall(0)
+      .onFirstCall()
       .resolves(testData.getSensorsNoArgs())
       .onSecondCall()
-      .rejects({message: 'Something broke'})
+      .rejects({message: 'filterSensors'})
       .withArgs(404)
-      .rejects({message: 'Something broke'})
+      .rejects({message: 'getStoredObservations'})
       .withArgs(5)
       .resolves(testData.getDataWithObs())
       .withArgs(3)
@@ -52,7 +52,7 @@ export default () => {
         url: mockUsgsQuery('errorId'),
         json: true,
       })
-      .yields({message: 'Something broke'}, null, null);
+      .yields({message: 'extractSensorObservations'}, null, null);
 
       sinon.stub(Service.prototype, 'postSensors')
       .withArgs(5, {properties: {observations: {}}})
@@ -67,11 +67,12 @@ export default () => {
         statusCode: 400,
       })
       .withArgs(9, {properties: {observations: {}}})
-      .rejects({message: 'Something broke'});
+      .rejects({message: 'loadObservations'});
     });
 
     after(() => {
       Service.prototype.getSensors.restore();
+      Service.prototype.postSensors.restore();
       EtlData.prototype.constructor.restore();
       request.get.restore();
     });
@@ -87,34 +88,6 @@ export default () => {
       })
       .catch((error) => {
         test.fail(error.message);
-      })
-      .finally(done)
-      .done();
-    });
-
-    it('Catches http request error (sensors)', (done) => {
-      test.promise
-      .given(etl.filterSensors())
-      .then((result) => {
-        test.fail('Promise was unexpectedly fulfilled. Result: '
-        + result);
-      })
-      .catch((error) => {
-        test.value(error.message).is('Something broke');
-      })
-      .finally(done)
-      .done();
-    });
-
-    it('Catches http request error (data)', (done) => {
-      test.promise
-      .given(etl.getStoredObservations(404, 'uniqueId'))
-      .then((result) => {
-        test.fail('Promise was unexpectedly fulfilled. Result: '
-        + result);
-      })
-      .catch((error) => {
-        test.value(error.message).is('Something broke');
       })
       .finally(done)
       .done();
@@ -196,24 +169,6 @@ export default () => {
       .done();
     });
 
-    it('Catches http request error (observations)', (done) => {
-      test.promise
-      .given(etl.extractSensorObservations({
-        uid: 'errorId',
-        pkey: 9,
-        lastUpdated: null,
-      }))
-      .then((result) => {
-        test.fail('Promise was unexpectedly fulfilled. Result: '
-        + result);
-      })
-      .catch((error) => {
-        test.value(error.message).is('Something broke');
-      })
-      .finally(done)
-      .done();
-    });
-
     it('Transforms extracted data (with up, down)', (done) => {
       let argData = testData.getUsgsObs(true);
       test.promise
@@ -276,46 +231,6 @@ export default () => {
       .catch((error) => {
         test.fail(error.message);
         configStub.restore();
-      })
-      .finally(done)
-      .done();
-    });
-
-    it('Bypasses methods in case of stored logs', (done) => {
-      let methodsToTest = [
-        new Promise((resolve, reject) => {
-          etl.transform({log: 'test1'})
-          .then((result) => resolve(result))
-          .catch((error) => reject(error));
-        }),
-        new Promise((resolve, reject) => {
-          etl.compareSensorObservations({log: 'test2'})
-          .then((result) => resolve(result))
-          .catch((error) => reject(error));
-        }),
-        new Promise((resolve, reject) => {
-          etl.compareSensorObservations({lastUpdated: false})
-          .then((result) => resolve(result))
-          .catch((error) => reject(error));
-        }),
-        new Promise((resolve, reject) => {
-          etl.loadObservations({log: 'test3'})
-          .then((result) => resolve(result))
-          .catch((error) => reject(error));
-        }),
-      ];
-      test.promise
-      .given(Promise.all(methodsToTest))
-      .then((result) => {
-        test.value(result).is({
-          '0': {log: 'test1'},
-          '1': {log: 'test2'},
-          '2': {lastUpdated: false},
-          '3': {log: 'test3'},
-        });
-      })
-      .catch((error) => {
-        test.fail(error.message);
       })
       .finally(done)
       .done();
@@ -406,18 +321,91 @@ export default () => {
       .done();
     });
 
-    it('Catches http request error (post data)', (done) => {
+    it('Bypasses methods in case of stored logs', (done) => {
+      let methodsToTest = [
+        new Promise((resolve, reject) => {
+          etl.transform({log: 'test1'})
+          .then((result) => resolve(result))
+          .catch((error) => reject(error));
+        }),
+        new Promise((resolve, reject) => {
+          etl.compareSensorObservations({log: 'test2'})
+          .then((result) => resolve(result))
+          .catch((error) => reject(error));
+        }),
+        new Promise((resolve, reject) => {
+          etl.compareSensorObservations({lastUpdated: false})
+          .then((result) => resolve(result))
+          .catch((error) => reject(error));
+        }),
+        new Promise((resolve, reject) => {
+          etl.loadObservations({log: 'test3'})
+          .then((result) => resolve(result))
+          .catch((error) => reject(error));
+        }),
+      ];
       test.promise
-      .given(etl.loadObservations({
-        pkey: 9,
-        data: {},
-      }))
+      .given(Promise.all(methodsToTest))
       .then((result) => {
-        test.fail('Promise was unexpectedly fulfilled. Result: '
-        + result);
+        test.value(result).is({
+          '0': {log: 'test1'},
+          '1': {log: 'test2'},
+          '2': {lastUpdated: false},
+          '3': {log: 'test3'},
+        });
       })
       .catch((error) => {
-        test.value(error.message).is('Something broke');
+        test.fail(error.message);
+      })
+      .finally(done)
+      .done();
+    });
+
+    it('Catches http request errors', (done) => {
+      // Swap resolve & reject callbacks to catch rejected
+      // promises from methods being tested
+      let methodsToTest = [
+        new Promise((resolve, reject) => {
+          etl.filterSensors()
+          .then((result) => reject(result))
+          .catch((error) => resolve(error));
+        }),
+        new Promise((resolve, reject) => {
+          etl.getStoredObservations(404, 'uniqueId')
+          .then((result) => reject(result))
+          .catch((error) => resolve(error));
+        }),
+        new Promise((resolve, reject) => {
+          etl.extractSensorObservations({
+            uid: 'errorId',
+            pkey: 9,
+            lastUpdated: null,
+          })
+          .then((result) => reject(result))
+          .catch((error) => resolve(error));
+        }),
+        new Promise((resolve, reject) => {
+          etl.loadObservations({
+            pkey: 9,
+            data: {},
+          })
+          .then((result) => reject(result))
+          .catch((error) => resolve(error));
+        }),
+      ];
+
+      test.promise
+      .given(Promise.all(methodsToTest))
+      .then((result) => {
+        test.value(result).is({
+          '0': {message: 'filterSensors'},
+          '1': {message: 'getStoredObservations'},
+          '2': {message: 'extractSensorObservations'},
+          '3': {message: 'loadObservations'},
+        });
+      })
+      .catch((error) => {
+        test.fail(error);
       })
       .finally(done)
       .done();

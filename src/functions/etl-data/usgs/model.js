@@ -4,12 +4,12 @@ import request from 'request';
 export class EtlData {
   constructor(config) {
     this.config = config;
-    // request.debug = this.config.DEBUG_HTTP_REQUESTS;
+    request.debug = this.config.DEBUG_HTTP_REQUESTS;
   }
 
   filterSensors() {
     const self = this;
-    let service = new Service(self.config);
+    const service = new Service(self.config);
     let filteredSensorList = [];
 
     return new Promise((resolve, reject) => {
@@ -40,7 +40,8 @@ export class EtlData {
 
   getStoredObservations(pkey, uid) {
     const self = this;
-    let service = new Service(self.config);
+    const service = new Service(self.config);
+
     return new Promise((resolve, reject) => {
       service.getSensors(pkey)
       .then((body) => {
@@ -80,7 +81,7 @@ export class EtlData {
 
   extractSensorObservations(sensor) {
     const self = this;
-    let usgsQuery = self.config.USGS_BASE_URL
+    const usgsQuery = self.config.USGS_BASE_URL
     + '&sites=' + sensor.uid
     + '&period=' + self.config.RECORDS_PERIOD;
     // + '&modifiedSince=' + self.config.RECORDS_INTERVAL;
@@ -116,6 +117,7 @@ export class EtlData {
     const self = this;
     let observations;
     let transformedData;
+
     return new Promise((resolve, reject) => {
       if (data.hasOwnProperty('log')) {
         resolve(data);
@@ -180,6 +182,7 @@ export class EtlData {
       log: sensor.pkey
       + ': Sensor has no new observations',
     };
+
     return new Promise((resolve, reject) => {
       if (sensor.hasOwnProperty('log')) {
         resolve(sensor);
@@ -207,7 +210,8 @@ export class EtlData {
 
   loadObservations(sensor) {
     const self = this;
-    let service = new Service(self.config);
+    const service = new Service(self.config);
+
     return new Promise((resolve, reject) => {
       if (sensor.hasOwnProperty('log')) {
         resolve(sensor);
