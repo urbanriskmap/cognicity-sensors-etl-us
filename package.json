@@ -42,7 +42,7 @@
   "scripts": {
     "lint": "eslint src",
     "docs": "node_modules/.bin/esdoc",
-    "mocha": "nyc mocha --require babel-core/register bin/test/index",
+    "mocha": "nyc mocha --require babel-core/register src/test/index",
     "test": "npm run lint && npm run mocha",
     "coverage": "nyc report --reporter=text-lcov | coveralls",
     "build": "rm -rf ./bin && ./node_modules/.bin/babel src -d bin",
