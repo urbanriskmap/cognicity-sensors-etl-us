@@ -219,7 +219,7 @@ export class EtlData {
         })
         .then((body) => {
           if (body.statusCode !== 200) {
-            reject(new Error(body));
+            reject(body);
           } else {
             const sensorID = body.body[0].sensor_id;
             resolve({success: sensorID + ': Data for sensor updated'});

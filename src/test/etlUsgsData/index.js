@@ -19,9 +19,9 @@ export default () => {
       .onFirstCall(0)
       .resolves(testData.getSensorsNoArgs())
       .onSecondCall()
-      .throws(new Error('Something broke'))
+      .rejects({message: 'Something broke'})
       .withArgs(404)
-      .throws(new Error('Something broke'))
+      .rejects({message: 'Something broke'})
       .withArgs(5)
       .resolves(testData.getDataWithObs())
       .withArgs(3)
@@ -52,7 +52,7 @@ export default () => {
         url: mockUsgsQuery('errorId'),
         json: true,
       })
-      .yields(new Error('Something broke'), null, null);
+      .yields({message: 'Something broke'}, null, null);
 
       sinon.stub(Service.prototype, 'postSensors')
       .withArgs(5, {properties: {observations: {}}})
@@ -67,7 +67,7 @@ export default () => {
         statusCode: 400,
       })
       .withArgs(9, {properties: {observations: {}}})
-      .throws(new Error('Something broke'));
+      .rejects({message: 'Something broke'});
     });
 
     after(() => {
@@ -100,7 +100,7 @@ export default () => {
         + result);
       })
       .catch((error) => {
-        test.value(error).is(new Error('Something broke'));
+        test.value(error.message).is('Something broke');
       })
       .finally(done)
       .done();
@@ -114,7 +114,7 @@ export default () => {
         + result);
       })
       .catch((error) => {
-        test.value(error).is(new Error('Something broke'));
+        test.value(error.message).is('Something broke');
       })
       .finally(done)
       .done();
@@ -208,7 +208,7 @@ export default () => {
         + result);
       })
       .catch((error) => {
-        test.value(error).is(new Error('Something broke'));
+        test.value(error.message).is('Something broke');
       })
       .finally(done)
       .done();
@@ -398,9 +398,9 @@ export default () => {
         + result);
       })
       .catch((error) => {
-        test.value(error).is(new Error({
+        test.value(error).is({
           statusCode: 400,
-        }));
+        });
       })
       .finally(done)
       .done();
@@ -417,7 +417,7 @@ export default () => {
         + result);
       })
       .catch((error) => {
-        test.value(error).is(new Error('Something broke'));
+        test.value(error.message).is('Something broke');
       })
       .finally(done)
       .done();
