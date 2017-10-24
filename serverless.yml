@@ -12,7 +12,10 @@ provider:
     area: ${file(./env.yml):areatag}
 
 package:
+  individually: true
   exclude: # Specify the directories and files which should be excluded in the deployment package
+    - bin/functions/** # Include functions individually
+    - bin/test/**
     - src/**
     - .git/**
     - .nyc_output/**
@@ -24,38 +27,59 @@ package:
     - .gitignore
     - .travis.yml
     - README.md
-  # include package.individually: true tag to optimize package sizes
 
 # Add one function for each Lambda
 functions:
   etlGroundwaterSensor:
     handler: bin/functions/etl-sensors/usgs.handler
+    package:
+      include: bin/functions/etl-sensors/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       SENSOR_CODE: 62610
       SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
+    events:
+      - schedule: rate(12 hours)
   etlGaugeHeightSensor:
     handler: bin/functions/etl-sensors/usgs.handler
+    package:
+      include: bin/functions/etl-sensors/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       SENSOR_CODE: 00065
+    events:
+      - schedule: rate(12 hours)
   etlDischargeRateSensor:
     handler: bin/functions/etl-sensors/usgs.handler
+    package:
+      include: bin/functions/etl-sensors/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       SENSOR_CODE: 00060
+    events:
+      - schedule: rate(12 hours)
   etlStreamElevationSensor:
     handler: bin/functions/etl-sensors/usgs.handler
+    package:
+      include: bin/functions/etl-sensors/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       SENSOR_CODE: 63160
+    events:
+      - schedule: rate(12 hours)
   etlPrecipitationSensor:
     handler: bin/functions/etl-sensors/usgs.handler
+    package:
+      include: bin/functions/etl-sensors/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       SENSOR_CODE: 00045
+    events:
+      - schedule: rate(12 hours)
   etlGroundwaterData:
     handler: bin/functions/etl-data/usgs.handler
+    package:
+      include: bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
@@ -66,6 +90,8 @@ functions:
       - schedule: rate(15 minutes)
   etlGaugeHeightData:
     handler: bin/functions/etl-data/usgs.handler
+    package:
+      include: bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
@@ -76,6 +102,8 @@ functions:
       - schedule: rate(15 minutes)
   etlDischargeRateData:
     handler: bin/functions/etl-data/usgs.handler
+    package:
+      include: bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
@@ -86,6 +114,8 @@ functions:
       - schedule: rate(15 minutes)
   etlStreamElevationData:
     handler: bin/functions/etl-data/usgs.handler
+    package:
+      include: bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
@@ -96,6 +126,8 @@ functions:
       - schedule: rate(15 minutes)
   etlPrecipitationData:
     handler: bin/functions/etl-data/usgs.handler
+    package:
+      include: bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./env.yml):apikey}
       RECORDS_PERIOD: P1D
