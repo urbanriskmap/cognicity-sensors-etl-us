@@ -22,6 +22,8 @@ export default () => {
       .resolves(testData.getDataWithObs())
       .withArgs(3)
       .resolves(testData.getDataNoObs())
+      // Susceptible to break, if call idx 3
+      // occurs async
       .onCall(3)
       .rejects({message: 'filterSensors'})
       .withArgs(404)
@@ -64,10 +66,30 @@ export default () => {
       })
       .withArgs(7, {properties: {observations: {}}})
       .resolves({
-        statusCode: 400,
+        statusCode: 200,
+        body: [
+          {sensor_id: 7},
+        ],
       })
       .withArgs(9, {properties: {observations: {}}})
+      .resolves({
+        statusCode: 200,
+        body: [
+          {sensor_id: 9},
+        ],
+      })
+      .withArgs(11, {properties: {observations: {}}})
+      .resolves({
+        statusCode: 400,
+      })
+      .withArgs(13, {properties: {observations: {}}})
       .rejects({message: 'loadObservations'});
+
+      sinon.stub(Service.prototype, 'deleteObservations')
+      .withArgs(7, 23)
+      .resolves({})
+      .withArgs(9, 27)
+      .rejects({});
     });
 
     after(() => {
@@ -99,7 +121,12 @@ export default () => {
       .then((sensor) => {
         Service.prototype.getSensors.called.should.be.equal(true);
         test.value(sensor)
-        .is({pkey: 5, uid: 'uniqueId', lastUpdated: 'lastDateTime'});
+        .is({
+          pkey: 5,
+          uid: 'uniqueId',
+          dataId: 23,
+          lastUpdated: 'lastDateTime',
+        });
       })
       .catch((error) => {
         test.fail(error.message);
@@ -114,7 +141,12 @@ export default () => {
       .then((sensor) => {
         Service.prototype.getSensors.called.should.be.equal(true);
         test.value(sensor)
-        .is({pkey: 3, uid: 'uniqueId', lastUpdated: null});
+        .is({
+          pkey: 3,
+          uid: 'uniqueId',
+          dataId: null,
+          lastUpdated: null,
+        });
       })
       .catch((error) => {
         test.fail(error.message);
@@ -126,8 +158,9 @@ export default () => {
     it('Extracts observations for USGS sensor', (done) => {
       test.promise
       .given(etl.extractSensorObservations({
-        uid: 'uniqueId',
         pkey: 5,
+        uid: 'uniqueId',
+        dataId: 23,
         lastUpdated: null,
       }))
       .then((data) => {
@@ -176,6 +209,7 @@ export default () => {
         storedProperties: {
           uid: 'uniqueId',
           pkey: 5,
+          dataId: 23,
           lastUpdated: null,
         },
         usgsData: argData.value.timeSeries,
@@ -183,6 +217,7 @@ export default () => {
       .then((sensor) => {
         test.value(sensor).is({
           pkey: 5,
+          dataId: 23,
           data: {
             upstream: [
               {dateTime: 'upstream_1', value: 3.1},
@@ -212,6 +247,7 @@ export default () => {
       .given(etl.transform({
         storedProperties: {
           uid: 'uniqueId',
+          dataId: 23,
           pkey: 7,
           lastUpdated: null,
         },
@@ -220,6 +256,7 @@ export default () => {
       .then((sensor) => {
         test.value(sensor).is({
           pkey: 7,
+          dataId: 23,
           data: [
             {dateTime: 'dateTime_1', value: 4.0},
             {dateTime: 'dateTime_2', value: 4.2},
@@ -240,6 +277,7 @@ export default () => {
       test.promise
       .given(etl.compareSensorObservations({
         pkey: 5,
+        dataId: 23,
         data: {
           upstream: [
             {dateTime: 'oldDateTime'},
@@ -264,6 +302,7 @@ export default () => {
       test.promise
       .given(etl.compareSensorObservations({
         pkey: 5,
+        dataId: 23,
         data: {
           upstream: [
             {dateTime: 'someDateTime'},
@@ -284,16 +323,55 @@ export default () => {
       .done();
     });
 
-    it('Loads observations', (done) => {
+    it('Loads observations (new)', (done) => {
       test.promise
       .given(etl.loadObservations({
         pkey: 5,
+        dataId: null,
         data: {},
       }))
       .then((result) => {
         test
         .value(result.success)
-        .is('5: Data for sensor updated');
+        .is('5: Data for sensor stored');
+      })
+      .catch((error) => {
+        test.fail(error.message);
+      })
+      .finally(done)
+      .done();
+    });
+
+    it('Loads observations (update)', (done) => {
+      test.promise
+      .given(etl.loadObservations({
+        pkey: 7,
+        dataId: 23,
+        data: {},
+      }))
+      .then((result) => {
+        test
+        .value(result.success)
+        .is('7: Data for sensor updated');
+      })
+      .catch((error) => {
+        test.fail(error.message);
+      })
+      .finally(done)
+      .done();
+    });
+
+    it('Resolves with a log if delete fails', (done) => {
+      test.promise
+      .given(etl.loadObservations({
+        pkey: 9,
+        dataId: 27,
+        data: {},
+      }))
+      .then((result) => {
+        test
+        .value(result.log)
+        .is('9: Failed to remove previous observations');
       })
       .catch((error) => {
         test.fail(error.message);
@@ -305,7 +383,7 @@ export default () => {
     it('Catches data upload error', (done) => {
       test.promise
       .given(etl.loadObservations({
-        pkey: 7,
+        pkey: 11,
         data: {},
       }))
       .then((result) => {
@@ -386,7 +464,7 @@ export default () => {
         }),
         new Promise((resolve, reject) => {
           etl.loadObservations({
-            pkey: 9,
+            pkey: 13,
             data: {},
           })
           .then((result) => reject(result))

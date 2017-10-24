@@ -44,4 +44,27 @@ export class Service {
       });
     });
   }
+
+  deleteObservations(sensorId, dataId) {
+    const requestOptions = {
+      url: this.config.SERVER_ENDPOINT + sensorId,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.config.API_KEY,
+      },
+      // Parse object.body as json
+      json: {
+        data_id: dataId,
+      },
+    };
+    return new Promise((resolve, reject) => {
+      request.delete(requestOptions, (error, response, body) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(body);
+        }
+      });
+    });
+  }
 }

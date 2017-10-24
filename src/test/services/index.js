@@ -17,7 +17,7 @@ export default () => {
         url: 'someEndpointsensorId',
         json: true,
       })
-      .yields(testData.getSensorsError(), null, null);
+      .yields({message: 'Get sensors error'}, null, null);
 
       sinon.stub(request, 'post')
       .yields(null, null, testData.postSensors())
@@ -29,12 +29,36 @@ export default () => {
         },
         json: {},
       })
-      .yields(testData.postSensorsError(), null, null);
+      .yields({message: 'Post sensors error'}, null, null);
+
+      sinon.stub(request, 'delete')
+      .withArgs({
+        url: 'someEndpoint1',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': 'someApiKey',
+        },
+        json: {data_id: 2},
+      })
+      .yields(null, null, {
+        statusCode: 200,
+        body: [],
+      })
+      .withArgs({
+        url: 'someEndpoint3',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': 'someApiKey',
+        },
+        json: {data_id: 4},
+      })
+      .yields({message: 'Delete error'}, null, null);
     });
 
     after(() => {
       request.get.restore();
       request.post.restore();
+      request.delete.restore();
     });
 
     it('Gets sensors', (done) => {
@@ -58,7 +82,7 @@ export default () => {
       .given(service.getSensors('sensorId'))
       .then()
       .catch((error) => {
-        test.value(error).is(new Error('Get sensors error'));
+        test.value(error.message).is('Get sensors error');
       })
       .finally(done)
       .done();
@@ -85,7 +109,32 @@ export default () => {
       .given(service.postSensors('sensorId', {}))
       .then()
       .catch((error) => {
-        test.value(error).is(new Error('Post sensors error'));
+        test.value(error.message).is('Post sensors error');
+      })
+      .finally(done)
+      .done();
+    });
+
+    it('Deletes sensor data row', (done) => {
+      test.promise
+      .given(service.deleteObservations(1, 2))
+      .then((body) => {
+        request.delete.called.should.be.equal(true);
+        test.value(body.statusCode).is(200);
+      })
+      .catch((error) => {
+        test.fail(error.message);
+      })
+      .finally(done)
+      .done();
+    });
+
+    it('Catches delete data error', (done) => {
+      test.promise
+      .given(service.deleteObservations(3, 4))
+      .then()
+      .catch((error) => {
+        test.value(error.message).is('Delete error');
       })
       .finally(done)
       .done();

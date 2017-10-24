@@ -47,12 +47,14 @@ export class EtlData {
       .then((body) => {
         let storedObservations;
         let lastUpdated;
+        let dataId;
         let latestRow = body.body[body.body.length - 1];
         if (latestRow.properties
         && latestRow.properties.hasOwnProperty('observations')
         && (latestRow.properties.observations.length
           || latestRow.properties.observations.upstream.length)) {
           storedObservations = latestRow.properties.observations;
+          dataId = latestRow.id;
           if (self.config.HAS_UPSTREAM_DOWNSTREAM) {
             lastUpdated = storedObservations.upstream[
               storedObservations.upstream.length - 1].dateTime;
@@ -63,12 +65,14 @@ export class EtlData {
           resolve({
             uid: uid,
             pkey: pkey,
+            dataId: dataId,
             lastUpdated: lastUpdated,
           });
         } else {
           resolve({
             uid: uid,
             pkey: pkey,
+            dataId: null,
             lastUpdated: null,
           });
         }
@@ -154,6 +158,7 @@ export class EtlData {
           }
           resolve({
             pkey: sensor.pkey,
+            dataId: sensor.dataId,
             data: transformedData,
             lastUpdated: sensor.lastUpdated,
           });
@@ -168,6 +173,7 @@ export class EtlData {
           }
           resolve({
             pkey: sensor.pkey,
+            dataId: sensor.dataId,
             data: transformedData,
             lastUpdated: sensor.lastUpdated,
           });
@@ -226,7 +232,18 @@ export class EtlData {
             reject(body);
           } else {
             const sensorID = body.body[0].sensor_id;
-            resolve({success: sensorID + ': Data for sensor updated'});
+            if (sensor.dataId) {
+              service.deleteObservations(sensor.pkey, sensor.dataId)
+              .then(() => {
+                resolve({success: sensorID + ': Data for sensor updated'});
+              })
+              .catch((error) => {
+                resolve({log: sensorID
+                  + ': Failed to remove previous observations'});
+              });
+            } else {
+              resolve({success: sensorID + ': Data for sensor stored'});
+            }
           }
         })
         .catch((error) => {
