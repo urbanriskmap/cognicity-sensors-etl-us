@@ -18,14 +18,14 @@ export default () => {
       sinon.stub(Service.prototype, 'getSensors')
       .onFirstCall()
       .resolves(testData.getSensorsNoArgs())
-      .onSecondCall()
-      .rejects({message: 'filterSensors'})
-      .withArgs(404)
-      .rejects({message: 'getStoredObservations'})
       .withArgs(5)
       .resolves(testData.getDataWithObs())
       .withArgs(3)
-      .resolves(testData.getDataNoObs());
+      .resolves(testData.getDataNoObs())
+      .onCall(3)
+      .rejects({message: 'filterSensors'})
+      .withArgs(404)
+      .rejects({message: 'getStoredObservations'});
 
       let mockUsgsQuery = (uid) => {
         return testConfig.USGS_BASE_URL
