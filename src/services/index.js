@@ -1,12 +1,16 @@
 import request from 'request';
 
-export default {
-  getSensors(id, config) {
+export class Service {
+  constructor(config) {
+    this.config = config;
+  }
+
+  getSensors(id) {
     return new Promise((resolve, reject) => {
       request.get({
           url: id
-            ? config.SERVER_ENDPOINT + id
-            : config.SERVER_ENDPOINT,
+            ? this.config.SERVER_ENDPOINT + id
+            : this.config.SERVER_ENDPOINT,
           json: true,
         }, (error, response, body) => {
           if (error) {
@@ -16,16 +20,16 @@ export default {
           }
         });
     });
-  },
+  }
 
-  postSensors(id, data, config) {
+  postSensors(id, data) {
     const requestOptions = {
       url: id
-        ? config.SERVER_ENDPOINT + id
-        : config.SERVER_ENDPOINT,
+        ? this.config.SERVER_ENDPOINT + id
+        : this.config.SERVER_ENDPOINT,
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': config.API_KEY,
+        'x-api-key': this.config.API_KEY,
       },
       // Parse object.body as json
       json: data,
@@ -39,5 +43,5 @@ export default {
         }
       });
     });
-  },
-};
+  }
+}

@@ -1,4 +1,5 @@
-import etl from './model';
+import {EtlData} from './model';
+import config from '../../../config';
 
 /**
  * ETL script for adding sensor data
@@ -10,6 +11,7 @@ import etl from './model';
  * @return {Object} error / response passed to callback
  */
 exports.handler = (event, context, callback) => {
+  let etl = new EtlData(config);
   let processEtl = [];
   let updateCount = 0;
 

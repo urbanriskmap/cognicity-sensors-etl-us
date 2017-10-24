@@ -99,4 +99,84 @@ export default {
       ],
     };
   },
+
+  getUsgsObs(hasUpDownStream) {
+    if (hasUpDownStream) {
+      return {
+        value: {
+          timeSeries: [
+            {
+              values: [
+                {
+                  value: [
+                    {
+                      value: 3.1,
+                      qualifiers: [
+                        'P',
+                      ],
+                      dateTime: 'upstream_1',
+                    },
+                    {
+                      value: 3.3,
+                      qualifiers: [
+                        'P',
+                      ],
+                      dateTime: 'upstream_2',
+                    },
+                  ],
+                },
+                {
+                  value: [
+                    {
+                      value: 2.9,
+                      qualifiers: [
+                        'P',
+                      ],
+                      dateTime: 'downstream_1',
+                    },
+                    {
+                      value: 3.0,
+                      qualifiers: [
+                        'P',
+                      ],
+                      dateTime: 'downstream_2',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      };
+    } else {
+      return {
+        value: {
+          timeSeries: [
+            {
+              values: [
+                {
+                  value: [
+                    {
+                      value: 4.0,
+                      qualifiers: [
+                        'P',
+                      ],
+                      dateTime: 'dateTime_1',
+                    },
+                    {
+                      value: 4.2,
+                      qualifiers: [
+                        'P',
+                      ],
+                      dateTime: 'dateTime_2',
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      };
+    }
+  },
 };

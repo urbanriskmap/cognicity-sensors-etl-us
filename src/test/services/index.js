@@ -1,18 +1,15 @@
 import * as test from 'unit.js';
 import sinon from 'sinon';
-import services from '../../services';
+import {Service} from '../../services';
 import testData from './test-data';
 import request from 'request';
-import config from '../../config';
+import testConfig from '../test-config';
 
 export default () => {
   describe('Test services', () => {
+    let service;
     before(() => {
-      sinon.stub(config, 'SERVER_ENDPOINT')
-        .value('someEndpoint');
-
-      sinon.stub(config, 'API_KEY')
-        .value('someApiKey');
+      service = new Service(testConfig);
 
       sinon.stub(request, 'get')
       .yields(null, null, testData.getSensors())
@@ -38,12 +35,11 @@ export default () => {
     after(() => {
       request.get.restore();
       request.post.restore();
-      // config.restore();
     });
 
     it('Gets sensors', (done) => {
       test.promise
-      .given(services.getSensors(null, config))
+      .given(service.getSensors(null))
       .then((body) => {
         request.get.called.should.be.equal(true);
         test
@@ -59,7 +55,7 @@ export default () => {
 
     it('Catches get sensors error', (done) => {
       test.promise
-      .given(services.getSensors('sensorId', config))
+      .given(service.getSensors('sensorId'))
       .then()
       .catch((error) => {
         test.value(error).is(new Error('Get sensors error'));
@@ -70,7 +66,7 @@ export default () => {
 
     it('Posts sensors', (done) => {
       test.promise
-      .given(services.postSensors(5, {}, config))
+      .given(service.postSensors(5, {}))
       .then((body) => {
         request.get.called.should.be.equal(true);
         test
@@ -86,7 +82,7 @@ export default () => {
 
     it('Catches post sensors error', (done) => {
       test.promise
-      .given(services.postSensors('sensorId', {}, config))
+      .given(service.postSensors('sensorId', {}))
       .then()
       .catch((error) => {
         test.value(error).is(new Error('Post sensors error'));

@@ -1,14 +1,19 @@
-import config from '../../../config';
-import services from '../../../services';
+import {Service} from '../../../services';
 import request from 'request';
-request.debug = config.DEBUG_HTTP_REQUESTS;
 
-export default {
+export class EtlData {
+  constructor(config) {
+    this.config = config;
+    // request.debug = this.config.DEBUG_HTTP_REQUESTS;
+  }
+
   filterSensors() {
+    const self = this;
+    let service = new Service(self.config);
     let filteredSensorList = [];
 
     return new Promise((resolve, reject) => {
-      services.getSensors(null, config)
+      service.getSensors()
       .then((body) => {
         const features = body.body.features;
 
@@ -17,7 +22,7 @@ export default {
             const properties = feature.properties.properties;
             if (properties.hasOwnProperty('uid')
             && properties.hasOwnProperty('class')
-            && properties.class === config.SENSOR_CODE) {
+            && properties.class === self.config.SENSOR_CODE) {
               filteredSensorList.push({
                 pkey: feature.properties.id,
                 uid: properties.uid,
@@ -31,11 +36,13 @@ export default {
         reject(error);
       });
     });
-  },
+  }
 
   getStoredObservations(pkey, uid) {
+    const self = this;
+    let service = new Service(self.config);
     return new Promise((resolve, reject) => {
-      services.getSensors(pkey, config)
+      service.getSensors(pkey)
       .then((body) => {
         let storedObservations;
         let lastUpdated;
@@ -45,7 +52,7 @@ export default {
         && (latestRow.properties.observations.length
           || latestRow.properties.observations.upstream.length)) {
           storedObservations = latestRow.properties.observations;
-          if (config.HAS_UPSTREAM_DOWNSTREAM) {
+          if (self.config.HAS_UPSTREAM_DOWNSTREAM) {
             lastUpdated = storedObservations.upstream[
               storedObservations.upstream.length - 1].dateTime;
           } else {
@@ -69,24 +76,24 @@ export default {
         reject(error);
       });
     });
-  },
+  }
 
   extractSensorObservations(sensor) {
-    let usgsQuery = config.USGS_BASE_URL
+    const self = this;
+    let usgsQuery = self.config.USGS_BASE_URL
     + '&sites=' + sensor.uid
-    + '&period=' + config.RECORDS_PERIOD;
-    + '&modifiedSince=' + config.RECORDS_INTERVAL;
+    + '&period=' + self.config.RECORDS_PERIOD;
+    // + '&modifiedSince=' + self.config.RECORDS_INTERVAL;
     const logMessage = {
       log: sensor.pkey
       + ': Sensor is inactive or has no new observations in past '
-      + config.RECORDS_INTERVAL.slice(2, -1) + ' hour(s).',
+      + self.config.RECORDS_INTERVAL.slice(2, -1) + ' minute(s).',
     };
 
     return new Promise((resolve, reject) => {
       // Get sensor observations from USGS source
-      request({
+      request.get({
         url: usgsQuery,
-        method: 'GET',
         json: true,
       }, (error, response, body) => {
         if (error) {
@@ -103,9 +110,10 @@ export default {
         }
       });
     });
-  },
+  }
 
   transform(data) {
+    const self = this;
     let observations;
     let transformedData;
     return new Promise((resolve, reject) => {
@@ -114,7 +122,7 @@ export default {
       } else {
         const sensor = data.storedProperties;
         const sensorData = data.usgsData;
-        if (config.HAS_UPSTREAM_DOWNSTREAM) {
+        if (self.config.HAS_UPSTREAM_DOWNSTREAM) {
           observations = {
             upstream: sensorData[0].values[0].value,
             downstream: sensorData[0].values[1].value,
@@ -158,15 +166,16 @@ export default {
           }
           resolve({
             pkey: sensor.pkey,
-            data: observations,
+            data: transformedData,
             lastUpdated: sensor.lastUpdated,
           });
         }
       }
     });
-  },
+  }
 
   compareSensorObservations(sensor) {
+    const self = this;
     const logMessage = {
       log: sensor.pkey
       + ': Sensor has no new observations',
@@ -179,7 +188,7 @@ export default {
           resolve(sensor);
         } else {
           let lastExtractedObservation;
-          if (config.HAS_UPSTREAM_DOWNSTREAM) {
+          if (self.config.HAS_UPSTREAM_DOWNSTREAM) {
             lastExtractedObservation = sensor.data.upstream[
                 sensor.data.upstream.length - 1].dateTime;
           } else {
@@ -194,21 +203,22 @@ export default {
         }
       }
     });
-  },
+  }
 
   loadObservations(sensor) {
+    const self = this;
+    let service = new Service(self.config);
     return new Promise((resolve, reject) => {
       if (sensor.hasOwnProperty('log')) {
         resolve(sensor);
       } else {
-        services.postSensors(sensor.pkey, {
+        service.postSensors(sensor.pkey, {
           properties: {
             observations: sensor.data,
           },
-        }, config)
+        })
         .then((body) => {
           if (body.statusCode !== 200) {
-            console.log(sensor.pkey + ': Error ' + body.statusCode);
             reject(new Error(body));
           } else {
             const sensorID = body.body[0].sensor_id;
@@ -220,5 +230,5 @@ export default {
         });
       }
     });
-  },
-};
+  }
+}
