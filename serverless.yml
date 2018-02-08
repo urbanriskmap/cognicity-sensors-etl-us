@@ -40,8 +40,7 @@ functions:
       SENSOR_CODE: '62610'
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
     events:
-      - schedule:
-        - rate: rate(12 hours)
+      - schedule: rate(12 hours)
 
   etlGaugeHeightSensor:
     handler: bin/functions/etl-sensors/usgs.handler
@@ -53,8 +52,7 @@ functions:
       SENSOR_CODE: '00065'
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
     events:
-      - schedule:
-        - rate: rate(12 hours)
+      - schedule: rate(12 hours)
 
   etlDischargeRateSensor:
     handler: bin/functions/etl-sensors/usgs.handler
@@ -66,8 +64,7 @@ functions:
       SENSOR_CODE: '00060'
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
     events:
-      - schedule:
-        - rate: rate(12 hours)
+      - schedule: rate(12 hours)
 
   etlStreamElevationSensor:
     handler: bin/functions/etl-sensors/usgs.handler
@@ -79,8 +76,7 @@ functions:
       SENSOR_CODE: '63160'
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
     events:
-      - schedule:
-        - rate: rate(12 hours)
+      - schedule: rate(12 hours)
 
   etlPrecipitationSensor:
     handler: bin/functions/etl-sensors/usgs.handler
@@ -92,8 +88,7 @@ functions:
       SENSOR_CODE: '00045'
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
     events:
-      - schedule:
-        - rate: rate(12 hours)
+      - schedule: rate(12 hours)
 
   etlGroundwaterData:
     handler: bin/functions/etl-data/usgs.handler
@@ -108,8 +103,7 @@ functions:
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     events:
-      - schedule:
-        - rate: rate(15 minutes)
+      - schedule: rate(15 minutes)
 
   etlGaugeHeightData:
     handler: bin/functions/etl-data/usgs.handler
@@ -124,8 +118,7 @@ functions:
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     events:
-      - schedule:
-        - rate: rate(15 minutes)
+      - schedule: rate(15 minutes)
 
   etlDischargeRateData:
     handler: bin/functions/etl-data/usgs.handler
@@ -140,8 +133,7 @@ functions:
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     events:
-      - schedule:
-        - rate: rate(15 minutes)
+      - schedule: rate(15 minutes)
 
   etlStreamElevationData:
     handler: bin/functions/etl-data/usgs.handler
@@ -156,8 +148,7 @@ functions:
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: true
     events:
-      - schedule:
-        - rate: rate(15 minutes)
+      - schedule: rate(15 minutes)
 
   etlPrecipitationData:
     handler: bin/functions/etl-data/usgs.handler
@@ -172,5 +163,4 @@ functions:
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     events:
-      - schedule:
-        - rate: rate(15 minutes)
+      - schedule: rate(15 minutes)
