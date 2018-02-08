@@ -9,7 +9,7 @@ node_modules/
 
 # dotenv environment variables file
 .env
-env.yml
+.env.yml
 
 # Serverless packages
 .serverless
@@ -22,4 +22,4 @@ bin/
 
 # ESDocs
 esdoc/
-.env.yml
+
