@@ -48,20 +48,48 @@ export class EtlData {
         let storedObservations;
         let lastUpdated;
         let dataId;
-        let latestRow = body.body[body.body.length - 1];
-        if (latestRow.properties
+        let storedObsCheckPassed = false;
+        let hasStoredObs = false;
+        let latestRow;
+
+        if (body.body && body.body.length) {
+          latestRow = body.body[body.body.length - 1];
+          storedObsCheckPassed = true;
+        }
+
+        if (latestRow
+        && latestRow.hasOwnProperty('properties')
+        && latestRow.properties
         && latestRow.properties.hasOwnProperty('observations')
-        && (latestRow.properties.observations.length
-          || latestRow.properties.observations.upstream.length)) {
+        ) {
+          storedObsCheckPassed = true;
           storedObservations = latestRow.properties.observations;
           dataId = latestRow.id;
-          if (self.config.HAS_UPSTREAM_DOWNSTREAM) {
+        }
+
+        if (storedObsCheckPassed) {
+          // process.env passes true / false values as strings
+          if (self.config.HAS_UPSTREAM_DOWNSTREAM === 'true'
+          && storedObservations.upstream.length
+          && storedObservations.upstream[
+            storedObservations.upstream.length - 1
+          ].hasOwnProperty('dateTime')) {
             lastUpdated = storedObservations.upstream[
               storedObservations.upstream.length - 1].dateTime;
-          } else {
+            hasStoredObs = true;
+          } else if (self.config.HAS_UPSTREAM_DOWNSTREAM === 'false'
+            && storedObservations.length
+            && storedObservations[
+                storedObservations.length - 1
+              ].hasOwnProperty('dateTime')
+          ) {
             lastUpdated = storedObservations[
               storedObservations.length - 1].dateTime;
+            hasStoredObs = true;
           }
+        }
+
+        if (hasStoredObs) {
           resolve({
             uid: uid,
             pkey: pkey,
@@ -128,54 +156,64 @@ export class EtlData {
       } else {
         const sensor = data.storedProperties;
         const sensorData = data.usgsData;
-        if (self.config.HAS_UPSTREAM_DOWNSTREAM) {
-          observations = {
-            upstream: sensorData[0].values[0].value,
-            downstream: sensorData[0].values[1].value,
-          };
-          transformedData = {
-            upstream: [],
-            downstream: [],
-          };
-          for (
-            let i = 0, j = 0;
-            i < observations.upstream.length
-            || j < observations.downstream.length;
-            i++, j++
-          ) {
-            if (observations.upstream[i].hasOwnProperty('value')) {
-              transformedData.upstream.push({
-                dateTime: observations.upstream[i].dateTime,
-                value: observations.upstream[i].value,
+        if (sensorData.length
+          && sensorData[0].hasOwnProperty('values')
+          && sensorData[0].values.length
+          && sensorData[0].values[0].hasOwnProperty('value')
+        ) {
+          if (self.config.HAS_UPSTREAM_DOWNSTREAM === 'true') {
+            observations = {
+              upstream: sensorData[0].values[0].value,
+              downstream: sensorData[0].values[1].value,
+            };
+            transformedData = {
+              upstream: [],
+              downstream: [],
+            };
+            for (
+              let i = 0, j = 0;
+              i < observations.upstream.length
+              || j < observations.downstream.length;
+              i++, j++
+            ) {
+              if (observations.upstream[i].hasOwnProperty('value')) {
+                transformedData.upstream.push({
+                  dateTime: observations.upstream[i].dateTime,
+                  value: observations.upstream[i].value,
+                });
+              }
+              if (observations.downstream[j].hasOwnProperty('value')) {
+                transformedData.downstream.push({
+                  dateTime: observations.downstream[j].dateTime,
+                  value: observations.downstream[j].value,
+                });
+              }
+            }
+            resolve({
+              pkey: sensor.pkey,
+              dataId: sensor.dataId,
+              data: transformedData,
+              lastUpdated: sensor.lastUpdated,
+            });
+          } else {
+            observations = sensorData[0].values[0].value;
+            transformedData = [];
+            for (let observation of observations) {
+              transformedData.push({
+                dateTime: observation.dateTime,
+                value: observation.value,
               });
             }
-            if (observations.downstream[j].hasOwnProperty('value')) {
-              transformedData.downstream.push({
-                dateTime: observations.downstream[j].dateTime,
-                value: observations.downstream[j].value,
-              });
-            }
-          }
-          resolve({
-            pkey: sensor.pkey,
-            dataId: sensor.dataId,
-            data: transformedData,
-            lastUpdated: sensor.lastUpdated,
-          });
-        } else {
-          observations = sensorData[0].values[0].value;
-          transformedData = [];
-          for (let observation of observations) {
-            transformedData.push({
-              dateTime: observation.dateTime,
-              value: observation.value,
+            resolve({
+              pkey: sensor.pkey,
+              dataId: sensor.dataId,
+              data: transformedData,
+              lastUpdated: sensor.lastUpdated,
             });
           }
+        } else {
           resolve({
-            pkey: sensor.pkey,
-            dataId: sensor.dataId,
-            data: transformedData,
-            lastUpdated: sensor.lastUpdated,
+            log: sensor.pkey + ': No valid data available',
           });
         }
       }
@@ -197,10 +235,18 @@ export class EtlData {
           resolve(sensor);
         } else {
           let lastExtractedObservation;
-          if (self.config.HAS_UPSTREAM_DOWNSTREAM) {
+          if (self.config.HAS_UPSTREAM_DOWNSTREAM === 'true'
+          && sensor.data.upstream.length
+          && sensor.data.upstream[sensor.data.upstream.length - 1]
+            .hasOwnProperty('dateTime')
+          ) {
             lastExtractedObservation = sensor.data.upstream[
                 sensor.data.upstream.length - 1].dateTime;
-          } else {
+          } else if (self.config.HAS_UPSTREAM_DOWNSTREAM === 'false'
+             && sensor.data.length
+             && sensor.data[sensor.data.length - 1]
+               .hasOwnProperty('dateTime')
+          ) {
             lastExtractedObservation = sensor.data[
               sensor.data.length - 1].dateTime;
           }
