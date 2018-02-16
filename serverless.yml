@@ -7,9 +7,9 @@ provider:
   name: aws
   runtime: nodejs6.10
   stage: dev
-  region: ${file(./env.yml):region}
+  region: ${file(./.env.yml):region}
   stackTags:
-    area: ${file(./env.yml):areatag}
+    area: ${file(./.env.yml):areatag}
 
 package:
   individually: true
@@ -36,10 +36,9 @@ functions:
       include:
         - bin/functions/etl-sensors/usgs/**
     environment:
-      API_KEY: ${file(./env.yml):apikey}
+      API_KEY: ${file(./.env.yml):apikey}
       SENSOR_CODE: '62610'
-      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
-    timeout: 24
+      SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
     events:
       - schedule: rate(12 hours)
 
@@ -49,10 +48,9 @@ functions:
       include:
         - bin/functions/etl-sensors/usgs/**
     environment:
-      API_KEY: ${file(./env.yml):apikey}
+      API_KEY: ${file(./.env.yml):apikey}
       SENSOR_CODE: '00065'
-      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
-    timeout: 24
+      SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
     events:
       - schedule: rate(12 hours)
 
@@ -62,10 +60,9 @@ functions:
       include:
         - bin/functions/etl-sensors/usgs/**
     environment:
-      API_KEY: ${file(./env.yml):apikey}
+      API_KEY: ${file(./.env.yml):apikey}
       SENSOR_CODE: '00060'
-      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
-    timeout: 24
+      SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
     events:
       - schedule: rate(12 hours)
 
@@ -75,10 +72,9 @@ functions:
       include:
         - bin/functions/etl-sensors/usgs/**
     environment:
-      API_KEY: ${file(./env.yml):apikey}
+      API_KEY: ${file(./.env.yml):apikey}
       SENSOR_CODE: '63160'
-      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
-    timeout: 24
+      SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
     events:
       - schedule: rate(12 hours)
 
@@ -88,10 +84,9 @@ functions:
       include:
         - bin/functions/etl-sensors/usgs/**
     environment:
-      API_KEY: ${file(./env.yml):apikey}
+      API_KEY: ${file(./.env.yml):apikey}
       SENSOR_CODE: '00045'
-      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
-    timeout: 24
+      SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
     events:
       - schedule: rate(12 hours)
 
@@ -101,11 +96,11 @@ functions:
       include:
         - bin/functions/etl-data/usgs/**
     environment:
-      API_KEY: ${file(./env.yml):apikey}
+      API_KEY: ${file(./.env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
       SENSOR_CODE: '62610'
-      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
+      SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     timeout: 24
     events:
@@ -117,11 +112,11 @@ functions:
       include:
         - bin/functions/etl-data/usgs/**
     environment:
-      API_KEY: ${file(./env.yml):apikey}
+      API_KEY: ${file(./.env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
       SENSOR_CODE: '00065'
-      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
+      SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     timeout: 24
     events:
@@ -133,11 +128,11 @@ functions:
       include:
         - bin/functions/etl-data/usgs/**
     environment:
-      API_KEY: ${file(./env.yml):apikey}
+      API_KEY: ${file(./.env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
       SENSOR_CODE: '00060'
-      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
+      SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     timeout: 24
     events:
@@ -149,11 +144,11 @@ functions:
       include:
         - bin/functions/etl-data/usgs/**
     environment:
-      API_KEY: ${file(./env.yml):apikey}
+      API_KEY: ${file(./.env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
       SENSOR_CODE: '63160'
-      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
+      SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: true
     timeout: 24
     events:
@@ -165,11 +160,11 @@ functions:
       include:
         - bin/functions/etl-data/usgs/**
     environment:
-      API_KEY: ${file(./env.yml):apikey}
+      API_KEY: ${file(./.env.yml):apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
       SENSOR_CODE: '00045'
-      SERVER_ENDPOINT: ${file(./env.yml):serverEndPoint}
+      SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
       HAS_UPSTREAM_DOWNSTREAM: false
     timeout: 24
     events:
