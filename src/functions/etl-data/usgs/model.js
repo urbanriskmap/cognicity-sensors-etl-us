@@ -54,7 +54,7 @@ export class EtlData {
 
         if (body.body && body.body.length) {
           latestRow = body.body[body.body.length - 1];
-          storedObsCheckPassed = true;
+          // storedObsCheckPassed = true;
         }
 
         if (latestRow
@@ -89,21 +89,12 @@ export class EtlData {
           }
         }
 
-        if (hasStoredObs) {
-          resolve({
-            uid: uid,
-            pkey: pkey,
-            dataId: dataId,
-            lastUpdated: lastUpdated,
-          });
-        } else {
-          resolve({
-            uid: uid,
-            pkey: pkey,
-            dataId: null,
-            lastUpdated: null,
-          });
-        }
+        resolve({
+          uid: uid,
+          pkey: pkey,
+          dataId: storedObsCheckPassed ? dataId : null,
+          lastUpdated: hasStoredObs ? lastUpdated : null,
+        });
       })
       .catch((error) => {
         reject(error);

@@ -1,6 +1,7 @@
 import * as test from 'unit.js';
 import sinon from 'sinon';
 import request from 'request';
+
 import {Service} from '../../services';
 import {EtlData} from '../../functions/etl-data/usgs/model';
 import testData from './test-data';
@@ -17,17 +18,15 @@ export default () => {
 
       sinon.stub(Service.prototype, 'getSensors')
       .onFirstCall()
-      .resolves(testData.getSensorsNoArgs())
+        .resolves(testData.getSensorsNoArgs())
       .withArgs(5)
-      .resolves(testData.getDataWithObs())
+        .resolves(testData.getDataWithObs())
       .withArgs(3)
-      .resolves(testData.getDataNoObs())
-      // Susceptible to break, if call idx 3
-      // occurs async
+        .resolves(testData.getDataNoObs())
       .onCall(3)
-      .rejects({message: 'filterSensors'})
+        .rejects({message: 'filterSensors'})
       .withArgs(404)
-      .rejects({message: 'getStoredObservations'});
+        .rejects({message: 'getStoredObservations'});
 
       let mockUsgsQuery = (uid) => {
         return testConfig.USGS_BASE_URL
@@ -95,6 +94,7 @@ export default () => {
     after(() => {
       Service.prototype.getSensors.restore();
       Service.prototype.postSensors.restore();
+      Service.prototype.deleteObservations.restore();
       EtlData.prototype.constructor.restore();
       request.get.restore();
     });
@@ -144,7 +144,7 @@ export default () => {
         .is({
           pkey: 3,
           uid: 'uniqueId',
-          dataId: null,
+          dataId: 27,
           lastUpdated: null,
         });
       })
@@ -444,6 +444,7 @@ export default () => {
       // promises from methods being tested
       let methodsToTest = [
         new Promise((resolve, reject) => {
+          // console.log(Service.prototype.getSensors.callCount);
           etl.filterSensors()
           .then((result) => reject(result))
           .catch((error) => resolve(error));
