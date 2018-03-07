@@ -69,14 +69,17 @@ exports.handler = (event, context, callback) => {
           sensors_updated: updateCount,
           logs: messages,
         };
+        console.log(JSON.stringify(result));
         callback(null, result);
       })
       .catch((error) => {
+        console.log(JSON.stringify(error));
         callback(error);
       });
     }
   })
   .catch((error) => {
+    console.log(JSON.stringify(error));
     callback(error);
   });
 };
