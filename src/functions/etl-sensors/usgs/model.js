@@ -170,7 +170,7 @@ export class EtlSensors {
           if (body.statusCode !== 200) {
             reject(body);
           } else {
-            const sensorID = body.result.features[0].properties.id;
+            const sensorID = body.result.id;
             resolve({success: sensorID + ': Added sensor'});
           }
         })

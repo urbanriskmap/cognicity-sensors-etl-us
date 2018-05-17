@@ -101,7 +101,7 @@ functions:
       RECORDS_INTERVAL: PT15M
       SENSOR_CODE: '62610'
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
-      HAS_UPSTREAM_DOWNSTREAM: false
+      HAS_UPSTREAM_DOWNSTREAM: 'false'
     timeout: 24
     events:
       - schedule: rate(15 minutes)
@@ -117,7 +117,7 @@ functions:
       RECORDS_INTERVAL: PT15M
       SENSOR_CODE: '00065'
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
-      HAS_UPSTREAM_DOWNSTREAM: false
+      HAS_UPSTREAM_DOWNSTREAM: 'false'
     timeout: 24
     events:
       - schedule: rate(15 minutes)
@@ -133,7 +133,7 @@ functions:
       RECORDS_INTERVAL: PT15M
       SENSOR_CODE: '00060'
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
-      HAS_UPSTREAM_DOWNSTREAM: false
+      HAS_UPSTREAM_DOWNSTREAM: 'false'
     timeout: 24
     events:
       - schedule: rate(15 minutes)
@@ -149,7 +149,7 @@ functions:
       RECORDS_INTERVAL: PT15M
       SENSOR_CODE: '63160'
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
-      HAS_UPSTREAM_DOWNSTREAM: true
+      HAS_UPSTREAM_DOWNSTREAM: 'true'
     timeout: 24
     events:
       - schedule: rate(15 minutes)
@@ -165,7 +165,7 @@ functions:
       RECORDS_INTERVAL: PT15M
       SENSOR_CODE: '00045'
       SERVER_ENDPOINT: ${file(./.env.yml):serverEndPoint}
-      HAS_UPSTREAM_DOWNSTREAM: false
+      HAS_UPSTREAM_DOWNSTREAM: 'false'
     timeout: 24
     events:
       - schedule: rate(15 minutes)

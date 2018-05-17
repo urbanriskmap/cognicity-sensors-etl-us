@@ -23,15 +23,9 @@ export default {
     return {
       'statusCode': 200,
       'result': {
-        'features': [
-          {
-            'properties': {
-              'id': 5,
-            },
+            'id': 5,
           },
-        ],
-      },
-    };
+      };
   },
 
   postSensorsError() {

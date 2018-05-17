@@ -94,7 +94,7 @@ export default () => {
       .then((body) => {
         request.get.called.should.be.equal(true);
         test
-          .value(body.result.features[0].properties.id)
+          .value(body.result.id)
           .is(5);
       })
       .catch((error) => {
