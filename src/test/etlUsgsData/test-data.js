@@ -1,7 +1,7 @@
 export default {
   getSensorsNoArgs() {
     return {
-      body: {
+      result: {
         features: [
           {
             properties: {

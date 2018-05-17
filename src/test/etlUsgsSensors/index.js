@@ -60,7 +60,7 @@ export default () => {
       .withArgs('', {properties: 1})
       .resolves({
         statusCode: 200,
-        body: {
+        result: {
           features: [
             {
               properties: {

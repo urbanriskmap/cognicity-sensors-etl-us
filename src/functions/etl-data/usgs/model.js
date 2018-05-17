@@ -15,7 +15,7 @@ export class EtlData {
     return new Promise((resolve, reject) => {
       service.getSensors()
       .then((body) => {
-        const features = body.body.features;
+        const features = body.result.features;
 
         for (let feature of features) {
           if (feature.properties.hasOwnProperty('properties')) {

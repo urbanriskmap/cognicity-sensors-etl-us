@@ -447,7 +447,9 @@ export default () => {
           // console.log(Service.prototype.getSensors.callCount);
           etl.filterSensors()
           .then((result) => reject(result))
-          .catch((error) => resolve(error));
+          .catch((error) => {
+            resolve(error);
+          });
         }),
         new Promise((resolve, reject) => {
           etl.getStoredObservations(404, 'uniqueId')

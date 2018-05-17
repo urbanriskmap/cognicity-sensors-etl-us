@@ -67,7 +67,7 @@ export default () => {
       .then((body) => {
         request.get.called.should.be.equal(true);
         test
-          .value(body.body.features[0].properties.properties.uid)
+          .value(body.result.features[0].properties.properties.uid)
           .is('uniqueId');
       })
       .catch((error) => {
@@ -94,7 +94,7 @@ export default () => {
       .then((body) => {
         request.get.called.should.be.equal(true);
         test
-          .value(body.body.features[0].properties.id)
+          .value(body.result.features[0].properties.id)
           .is(5);
       })
       .catch((error) => {
