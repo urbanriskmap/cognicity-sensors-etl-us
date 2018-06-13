@@ -17,6 +17,7 @@ const stubData = {
             'created': '2017-10-25T00:06:39.355Z',
             'properties': {
               'uid': '261150080270001',
+              'agency': 'usgs',
               'type': 'ST-CA',
               'class': '63610',
               'units': 'ft',

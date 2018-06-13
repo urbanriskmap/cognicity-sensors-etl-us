@@ -203,6 +203,7 @@ export default () => {
         .is({
           properties: {
             uid: 'someUniqueId',
+            agency: 'usgs',
             type: 'sensorType',
             class: testConfig.SENSOR_CODE,
             units: 'ft',

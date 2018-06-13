@@ -32,8 +32,11 @@ export class EtlSensors {
             if (feature.properties.hasOwnProperty('properties')) {
               const properties = feature.properties.properties;
               if (properties.hasOwnProperty('uid')
-              && properties.hasOwnProperty('class')
-              && String(properties.class) === self.config.SENSOR_CODE) {
+                && properties.hasOwnProperty('class')
+                && String(properties.class) === self.config.SENSOR_CODE
+                && properties.hasOwnProperty('agency')
+                && properties.agency === 'usgs'
+              ) {
                 existingSensorUids.push(properties.uid);
               }
             }
@@ -141,6 +144,7 @@ export class EtlSensors {
           let sensorMetadata = {
             properties: {
               uid: uid,
+              agency: 'usgs',
               type: sensorType,
               class: self.config.SENSOR_CODE,
               units: units,

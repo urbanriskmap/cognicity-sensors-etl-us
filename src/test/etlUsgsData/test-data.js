@@ -9,6 +9,7 @@ export default {
               properties: {
                 uid: 'uniqueId',
                 class: 'sensorCode',
+                agency: 'usgs',
               },
             },
           },
@@ -23,6 +24,7 @@ export default {
               id: 7,
               properties: {
                 noUid: 'foo',
+                agency: 'usgs',
               },
             },
           },
@@ -32,6 +34,7 @@ export default {
               properties: {
                 uid: 'foo',
                 class: 'foo',
+                agency: 'usgs',
               },
             },
           },

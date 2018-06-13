@@ -21,8 +21,11 @@ export class EtlData {
           if (feature.properties.hasOwnProperty('properties')) {
             const properties = feature.properties.properties;
             if (properties.hasOwnProperty('uid')
-            && properties.hasOwnProperty('class')
-            && String(properties.class) === self.config.SENSOR_CODE) {
+              && properties.hasOwnProperty('class')
+              && String(properties.class) === self.config.SENSOR_CODE
+              && properties.hasOwnProperty('agency')
+              && properties.agency === 'usgs'
+            ) {
               filteredSensorList.push({
                 pkey: feature.properties.id,
                 uid: properties.uid,
