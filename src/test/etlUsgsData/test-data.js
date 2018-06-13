@@ -1,7 +1,7 @@
 export default {
   getSensorsNoArgs() {
     return {
-      body: {
+      result: {
         features: [
           {
             properties: {
@@ -45,10 +45,10 @@ export default {
 
   getDataWithObs() {
     return {
-      body: [
+      result: [
         {
-          id: 23,
-          sensor_id: 5,
+          dataId: 23,
+          id: 5,
           properties: {
             observations: {
               upstream: [
@@ -88,10 +88,10 @@ export default {
 
   getDataNoObs() {
     return {
-      body: [
+      result: [
         {
-          id: 27,
-          sensor_id: 3,
+          dataId: 27,
+          id: 3,
           properties: {
             observations: {
               upstream: [],

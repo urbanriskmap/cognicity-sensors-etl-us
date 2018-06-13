@@ -257,7 +257,6 @@ export default () => {
       test.promise
       .given(callEtlMethods(etl))
       .then((result) => {
-        console.log(result);
         test.value(result).is({
           sensors_updated: 1,
           logs: '54: Data for sensor updated',

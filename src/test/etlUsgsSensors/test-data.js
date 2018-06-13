@@ -1,7 +1,7 @@
 export default {
   getSensors() {
     return {
-      body: {
+      result: {
         features: [
           {
             properties: {

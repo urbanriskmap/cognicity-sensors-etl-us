@@ -15,7 +15,7 @@ export class EtlData {
     return new Promise((resolve, reject) => {
       service.getSensors()
       .then((body) => {
-        const features = body.body.features;
+        const features = body.result.features;
 
         for (let feature of features) {
           if (feature.properties.hasOwnProperty('properties')) {
@@ -55,8 +55,8 @@ export class EtlData {
         let hasStoredObs = false;
         let latestRow;
 
-        if (body.body && body.body.length) {
-          latestRow = body.body[body.body.length - 1];
+        if (body.result && body.result.length) {
+          latestRow = body.result[body.result.length - 1];
           // storedObsCheckPassed = true;
         }
 
@@ -67,7 +67,7 @@ export class EtlData {
         ) {
           storedObsCheckPassed = true;
           storedObservations = latestRow.properties.observations;
-          dataId = latestRow.id;
+          dataId = latestRow.dataId;
         }
 
         if (storedObsCheckPassed) {
@@ -271,7 +271,7 @@ export class EtlData {
           if (body.statusCode !== 200) {
             reject(body);
           } else {
-            const sensorID = body.body[0].sensor_id;
+            const sensorID = body.result.id;
             if (sensor.dataId) {
               service.deleteObservations(sensor.pkey, sensor.dataId)
               .then(() => {

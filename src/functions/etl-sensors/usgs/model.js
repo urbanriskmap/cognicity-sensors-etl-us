@@ -21,7 +21,7 @@ export class EtlSensors {
       service.getSensors()
       .then((body) => {
         let existingSensorUids = [];
-        const features = body.body.features;
+        const features = body.result.features;
 
         if (!features.length) {
           resolve(existingSensorUids);
@@ -174,7 +174,7 @@ export class EtlSensors {
           if (body.statusCode !== 200) {
             reject(body);
           } else {
-            const sensorID = body.body.features[0].properties.id;
+            const sensorID = body.result.id;
             resolve({success: sensorID + ': Added sensor'});
           }
         })

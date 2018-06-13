@@ -59,23 +59,17 @@ export default () => {
       .withArgs(5, {properties: {observations: {}}})
       .resolves({
         statusCode: 200,
-        body: [
-          {sensor_id: 5},
-        ],
+        result: {id: 5},
       })
       .withArgs(7, {properties: {observations: {}}})
       .resolves({
         statusCode: 200,
-        body: [
-          {sensor_id: 7},
-        ],
+        result: {id: 7},
       })
       .withArgs(9, {properties: {observations: {}}})
       .resolves({
         statusCode: 200,
-        body: [
-          {sensor_id: 9},
-        ],
+        result: {id: 9},
       })
       .withArgs(11, {properties: {observations: {}}})
       .resolves({
@@ -447,7 +441,9 @@ export default () => {
           // console.log(Service.prototype.getSensors.callCount);
           etl.filterSensors()
           .then((result) => reject(result))
-          .catch((error) => resolve(error));
+          .catch((error) => {
+            resolve(error);
+          });
         }),
         new Promise((resolve, reject) => {
           etl.getStoredObservations(404, 'uniqueId')

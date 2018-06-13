@@ -1,7 +1,7 @@
 export default {
   getSensors() {
     return {
-      'body': {
+      'result': {
         'features': [
           {
             'properties': {
@@ -22,16 +22,10 @@ export default {
   postSensors() {
     return {
       'statusCode': 200,
-      'body': {
-        'features': [
-          {
-            'properties': {
-              'id': 5,
-            },
+      'result': {
+            'id': 5,
           },
-        ],
-      },
-    };
+      };
   },
 
   postSensorsError() {
