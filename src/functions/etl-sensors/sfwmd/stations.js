@@ -12,7 +12,7 @@ export default {
       },
       location: {
         lat: 26.35621417,
-        long: -80.29775833,
+        lng: -80.29775833,
       },
     },
     {
@@ -26,7 +26,7 @@ export default {
       },
       location: {
         lat: 26.35556722,
-        long: -80.29726111,
+        lng: -80.29726111,
       },
     },
     {
@@ -40,7 +40,7 @@ export default {
       },
       location: {
         lat: 26.35573472,
-        long: -80.29765806,
+        lng: -80.29765806,
       },
     },
     {
@@ -54,7 +54,7 @@ export default {
       },
       location: {
         lat: 26.32785528,
-        long: -80.13087583,
+        lng: -80.13087583,
       },
     },
     {
@@ -68,7 +68,7 @@ export default {
       },
       location: {
         lat: 26.32785500,
-        long: -80.13059806,
+        lng: -80.13059806,
       },
     },
     {
@@ -82,7 +82,7 @@ export default {
       },
       location: {
         lat: 26.31424583,
-        long: -80.08059861,
+        lng: -80.08059861,
       },
     },
 
@@ -98,7 +98,7 @@ export default {
       },
       location: {
         lat: 26.22949556,
-        long: -80.29888167,
+        lng: -80.29888167,
       },
     },
     {
@@ -112,7 +112,7 @@ export default {
       },
       location: {
         lat: 26.22949500,
-        long: -80.29824167,
+        lng: -80.29824167,
       },
     },
     {
@@ -126,7 +126,7 @@ export default {
       },
       location: {
         lat: 26.22945778,
-        long: -80.29852222,
+        lng: -80.29852222,
       },
     },
     {
@@ -140,7 +140,7 @@ export default {
       },
       location: {
         lat: 26.23085056,
-        long: -80.12188472,
+        lng: -80.12188472,
       },
     },
     {
@@ -154,7 +154,7 @@ export default {
       },
       location: {
         lat: 26.23060250,
-        long: -80.12133306,
+        lng: -80.12133306,
       },
     },
     {
@@ -168,7 +168,7 @@ export default {
       },
       location: {
         lat: 26.23119194,
-        long: -80.12420944,
+        lng: -80.12420944,
       },
     },
     {
@@ -182,7 +182,7 @@ export default {
       },
       location: {
         lat: 26.20620806,
-        long: -80.13197944,
+        lng: -80.13197944,
       },
     },
     {
@@ -196,7 +196,7 @@ export default {
       },
       location: {
         lat: 26.20623111,
-        long: -80.13129944,
+        lng: -80.13129944,
       },
     },
     {
@@ -210,7 +210,7 @@ export default {
       },
       location: {
         lat: 26.20612167,
-        long: -80.13164944,
+        lng: -80.13164944,
       },
     },
     {
@@ -224,7 +224,7 @@ export default {
       },
       location: {
         lat: 26.22411167,
-        long: -80.17040083,
+        lng: -80.17040083,
       },
     },
     {
@@ -238,7 +238,7 @@ export default {
       },
       location: {
         lat: 26.22331389,
-        long: -80.17033222,
+        lng: -80.17033222,
       },
     },
     {
@@ -252,7 +252,7 @@ export default {
       },
       location: {
         lat: 26.22365667,
-        long: -80.17045028,
+        lng: -80.17045028,
       },
     },
 
@@ -268,7 +268,7 @@ export default {
       },
       location: {
         lat: 26.16435528,
-        long: -80.29790083,
+        lng: -80.29790083,
       },
     },
     {
@@ -282,7 +282,7 @@ export default {
       },
       location: {
         lat: 26.16380028,
-        long: -80.29794639,
+        lng: -80.29794639,
       },
     },
     {
@@ -296,7 +296,7 @@ export default {
       },
       location: {
         lat: 26.16424917,
-        long: -80.29799056,
+        lng: -80.29799056,
       },
     },
     {
@@ -310,7 +310,7 @@ export default {
       },
       location: {
         lat: 26.17316694,
-        long: -80.17929972,
+        lng: -80.17929972,
       },
     },
     {
@@ -324,7 +324,7 @@ export default {
       },
       location: {
         lat: 26.17319389,
-        long: -80.17871278,
+        lng: -80.17871278,
       },
     },
     {
@@ -338,7 +338,7 @@ export default {
       },
       location: {
         lat: 26.17314000,
-        long: -80.17865750,
+        lng: -80.17865750,
       },
     },
 
@@ -354,7 +354,7 @@ export default {
       },
       location: {
         lat: 26.13578611,
-        long: -80.19488250,
+        lng: -80.19488250,
       },
     },
     {
@@ -368,7 +368,7 @@ export default {
       },
       location: {
         lat: 26.13577778,
-        long: -80.19402111,
+        lng: -80.19402111,
       },
     },
     {
@@ -382,7 +382,7 @@ export default {
       },
       location: {
         lat: 26.13587500,
-        long: -80.19447833,
+        lng: -80.19447833,
       },
     },
 
@@ -398,7 +398,7 @@ export default {
       },
       location: {
         lat: 26.14991389,
-        long: -80.44262222,
+        lng: -80.44262222,
       },
     },
     {
@@ -412,7 +412,7 @@ export default {
       },
       location: {
         lat: 26.14592222,
-        long: -80.44127778,
+        lng: -80.44127778,
       },
     },
     {
@@ -426,7 +426,7 @@ export default {
       },
       location: {
         lat: 26.14975028,
-        long: -80.44246917,
+        lng: -80.44246917,
       },
     },
     {
@@ -440,7 +440,7 @@ export default {
       },
       location: {
         lat: 26.12948750,
-        long: -80.36556944,
+        lng: -80.36556944,
       },
     },
     {
@@ -454,7 +454,7 @@ export default {
       },
       location: {
         lat: 26.12920222,
-        long: -80.36590306,
+        lng: -80.36590306,
       },
     },
     {
@@ -468,7 +468,7 @@ export default {
       },
       location: {
         lat: 26.12925944,
-        long: -80.36570556,
+        lng: -80.36570556,
       },
     },
     {
@@ -482,7 +482,7 @@ export default {
       },
       location: {
         lat: 26.09497167,
-        long: -80.23035167,
+        lng: -80.23035167,
       },
     },
     {
@@ -496,7 +496,7 @@ export default {
       },
       location: {
         lat: 26.09474972,
-        long: -80.22923583,
+        lng: -80.22923583,
       },
     },
     {
@@ -510,7 +510,7 @@ export default {
       },
       location: {
         lat: 26.09488083,
-        long: -80.22984389,
+        lng: -80.22984389,
       },
     },
 
@@ -526,7 +526,7 @@ export default {
       },
       location: {
         lat: 26.06163722,
-        long: -80.44326528,
+        lng: -80.44326528,
       },
     },
     {
@@ -540,7 +540,7 @@ export default {
       },
       location: {
         lat: 26.06159861,
-        long: -80.44375750,
+        lng: -80.44375750,
       },
     },
     {
@@ -554,7 +554,7 @@ export default {
       },
       location: {
         lat: 26.06152833,
-        long: -80.44355972,
+        lng: -80.44355972,
       },
     },
     {
@@ -568,7 +568,7 @@ export default {
       },
       location: {
         lat: 26.06147361,
-        long: -80.42014556,
+        lng: -80.42014556,
       },
     },
     {
@@ -582,7 +582,7 @@ export default {
       },
       location: {
         lat: 26.06172583,
-        long: -80.41875361,
+        lng: -80.41875361,
       },
     },
     {
@@ -596,7 +596,7 @@ export default {
       },
       location: {
         lat: 26.06159417,
-        long: -80.41952778,
+        lng: -80.41952778,
       },
     },
     {
@@ -610,7 +610,7 @@ export default {
       },
       location: {
         lat: 26.06461417,
-        long: -80.28195278,
+        lng: -80.28195278,
       },
     },
     {
@@ -624,7 +624,7 @@ export default {
       },
       location: {
         lat: 26.06462917,
-        long: -80.28102028,
+        lng: -80.28102028,
       },
     },
     {
@@ -638,7 +638,7 @@ export default {
       },
       location: {
         lat: 26.06444028,
-        long: -80.28150278,
+        lng: -80.28150278,
       },
     },
     {
@@ -652,7 +652,7 @@ export default {
       },
       location: {
         lat: 26.06625667,
-        long: -80.20901639,
+        lng: -80.20901639,
       },
     },
     {
@@ -666,7 +666,7 @@ export default {
       },
       location: {
         lat: 26.06627861,
-        long: -80.20870500,
+        lng: -80.20870500,
       },
     },
     {
@@ -680,7 +680,7 @@ export default {
       },
       location: {
         lat: 26.06619889,
-        long: -80.20865722,
+        lng: -80.20865722,
       },
     },
     {
@@ -694,7 +694,7 @@ export default {
       },
       location: {
         lat: 26.06619333,
-        long: -80.20887028,
+        lng: -80.20887028,
       },
     },
 
@@ -710,7 +710,7 @@ export default {
       },
       location: {
         lat: 25.95680139,
-        long: -80.43184500,
+        lng: -80.43184500,
       },
     },
     {
@@ -724,7 +724,7 @@ export default {
       },
       location: {
         lat: 25.95679583,
-        long: -80.43042667,
+        lng: -80.43042667,
       },
     },
     {
@@ -738,7 +738,7 @@ export default {
       },
       location: {
         lat: 25.95683972,
-        long: -80.43137167,
+        lng: -80.43137167,
       },
     },
     {
@@ -752,7 +752,7 @@ export default {
       },
       location: {
         lat: 25.92920917,
-        long: -80.15165250,
+        lng: -80.15165250,
       },
     },
     {
@@ -766,7 +766,7 @@ export default {
       },
       location: {
         lat: 25.92922472,
-        long: -80.15134000,
+        lng: -80.15134000,
       },
     },
     {
@@ -780,7 +780,7 @@ export default {
       },
       location: {
         lat: 25.92908278,
-        long: -80.15147694,
+        lng: -80.15147694,
       },
     },
   ],
