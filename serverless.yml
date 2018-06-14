@@ -184,3 +184,4 @@ functions:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
     timeout: 24
+    # Use 'ManualTrigger' Test in lambda function console after updating stations.js
