@@ -173,3 +173,14 @@ functions:
     timeout: 24
     events:
       - schedule: ${self:custom.usgsDataSchedule}
+
+  # SFWMD Upload Stations
+  wmdUploadStations:
+    handler: bin/functions/etl-sensors/sfwmd.handler
+    package:
+      include:
+        - bin/functions/etl-sensors/sfwmd/**
+    environment:
+      API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
+    timeout: 24
