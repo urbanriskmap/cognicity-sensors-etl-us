@@ -22,14 +22,15 @@ export class UploadStations {
           for (let feature of features) {
             if (feature.properties.hasOwnProperty('properties')) {
               const properties = feature.properties.properties;
-              if (properties.hasOwnProperty('uid')
+              if (properties.hasOwnProperty('stationId')
                 && properties.hasOwnProperty('agency')
                 && properties.agency === 'sfwmd'
               ) {
-                existingStationIds.push(properties.uid);
+                existingStationIds.push(properties.stationId);
               }
             }
           }
+          resolve(existingStationIds);
         }
       })
       .catch((error) => reject(error));
@@ -73,7 +74,7 @@ export class UploadStations {
           if (body.statusCode !== 200) {
             reject(body);
           } else {
-            const stationID = body.result.id;
+            const stationID = body.result.features[0].properties.id;
             resolve({success: stationID + ': Added station'});
           }
         })
