@@ -17,14 +17,15 @@ export default () => {
       etl = new EtlData(testConfig);
 
       sinon.stub(Service.prototype, 'getSensors')
-      .onFirstCall()
-        .resolves(testData.getSensorsNoArgs())
+      .withArgs()
+        .onFirstCall()
+          .resolves(testData.getSensorsNoArgs())
+        .onSecondCall()
+          .rejects({message: 'filterSensors'})
       .withArgs(5)
         .resolves(testData.getDataWithObs())
       .withArgs(3)
         .resolves(testData.getDataNoObs())
-      .onCall(3)
-        .rejects({message: 'filterSensors'})
       .withArgs(404)
         .rejects({message: 'getStoredObservations'});
 
@@ -104,6 +105,59 @@ export default () => {
       })
       .catch((error) => {
         test.fail(error.message);
+      })
+      .finally(done)
+      .done();
+    });
+
+    it('Catches http request errors', (done) => {
+      // Swap resolve & reject callbacks to catch rejected
+      // promises from methods being tested
+      let methodsToTest = [
+        new Promise((resolve, reject) => {
+          // console.log(Service.prototype.getSensors.callCount);
+          etl.filterSensors()
+          .then((result) => reject(result))
+          .catch((error) => {
+            resolve(error);
+          });
+        }),
+        new Promise((resolve, reject) => {
+          etl.getStoredObservations(404, 'uniqueId')
+          .then((result) => reject(result))
+          .catch((error) => resolve(error));
+        }),
+        new Promise((resolve, reject) => {
+          etl.extractSensorObservations({
+            uid: 'errorId',
+            pkey: 9,
+            lastUpdated: null,
+          })
+          .then((result) => reject(result))
+          .catch((error) => resolve(error));
+        }),
+        new Promise((resolve, reject) => {
+          etl.loadObservations({
+            pkey: 13,
+            data: {},
+          })
+          .then((result) => reject(result))
+          .catch((error) => resolve(error));
+        }),
+      ];
+
+      test.promise
+      .given(Promise.all(methodsToTest))
+      .then((result) => {
+        test.value(result).is({
+          '0': {message: 'filterSensors'},
+          '1': {message: 'getStoredObservations'},
+          '2': {message: 'extractSensorObservations'},
+          '3': {message: 'loadObservations'},
+        });
+      })
+      .catch((error) => {
+        test.fail(error);
       })
       .finally(done)
       .done();
@@ -416,6 +470,7 @@ export default () => {
           .catch((error) => reject(error));
         }),
       ];
+
       test.promise
       .given(Promise.all(methodsToTest))
       .then((result) => {
@@ -428,59 +483,6 @@ export default () => {
       })
       .catch((error) => {
         test.fail(error.message);
-      })
-      .finally(done)
-      .done();
-    });
-
-    it('Catches http request errors', (done) => {
-      // Swap resolve & reject callbacks to catch rejected
-      // promises from methods being tested
-      let methodsToTest = [
-        new Promise((resolve, reject) => {
-          // console.log(Service.prototype.getSensors.callCount);
-          etl.filterSensors()
-          .then((result) => reject(result))
-          .catch((error) => {
-            resolve(error);
-          });
-        }),
-        new Promise((resolve, reject) => {
-          etl.getStoredObservations(404, 'uniqueId')
-          .then((result) => reject(result))
-          .catch((error) => resolve(error));
-        }),
-        new Promise((resolve, reject) => {
-          etl.extractSensorObservations({
-            uid: 'errorId',
-            pkey: 9,
-            lastUpdated: null,
-          })
-          .then((result) => reject(result))
-          .catch((error) => resolve(error));
-        }),
-        new Promise((resolve, reject) => {
-          etl.loadObservations({
-            pkey: 13,
-            data: {},
-          })
-          .then((result) => reject(result))
-          .catch((error) => resolve(error));
-        }),
-      ];
-
-      test.promise
-      .given(Promise.all(methodsToTest))
-      .then((result) => {
-        test.value(result).is({
-          '0': {message: 'filterSensors'},
-          '1': {message: 'getStoredObservations'},
-          '2': {message: 'extractSensorObservations'},
-          '3': {message: 'loadObservations'},
-        });
-      })
-      .catch((error) => {
-        test.fail(error);
       })
       .finally(done)
       .done();
