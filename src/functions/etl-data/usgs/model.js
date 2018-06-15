@@ -13,18 +13,17 @@ export class EtlData {
     let filteredSensorList = [];
 
     return new Promise((resolve, reject) => {
-      service.getSensors()
+      service.getSensors('usgs')
       .then((body) => {
         const features = body.result.features;
 
         for (let feature of features) {
           if (feature.properties.hasOwnProperty('properties')) {
             const properties = feature.properties.properties;
+
             if (properties.hasOwnProperty('uid')
               && properties.hasOwnProperty('class')
               && String(properties.class) === self.config.SENSOR_CODE
-              && properties.hasOwnProperty('agency')
-              && properties.agency === 'usgs'
             ) {
               filteredSensorList.push({
                 pkey: feature.properties.id,
@@ -46,7 +45,7 @@ export class EtlData {
     const service = new Service(self.config);
 
     return new Promise((resolve, reject) => {
-      service.getSensors(pkey)
+      service.getSensors('usgs', pkey)
       .then((body) => {
         let storedObservations;
         let lastUpdated;

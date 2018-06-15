@@ -11,6 +11,6 @@ export default {
 
   DEBUG_HTTP_REQUESTS: false,
 
-  SERVER_ENDPOINT: 'someEndpoint',
+  SERVER_ENDPOINT: 'someEndpoint/',
   API_KEY: 'someApiKey',
 };

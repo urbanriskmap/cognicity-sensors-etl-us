@@ -17,16 +17,16 @@ export default () => {
       etl = new EtlData(testConfig);
 
       sinon.stub(Service.prototype, 'getSensors')
-      .withArgs()
+      .withArgs('usgs')
         .onFirstCall()
           .resolves(testData.getSensorsNoArgs())
         .onSecondCall()
           .rejects({message: 'filterSensors'})
-      .withArgs(5)
+      .withArgs('usgs', 5)
         .resolves(testData.getDataWithObs())
-      .withArgs(3)
+      .withArgs('usgs', 3)
         .resolves(testData.getDataNoObs())
-      .withArgs(404)
+      .withArgs('usgs', 404)
         .rejects({message: 'getStoredObservations'});
 
       let mockUsgsQuery = (uid) => {
@@ -115,7 +115,6 @@ export default () => {
       // promises from methods being tested
       let methodsToTest = [
         new Promise((resolve, reject) => {
-          // console.log(Service.prototype.getSensors.callCount);
           etl.filterSensors()
           .then((result) => reject(result))
           .catch((error) => {

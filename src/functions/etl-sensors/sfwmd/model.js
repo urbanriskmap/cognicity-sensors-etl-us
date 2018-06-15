@@ -11,7 +11,7 @@ export class UploadStations {
     const service = new Service(this.config);
 
     return new Promise((resolve, reject) => {
-      service.getSensors()
+      service.getSensors('sfwmd')
       .then((body) => {
         let existingStationIds = [];
         const features = body.result.features;
@@ -22,10 +22,7 @@ export class UploadStations {
           for (let feature of features) {
             if (feature.properties.hasOwnProperty('properties')) {
               const properties = feature.properties.properties;
-              if (properties.hasOwnProperty('stationId')
-                && properties.hasOwnProperty('agency')
-                && properties.agency === 'sfwmd'
-              ) {
+              if (properties.hasOwnProperty('stationId')) {
                 existingStationIds.push(properties.stationId);
               }
             }

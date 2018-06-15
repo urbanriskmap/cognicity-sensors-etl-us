@@ -17,9 +17,9 @@ export default () => {
 
       sinon.stub(Service.prototype, 'getSensors')
       .onFirstCall()
-      .resolves(testData.getSensors())
+        .resolves(testData.getSensors())
       .onSecondCall()
-      .rejects({message: 'getExistingSensors'});
+        .rejects({message: 'getExistingSensors'});
 
       let mockUsgsQuery = (sensorCode) => {
         return testConfig.USGS_BASE_URL

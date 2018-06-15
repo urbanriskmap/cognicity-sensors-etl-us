@@ -18,7 +18,7 @@ export class EtlSensors {
     const service = new Service(self.config);
 
     return new Promise((resolve, reject) => {
-      service.getSensors()
+      service.getSensors('usgs')
       .then((body) => {
         let existingSensorUids = [];
         const features = body.result.features;

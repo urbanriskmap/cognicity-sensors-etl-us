@@ -12,47 +12,42 @@ export default () => {
       service = new Service(testConfig);
 
       sinon.stub(request, 'get')
-      .yields(null, null, testData.getSensors())
+        .yields(null, null, testData.getSensors())
       .withArgs({
-        url: 'someEndpointsensorId',
+        url: 'someEndpoint/sensorId',
         json: true,
       })
-      .yields({message: 'Get sensors error'}, null, null);
+        .yields({message: 'Get sensors error'}, null, null);
 
       sinon.stub(request, 'post')
-      .yields(null, null, testData.postSensors())
+        .yields(null, null, testData.postSensors())
       .withArgs({
-        url: 'someEndpointsensorId',
+        url: 'someEndpoint/sensorId',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': 'someApiKey',
         },
         json: {},
       })
-      .yields({message: 'Post sensors error'}, null, null);
+        .yields({message: 'Post sensors error'}, null, null);
 
       sinon.stub(request, 'delete')
       .withArgs({
-        url: 'someEndpoint1',
+        url: 'someEndpoint/1/2',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': 'someApiKey',
         },
-        json: {data_id: 2},
       })
-      .yields(null, null, {
-        statusCode: 200,
-        body: [],
-      })
+        .yields(null, null, {statusCode: 200, body: []})
       .withArgs({
-        url: 'someEndpoint3',
+        url: 'someEndpoint/3/4',
         headers: {
           'Content-Type': 'application/json',
           'x-api-key': 'someApiKey',
         },
-        json: {data_id: 4},
       })
-      .yields({message: 'Delete error'}, null, null);
+        .yields({message: 'Delete error'}, null, null);
     });
 
     after(() => {
@@ -63,7 +58,7 @@ export default () => {
 
     it('Gets sensors', (done) => {
       test.promise
-      .given(service.getSensors(null))
+      .given(service.getSensors('usgs'))
       .then((body) => {
         request.get.called.should.be.equal(true);
         test
