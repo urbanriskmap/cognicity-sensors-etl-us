@@ -26,7 +26,7 @@ export class EtlData {
               && String(properties.class) === self.config.SENSOR_CODE
             ) {
               filteredSensorList.push({
-                pkey: feature.properties.id,
+                sensorId: feature.properties.id,
                 uid: properties.uid,
               });
             }
@@ -40,12 +40,12 @@ export class EtlData {
     });
   }
 
-  getStoredObservations(pkey, uid) {
+  getStoredObservations(sensorId, uid) {
     const self = this;
     const service = new Service(self.config);
 
     return new Promise((resolve, reject) => {
-      service.getSensors('usgs', pkey)
+      service.getSensors('usgs', sensorId)
       .then((body) => {
         let storedObservations;
         let lastUpdated;
@@ -93,7 +93,7 @@ export class EtlData {
 
         resolve({
           uid: uid,
-          pkey: pkey,
+          sensorId: sensorId,
           dataId: storedObsCheckPassed ? dataId : null,
           lastUpdated: hasStoredObs ? lastUpdated : null,
         });
@@ -111,7 +111,7 @@ export class EtlData {
     + '&period=' + self.config.RECORDS_PERIOD;
     // + '&modifiedSince=' + self.config.RECORDS_INTERVAL;
     const logMessage = {
-      log: sensor.pkey
+      log: sensor.sensorId
       + ': Sensor is inactive or has no new observations in past '
       + self.config.RECORDS_INTERVAL.slice(2, -1) + ' minute(s).',
     };
@@ -183,7 +183,7 @@ export class EtlData {
               }
             }
             resolve({
-              pkey: sensor.pkey,
+              sensorId: sensor.sensorId,
               dataId: sensor.dataId,
               data: transformedData,
               lastUpdated: sensor.lastUpdated,
@@ -198,7 +198,7 @@ export class EtlData {
               });
             }
             resolve({
-              pkey: sensor.pkey,
+              sensorId: sensor.sensorId,
               dataId: sensor.dataId,
               data: transformedData,
               lastUpdated: sensor.lastUpdated,
@@ -206,7 +206,7 @@ export class EtlData {
           }
         } else {
           resolve({
-            log: sensor.pkey + ': No valid data available',
+            log: sensor.sensorId + ': No valid data available',
           });
         }
       }
@@ -216,7 +216,7 @@ export class EtlData {
   compareSensorObservations(sensor) {
     const self = this;
     const logMessage = {
-      log: sensor.pkey
+      log: sensor.sensorId
       + ': Sensor has no new observations',
     };
 
@@ -261,7 +261,7 @@ export class EtlData {
       if (sensor.hasOwnProperty('log')) {
         resolve(sensor);
       } else {
-        service.postSensors(sensor.pkey, {
+        service.postSensors(sensor.sensorId, {
           properties: {
             observations: sensor.data,
           },
@@ -272,7 +272,7 @@ export class EtlData {
           } else {
             const sensorID = body.result.id;
             if (sensor.dataId) {
-              service.deleteObservations(sensor.pkey, sensor.dataId)
+              service.deleteObservations(sensor.sensorId, sensor.dataId)
               .then(() => {
                 resolve({success: sensorID + ': Data for sensor updated'});
               })

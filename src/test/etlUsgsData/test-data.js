@@ -48,7 +48,7 @@ export default {
       result: [
         {
           dataId: 23,
-          id: 5,
+          sensorId: 5,
           properties: {
             observations: {
               upstream: [
@@ -91,7 +91,7 @@ export default {
       result: [
         {
           dataId: 27,
-          id: 3,
+          sensorId: 3,
           properties: {
             observations: {
               upstream: [],

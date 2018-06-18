@@ -94,14 +94,14 @@ export default () => {
       request.get.restore();
     });
 
-    it('Returns filtered list with valid uid and pkey', (done) => {
+    it('Returns filtered list with valid uid and sensorId', (done) => {
       test.promise
       .given(etl.filterSensors())
       .then((filteredSensorList) => {
         Service.prototype.getSensors.called.should.be.equal(true);
         let sensor = filteredSensorList[0];
         test.value(sensor)
-        .is({pkey: 5, uid: 'uniqueId'});
+        .is({sensorId: 5, uid: 'uniqueId'});
       })
       .catch((error) => {
         test.fail(error.message);
@@ -129,7 +129,7 @@ export default () => {
         new Promise((resolve, reject) => {
           etl.extractSensorObservations({
             uid: 'errorId',
-            pkey: 9,
+            sensorId: 9,
             lastUpdated: null,
           })
           .then((result) => reject(result))
@@ -137,7 +137,7 @@ export default () => {
         }),
         new Promise((resolve, reject) => {
           etl.loadObservations({
-            pkey: 13,
+            sensorId: 13,
             data: {},
           })
           .then((result) => reject(result))
@@ -169,7 +169,7 @@ export default () => {
         Service.prototype.getSensors.called.should.be.equal(true);
         test.value(sensor)
         .is({
-          pkey: 5,
+          sensorId: 5,
           uid: 'uniqueId',
           dataId: 23,
           lastUpdated: 'lastDateTime',
@@ -189,7 +189,7 @@ export default () => {
         Service.prototype.getSensors.called.should.be.equal(true);
         test.value(sensor)
         .is({
-          pkey: 3,
+          sensorId: 3,
           uid: 'uniqueId',
           dataId: 27,
           lastUpdated: null,
@@ -205,7 +205,7 @@ export default () => {
     it('Extracts observations for USGS sensor', (done) => {
       test.promise
       .given(etl.extractSensorObservations({
-        pkey: 5,
+        sensorId: 5,
         uid: 'uniqueId',
         dataId: 23,
         lastUpdated: null,
@@ -230,7 +230,7 @@ export default () => {
       test.promise
       .given(etl.extractSensorObservations({
         uid: 'otherUniqueId',
-        pkey: 7,
+        sensorId: 7,
         lastUpdated: null,
       }))
       .then((result) => {
@@ -255,7 +255,7 @@ export default () => {
       .given(etl.transform({
         storedProperties: {
           uid: 'uniqueId',
-          pkey: 5,
+          sensorId: 5,
           dataId: 23,
           lastUpdated: null,
         },
@@ -263,7 +263,7 @@ export default () => {
       }))
       .then((sensor) => {
         test.value(sensor).is({
-          pkey: 5,
+          sensorId: 5,
           dataId: 23,
           data: {
             upstream: [
@@ -295,14 +295,14 @@ export default () => {
         storedProperties: {
           uid: 'uniqueId',
           dataId: 23,
-          pkey: 7,
+          sensorId: 7,
           lastUpdated: null,
         },
         usgsData: argData.value.timeSeries,
       }))
       .then((sensor) => {
         test.value(sensor).is({
-          pkey: 7,
+          sensorId: 7,
           dataId: 23,
           data: [
             {dateTime: 'dateTime_1', value: 4.0},
@@ -323,7 +323,7 @@ export default () => {
     it('Compares sensor observations (updated data)', (done) => {
       test.promise
       .given(etl.compareSensorObservations({
-        pkey: 5,
+        sensorId: 5,
         dataId: 23,
         data: {
           upstream: [
@@ -348,7 +348,7 @@ export default () => {
     it('Compares sensor observations (no updates)', (done) => {
       test.promise
       .given(etl.compareSensorObservations({
-        pkey: 5,
+        sensorId: 5,
         dataId: 23,
         data: {
           upstream: [
@@ -373,7 +373,7 @@ export default () => {
     it('Loads observations (new)', (done) => {
       test.promise
       .given(etl.loadObservations({
-        pkey: 5,
+        sensorId: 5,
         dataId: null,
         data: {},
       }))
@@ -392,7 +392,7 @@ export default () => {
     it('Loads observations (update)', (done) => {
       test.promise
       .given(etl.loadObservations({
-        pkey: 7,
+        sensorId: 7,
         dataId: 23,
         data: {},
       }))
@@ -411,7 +411,7 @@ export default () => {
     it('Resolves with a log if delete fails', (done) => {
       test.promise
       .given(etl.loadObservations({
-        pkey: 9,
+        sensorId: 9,
         dataId: 27,
         data: {},
       }))
@@ -430,7 +430,7 @@ export default () => {
     it('Catches data upload error', (done) => {
       test.promise
       .given(etl.loadObservations({
-        pkey: 11,
+        sensorId: 11,
         data: {},
       }))
       .then((result) => {
