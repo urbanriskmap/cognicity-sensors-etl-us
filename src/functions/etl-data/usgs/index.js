@@ -6,7 +6,7 @@ import config from '../../../config';
  * @function call-etl-data-methods
  * @param {Object} etl - ETL data model
  * @abstract
- * @return {Promise} 
+ * @return {Promise}
  */
 exports.callEtlMethods = (etl) => {
   return new Promise((res, rej) => {
@@ -21,7 +21,7 @@ exports.callEtlMethods = (etl) => {
         for (let sensor of filteredSensorList) {
           processEtl.push(
             new Promise((resolve, reject) => {
-              etl.getStoredObservations(sensor.pkey, sensor.uid)
+              etl.getStoredObservations(sensor.sensorId, sensor.uid)
               .then((sensor) => {
                 etl.extractSensorObservations(sensor)
                 .then((data) => {
@@ -38,25 +38,15 @@ exports.callEtlMethods = (etl) => {
                           resolve(result.success);
                         }
                       })
-                      .catch((error) => {
-                        reject(error);
-                      });
+                      .catch((error) => reject(error));
                     })
-                    .catch((error) => {
-                      reject(error);
-                    });
+                    .catch((error) => reject(error));
                   })
-                  .catch((error) => {
-                    reject(error);
-                  });
+                  .catch((error) => reject(error));
                 })
-                .catch((error) => {
-                  reject(error);
-                });
+                .catch((error) => reject(error));
               })
-              .catch((error) => {
-                reject(error);
-              });
+              .catch((error) => reject(error));
             })
           );
         }
@@ -68,14 +58,10 @@ exports.callEtlMethods = (etl) => {
             logs: messages,
           });
         })
-        .catch((error) => {
-          rej(error);
-        });
+        .catch((error) => rej(error));
       }
     })
-    .catch((error) => {
-      rej(error);
-    });
+    .catch((error) => rej(error));
   });
 };
 

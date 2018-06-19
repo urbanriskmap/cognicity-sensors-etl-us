@@ -270,8 +270,11 @@ export class EtlData {
           if (body.statusCode !== 200) {
             reject(body);
           } else {
-            const sensorID = body.result.id;
-            if (sensor.dataId) {
+            const sensorID = body.result.dataId;
+
+            if (sensor.dataId
+              && Number.isInteger(parseInt(sensor.dataId, 10))
+            ) {
               service.deleteObservations(sensor.sensorId, sensor.dataId)
               .then(() => {
                 resolve({success: sensorID + ': Data for sensor updated'});

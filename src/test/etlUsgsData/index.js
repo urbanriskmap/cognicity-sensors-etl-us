@@ -60,17 +60,17 @@ export default () => {
       .withArgs(5, {properties: {observations: {}}})
       .resolves({
         statusCode: 200,
-        result: {id: 5},
+        result: {dataId: 5},
       })
       .withArgs(7, {properties: {observations: {}}})
       .resolves({
         statusCode: 200,
-        result: {id: 7},
+        result: {dataId: 7},
       })
       .withArgs(9, {properties: {observations: {}}})
       .resolves({
         statusCode: 200,
-        result: {id: 9},
+        result: {dataId: 9},
       })
       .withArgs(11, {properties: {observations: {}}})
       .resolves({
