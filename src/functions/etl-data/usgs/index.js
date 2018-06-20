@@ -65,7 +65,6 @@ exports.callEtlMethods = (etl) => {
   });
 };
 
-
 /**
  * ETL script for adding sensor data
  * @function etl-data-usgs

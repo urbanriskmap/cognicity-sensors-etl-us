@@ -9,28 +9,64 @@ import config from '../../../config';
  * @return {Promise}
  */
 exports.callEtlMethods = (etl) => {
-  return new Promise((resolve, reject) => {
-    // let processEtl = [];
-    // let updateCount = 0;
+  return new Promise((res, rej) => {
+    let processEtl = [];
+    let updateCount = 0;
 
     etl.filterSensors()
     .then((filteredStationList) => {
       if (!filteredStationList.length) {
-        reject('No stored stations found');
+        rej('No stored stations found');
       } else {
-        etl.checkStoredObservations()
-        .then((data) => {
-          //
+        for (let station of filteredStationList) {
+          processEtl.push(
+            new Promise((resolve, reject) => {
+              etl.checkStoredObservations(station.sensorId, station.uid)
+              .then((station) => {
+                etl.extractStationObservations(station)
+                .then((data) => {
+                  etl.transform(data)
+                  .then((station) => {
+                    etl.compareStationObservations(station)
+                    .then((station) => {
+                      etl.loadObservations(station)
+                      .then((result) => {
+                        if (result.hasOwnProperty('log')) {
+                          resolve(result.log);
+                        } else if (result.hasOwnProperty('success')) {
+                          updateCount += 1;
+                          resolve(result.success);
+                        }
+                      })
+                      .catch((error) => reject(error));
+                    })
+                    .catch((error) => reject(error));
+                  })
+                  .catch((error) => reject(error));
+                })
+                .catch((error) => reject(error));
+              })
+              .catch((error) => reject(error));
+            })
+          );
+        }
+
+        Promise.all(processEtl)
+        .then((messages) => {
+          res({
+            sensors_updated: updateCount,
+            logs: messages,
+          });
         })
-        .catch((error) => reject(error));
+        .catch((error) => rej(error));
       }
     })
-    .catch((error) => reject(error));
+    .catch((error) => rej(error));
   });
 };
 
 /**
- * ETL script for adding sensor data
+ * ETL script for adding station data
  * @function etl-data-sfwmd
  * @param {Object} event - AWS Lambda event object
  * @param {Object} context - AWS Lambda context object
