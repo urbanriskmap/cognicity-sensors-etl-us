@@ -1,6 +1,6 @@
 {
   "name": "cognicity-sensors-etl-us",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Lambda ETL service for inserting, fetching water sensors data for RiskMap US deployments",
   "author": "Mayank Ojha",
   "license": "GPL-3.0",

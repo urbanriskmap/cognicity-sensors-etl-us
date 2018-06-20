@@ -202,7 +202,7 @@ export default () => {
         // Mock get sensors query result
         stubData.getMetadata
       )
-      // For getStoredObservations()
+      // For checkStoredObservations()
       .withArgs(54) // test sensor_id
       .resolves(
         // Mock get sensors by id query result

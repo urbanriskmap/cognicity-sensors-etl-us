@@ -27,7 +27,7 @@ export default () => {
       .withArgs('usgs', 3)
         .resolves(testData.getDataNoObs())
       .withArgs('usgs', 404)
-        .rejects({message: 'getStoredObservations'});
+        .rejects({message: 'checkStoredObservations'});
 
       let mockUsgsQuery = (uid) => {
         return testConfig.USGS_BASE_URL
@@ -101,7 +101,7 @@ export default () => {
         Service.prototype.getSensors.called.should.be.equal(true);
         let sensor = filteredSensorList[0];
         test.value(sensor)
-        .is({sensorId: 5, uid: 'uniqueId'});
+        .is({id: 5, uid: 'uniqueId'});
       })
       .catch((error) => {
         test.fail(error.message);
@@ -122,7 +122,7 @@ export default () => {
           });
         }),
         new Promise((resolve, reject) => {
-          etl.getStoredObservations(404, 'uniqueId')
+          etl.checkStoredObservations(404, 'uniqueId')
           .then((result) => reject(result))
           .catch((error) => resolve(error));
         }),
@@ -150,7 +150,7 @@ export default () => {
       .then((result) => {
         test.value(result).is({
           '0': {message: 'filterSensors'},
-          '1': {message: 'getStoredObservations'},
+          '1': {message: 'checkStoredObservations'},
           '2': {message: 'extractSensorObservations'},
           '3': {message: 'loadObservations'},
         });
@@ -164,7 +164,7 @@ export default () => {
 
     it('Returns last updated dateTime for sensor data', (done) => {
       test.promise
-      .given(etl.getStoredObservations(5, 'uniqueId'))
+      .given(etl.checkStoredObservations(5, 'uniqueId'))
       .then((sensor) => {
         Service.prototype.getSensors.called.should.be.equal(true);
         test.value(sensor)
@@ -184,7 +184,7 @@ export default () => {
 
     it('Returns null for last updated if no data stored', (done) => {
       test.promise
-      .given(etl.getStoredObservations(3, 'uniqueId'))
+      .given(etl.checkStoredObservations(3, 'uniqueId'))
       .then((sensor) => {
         Service.prototype.getSensors.called.should.be.equal(true);
         test.value(sensor)

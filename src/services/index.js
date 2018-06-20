@@ -5,12 +5,18 @@ export class Service {
     this.config = config;
   }
 
-  getSensors(agency, id) {
+  getSensors(agency, id, type) {
     return new Promise((resolve, reject) => {
+      let queryUrl = this.config.SERVER_ENDPOINT;
+
+      queryUrl += id ?
+        id + '?agency=' + agency :
+        '?agency=' + agency;
+
+      queryUrl += type ? '&type=' + type : '';
+
       request.get({
-          url: id
-            ? this.config.SERVER_ENDPOINT + id + '?agency=' + agency
-            : this.config.SERVER_ENDPOINT + '?agency=' + agency,
+          url: queryUrl,
           json: true,
         }, (error, response, body) => {
           if (error) {

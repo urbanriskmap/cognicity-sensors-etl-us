@@ -1,106 +1,90 @@
 import {Service} from '../../../services';
 import request from 'request';
+import Sensors from '../../../library/data';
 
 export class EtlData {
   constructor(config) {
     this.config = config;
     request.debug = this.config.DEBUG_HTTP_REQUESTS;
+    this.sensors = new Sensors(this.config, new Service(this.config));
   }
 
+  // TODO: move to index.js
   filterSensors() {
-    const self = this;
-    const service = new Service(self.config);
-    let filteredSensorList = [];
+    const conditions = [
+      {
+        type: 'hasProperty',
+        values: ['uid'],
+      },
+      {
+        type: 'hasProperty',
+        values: ['class'],
+      },
+      {
+        type: 'equate',
+        values: [
+          {
+            type: 'property',
+            value: 'class',
+          },
+          {
+            type: 'configVariable',
+            value: 'SENSOR_CODE',
+          },
+          // other types:
+          // {
+          //   type: 'value',
+          //   value: 'usgs',
+          // },
+        ],
+      },
+    ];
 
     return new Promise((resolve, reject) => {
-      service.getSensors('usgs')
-      .then((body) => {
-        const features = body.result.features;
-
-        for (let feature of features) {
-          if (feature.properties.hasOwnProperty('properties')) {
-            const properties = feature.properties.properties;
-
-            if (properties.hasOwnProperty('uid')
-              && properties.hasOwnProperty('class')
-              && String(properties.class) === self.config.SENSOR_CODE
-            ) {
-              filteredSensorList.push({
-                sensorId: feature.properties.id,
-                uid: properties.uid,
-              });
-            }
-          }
-        }
-        resolve(filteredSensorList);
-      })
-      .catch((error) => {
-        reject(error);
-      });
+      this.sensors.filter(conditions, 'usgs', 'uid')
+      .then((list) => resolve(list))
+      .catch((error) => reject(error));
     });
   }
 
-  getStoredObservations(sensorId, uid) {
-    const self = this;
-    const service = new Service(self.config);
-
+  checkStoredObservations(sensorId, uid) {
     return new Promise((resolve, reject) => {
-      service.getSensors('usgs', sensorId)
-      .then((body) => {
-        let storedObservations;
+      this.sensors.getStoredObservations('usgs', sensorId)
+      .then(({
+        storedObservations,
+        dataId,
+      }) => {
         let lastUpdated;
-        let dataId;
-        let storedObsCheckPassed = false;
         let hasStoredObs = false;
-        let latestRow;
 
-        if (body.result && body.result.length) {
-          latestRow = body.result[body.result.length - 1];
-          // storedObsCheckPassed = true;
-        }
-
-        if (latestRow
-        && latestRow.hasOwnProperty('properties')
-        && latestRow.properties
-        && latestRow.properties.hasOwnProperty('observations')
+        // process.env passes true / false values as strings
+        if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'true'
+        && storedObservations.upstream.length
+        && storedObservations.upstream[
+          storedObservations.upstream.length - 1
+        ].hasOwnProperty('dateTime')) {
+          lastUpdated = storedObservations.upstream[
+            storedObservations.upstream.length - 1].dateTime;
+          hasStoredObs = true;
+        } else if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'false'
+          && storedObservations.length
+          && storedObservations[
+              storedObservations.length - 1
+            ].hasOwnProperty('dateTime')
         ) {
-          storedObsCheckPassed = true;
-          storedObservations = latestRow.properties.observations;
-          dataId = latestRow.dataId;
-        }
-
-        if (storedObsCheckPassed) {
-          // process.env passes true / false values as strings
-          if (self.config.HAS_UPSTREAM_DOWNSTREAM === 'true'
-          && storedObservations.upstream.length
-          && storedObservations.upstream[
-            storedObservations.upstream.length - 1
-          ].hasOwnProperty('dateTime')) {
-            lastUpdated = storedObservations.upstream[
-              storedObservations.upstream.length - 1].dateTime;
-            hasStoredObs = true;
-          } else if (self.config.HAS_UPSTREAM_DOWNSTREAM === 'false'
-            && storedObservations.length
-            && storedObservations[
-                storedObservations.length - 1
-              ].hasOwnProperty('dateTime')
-          ) {
-            lastUpdated = storedObservations[
-              storedObservations.length - 1].dateTime;
-            hasStoredObs = true;
-          }
+          lastUpdated = storedObservations[
+            storedObservations.length - 1].dateTime;
+          hasStoredObs = true;
         }
 
         resolve({
-          uid: uid,
-          sensorId: sensorId,
-          dataId: storedObsCheckPassed ? dataId : null,
+          sensorId: sensorId, // 'id' property in metadata, 'sensorId' in data
+          uid: uid, // 'uid' property in metadata
+          dataId: dataId ? dataId : null,
           lastUpdated: hasStoredObs ? lastUpdated : null,
         });
       })
-      .catch((error) => {
-        reject(error);
-      });
+      .catch((error) => reject(error));
     });
   }
 
@@ -109,7 +93,6 @@ export class EtlData {
     const usgsQuery = self.config.USGS_BASE_URL
     + '&sites=' + sensor.uid
     + '&period=' + self.config.RECORDS_PERIOD;
-    // + '&modifiedSince=' + self.config.RECORDS_INTERVAL;
     const logMessage = {
       log: sensor.sensorId
       + ': Sensor is inactive or has no new observations in past '
@@ -149,6 +132,7 @@ export class EtlData {
       } else {
         const sensor = data.storedProperties;
         const sensorData = data.usgsData;
+
         if (sensorData.length
           && sensorData[0].hasOwnProperty('values')
           && sensorData[0].values.length
@@ -214,7 +198,6 @@ export class EtlData {
   }
 
   compareSensorObservations(sensor) {
-    const self = this;
     const logMessage = {
       log: sensor.sensorId
       + ': Sensor has no new observations',
@@ -228,14 +211,14 @@ export class EtlData {
           resolve(sensor);
         } else {
           let lastExtractedObservation;
-          if (self.config.HAS_UPSTREAM_DOWNSTREAM === 'true'
+          if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'true'
           && sensor.data.upstream.length
           && sensor.data.upstream[sensor.data.upstream.length - 1]
             .hasOwnProperty('dateTime')
           ) {
             lastExtractedObservation = sensor.data.upstream[
                 sensor.data.upstream.length - 1].dateTime;
-          } else if (self.config.HAS_UPSTREAM_DOWNSTREAM === 'false'
+          } else if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'false'
              && sensor.data.length
              && sensor.data[sensor.data.length - 1]
                .hasOwnProperty('dateTime')
@@ -253,45 +236,14 @@ export class EtlData {
     });
   }
 
+  // TODO: move to index.js
   loadObservations(sensor) {
-    const self = this;
-    const service = new Service(self.config);
-
     return new Promise((resolve, reject) => {
-      if (sensor.hasOwnProperty('log')) {
-        resolve(sensor);
-      } else {
-        service.postSensors(sensor.sensorId, {
-          properties: {
-            observations: sensor.data,
-          },
-        })
-        .then((body) => {
-          if (body.statusCode !== 200) {
-            reject(body);
-          } else {
-            const sensorID = body.result.dataId;
-
-            if (sensor.dataId
-              && Number.isInteger(parseInt(sensor.dataId, 10))
-            ) {
-              service.deleteObservations(sensor.sensorId, sensor.dataId)
-              .then(() => {
-                resolve({success: sensorID + ': Data for sensor updated'});
-              })
-              .catch((error) => {
-                resolve({log: sensorID
-                  + ': Failed to remove previous observations'});
-              });
-            } else {
-              resolve({success: sensorID + ': Data for sensor stored'});
-            }
-          }
-        })
-        .catch((error) => {
-          reject(error);
-        });
-      }
+      this.sensors.loadObservations(sensor, {
+        observations: sensor.data,
+      }, 'sensor')
+      .then((msg) => resolve(msg))
+      .catch((error) => reject(error));
     });
   }
 }
