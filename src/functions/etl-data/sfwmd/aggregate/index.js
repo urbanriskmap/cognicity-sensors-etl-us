@@ -1,5 +1,5 @@
 import {EtlData} from './model';
-import config from '../../../config';
+import config from '../../../../config';
 
 /**
  * ETL script for adding station data
@@ -13,7 +13,7 @@ exports.callEtlMethods = (etl) => {
     let processEtl = [];
     let updateCount = 0;
 
-    etl.filterSensors()
+    etl.filterStations()
     .then((filteredStationList) => {
       if (!filteredStationList.length) {
         rej('No stored stations found');
@@ -32,8 +32,10 @@ exports.callEtlMethods = (etl) => {
                       etl.loadObservations(station)
                       .then((result) => {
                         if (result.hasOwnProperty('log')) {
+                          console.log(result.log);
                           resolve(result.log);
                         } else if (result.hasOwnProperty('success')) {
+                          console.log(result.success);
                           updateCount += 1;
                           resolve(result.success);
                         }
@@ -78,12 +80,6 @@ exports.handler = (event, context, callback) => {
   let etl = new EtlData(config);
 
   exports.callEtlMethods(etl)
-  .then((successLogs) => {
-    console.log(JSON.stringify(successLogs));
-    callback(null, successLogs);
-  })
-  .catch((errorLogs) => {
-    console.log(JSON.stringify(errorLogs));
-    callback(errorLogs);
-  });
+  .then((successLogs) => callback(null, successLogs))
+  .catch((errorLogs) => callback(errorLogs));
 };

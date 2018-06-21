@@ -21,7 +21,7 @@ exports.callEtlMethods = (etl) => {
         for (let sensor of filteredSensorList) {
           processEtl.push(
             new Promise((resolve, reject) => {
-              etl.checkStoredObservations(sensor.sensorId, sensor.uid)
+              etl.checkStoredObservations(sensor.id, sensor.uid)
               .then((sensor) => {
                 etl.extractSensorObservations(sensor)
                 .then((data) => {
@@ -32,8 +32,10 @@ exports.callEtlMethods = (etl) => {
                       etl.loadObservations(sensor)
                       .then((result) => {
                         if (result.hasOwnProperty('log')) {
+                          console.log(result.log);
                           resolve(result.log);
                         } else if (result.hasOwnProperty('success')) {
+                          console.log(result.success);
                           updateCount += 1;
                           resolve(result.success);
                         }
@@ -74,16 +76,10 @@ exports.callEtlMethods = (etl) => {
  * @abstract
  * @return {Object} error / response passed to callback
  */
-exports.handler = (event, context, callback) => {
-  let etl = new EtlData(config);
+ exports.handler = (event, context, callback) => {
+   let etl = new EtlData(config);
 
-  exports.callEtlMethods(etl)
-  .then((successLogs) => {
-    console.log(JSON.stringify(successLogs));
-    callback(null, successLogs);
-  })
-  .catch((errorLogs) => {
-    console.log(JSON.stringify(errorLogs));
-    callback(errorLogs);
-  });
-};
+   exports.callEtlMethods(etl)
+   .then((successLogs) => callback(null, successLogs))
+   .catch((errorLogs) => callback(errorLogs));
+ };

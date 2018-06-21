@@ -4,7 +4,7 @@ custom:
   projectName: us-${opt:stage}
   usgsSensorSchedule: rate(12 hours)
   usgsDataSchedule: rate(15 minutes)
-  sfwmdTimeSeriesSchedule: rate(30 minutes)
+  sfwmdTimeseriesSchedule: rate(30 minutes)
   sfwmdAggregateSchedule: rate(6 hours)
 
 provider:
@@ -194,7 +194,7 @@ functions:
     timeout: 24
     # Use 'ManualTrigger' Test in lambda function console after updating stations.js
 
-  # SFWMD timeSeries data
+  # SFWMD timeseries data
   etlWmdTimeseriesData:
     handler: bin/functions/etl-data/sfwmd/timeseries.handler
     package:
@@ -207,18 +207,23 @@ functions:
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
     timeout: 60
     events:
-      - schedule: ${self:custom.sfwmdTimeSeriesSchedule}
+      - schedule:
+        rate: ${self:custom.sfwmdTimeseriesSchedule}
+        enabled: false
 
-    etlWmdAggregateData:
-      handler: bin/functions/etl-data/sfwmd/agggregate.handler
-      package:
-        include:
-          - bin/functions/etl-data/sfwmd/aggregate/**
-      environment:
-        API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
-        RECORDS_PERIOD: P7D
-        RECORDS_INTERVAL: PT6H
-        SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
-      timeout: 60
-      events:
-        - schedule: ${self:custom.sfwmdAggregateSchedule}
+  # SFWMD calulated daily mean data
+  etlWmdAggregateData:
+    handler: bin/functions/etl-data/sfwmd/agggregate.handler
+    package:
+      include:
+        - bin/functions/etl-data/sfwmd/aggregate/**
+    environment:
+      API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      RECORDS_PERIOD: P7D
+      RECORDS_INTERVAL: PT6H
+      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
+    timeout: 60
+    events:
+      - schedule:
+        rate: ${self:custom.sfwmdAggregateSchedule}
+        enabled: false

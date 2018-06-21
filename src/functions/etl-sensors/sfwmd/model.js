@@ -7,6 +7,12 @@ export class UploadStations {
     request.debug = this.config.DEBUG_HTTP_REQUESTS;
   }
 
+  /**
+   * This method gets existing sfwmd stations
+   * @function getExistingStations
+   * @external {XMLHttpRequest} getSensors
+   * @return {Promise} Array of uids (strings)
+   */
   getExistingStations() {
     const service = new Service(this.config);
 
@@ -34,6 +40,13 @@ export class UploadStations {
     });
   }
 
+  /**
+   * This method compares stored stations against
+   * @function extractUsgsSensors
+   * @param {object} station - station interface from station.js
+   * @param {string[]} existingStationIds - list of sensor uid's
+   * @return {Promise} Promise object
+   */
   compareStations(station, existingStationIds) {
     return new Promise((resolve, reject) => {
       let stationExists = false;

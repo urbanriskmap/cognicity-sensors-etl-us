@@ -5,12 +5,12 @@ export class Service {
     this.config = config;
   }
 
-  getSensors(agency, id, type) {
+  getSensors(agency, sensorId, type) {
     return new Promise((resolve, reject) => {
       let queryUrl = this.config.SERVER_ENDPOINT;
 
-      queryUrl += id ?
-        id + '?agency=' + agency :
+      queryUrl += sensorId ?
+        sensorId + '?agency=' + agency :
         '?agency=' + agency;
 
       queryUrl += type ? '&type=' + type : '';
@@ -40,6 +40,7 @@ export class Service {
       // Parse object.body as json
       json: data,
     };
+
     return new Promise((resolve, reject) => {
       request.post(requestOptions, (error, response, body) => {
         if (error) {

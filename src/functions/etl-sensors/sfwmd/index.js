@@ -17,8 +17,10 @@ exports.handler = (event, context, callback) => {
             upload.loadStation(metadata)
             .then((result) => {
               if (result.hasOwnProperty('log')) {
+                console.log(result.log);
                 resolve(result.log);
-              } else {
+              } else if (result.hasOwnProperty('success')) {
+                console.log(result.success);
                 uploadCount += 1;
                 resolve(result.success);
               }

@@ -1,6 +1,6 @@
-import {Service} from '../../../services';
+import {Service} from '../../../../services';
 import request from 'request';
-import Stations from '../../../library/data';
+import Stations from '../../../../library/data';
 
 export class EtlData {
   constructor(config) {
@@ -25,17 +25,19 @@ export class EtlData {
     });
   }
 
-  checkStoredObservations(sensorId, uid) {
+  checkStoredObservations(id, uid) {
     return new Promise((resolve, reject) => {
-      this.stations.getStoredObservations('sfwmd', sensorId, 'timeseries')
+      this.stations.getStoredObservations('sfwmd', id, 'timeseries')
       .then(({
+        checksPassed,
         storedObservations,
         dataId,
       }) => {
         let lastUpdated;
         let hasStoredObs = false;
 
-        if (storedObservations.length
+        if (checksPassed
+          && storedObservations.length
           && storedObservations[storedObservations.length - 1]
           .hasOwnProperty('dateTime')
         ) {
@@ -47,7 +49,7 @@ export class EtlData {
         }
 
         resolve({
-          sensorId: sensorId, // 'id' property in metadata, 'sensorId' in data
+          id: id, // 'id' property in metadata, 'sensorId' in data
           uid: uid, // 'stationId' property in metadata
           dataId: dataId ? dataId : null,
           lastUpdated: hasStoredObs ? lastUpdated : null,
@@ -57,29 +59,8 @@ export class EtlData {
     });
   }
 
-  getWmdQueryTimeFormat() {
-    const periodMilliseconds = parseInt(
-      this.config.RECORDS_PERIOD.slice(2, -1),
-      10
-    ) * 24 * 60 * 60 * 1000;
-
-    const now = Date.now();
-    const start = Date.parse(now) - periodMilliseconds;
-
-    const begin = start.getFullYear() + '-' + start.getMonth() + '-'
-    + start.getDate() + start.getHours() + ':' + start.getMinutes() + ':00:000';
-
-    const end = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate()
-    + now.getHours() + ':' + now.getMinutes() + ':00:000';
-
-    return {
-      begin: begin,
-      end: end,
-    };
-  }
-
   extractStationObservations(station) {
-    const period = this.getWmdQueryTimeFormat();
+    const period = this.stations.getWmdQueryTimeFormat();
     const sfwmdQuery = this.config.SFWMD_TIMESERIES_ENDPOINT
     + '&beginDateTime=' + period.begin
     + '&endDateTime=' + period.end
@@ -138,14 +119,14 @@ export class EtlData {
             });
           }
           resolve({
-            sensorId: station.sensorId,
+            id: station.id,
             dataId: station.dataId,
             data: transformedData,
             lastUpdated: station.lastUpdated,
           });
         } else {
           resolve({
-            log: station.sensorId + ': No valid data available',
+            log: station.id + ': No valid data available',
           });
         }
       }
@@ -187,12 +168,16 @@ export class EtlData {
   // TODO: move to index.js
   loadObservations(station) {
     return new Promise((resolve, reject) => {
-      this.sensors.loadObservations(station.sensorId, {
-        type: 'timeseries',
-        observations: station.data,
-      }, 'station')
-      .then((msg) => resolve(msg))
-      .catch((error) => reject(error));
+      if (station.hasOwnProperty('log')) {
+        resolve(station);
+      } else {
+        this.stations.loadObservations(station, {
+          type: 'timeseries',
+          observations: station.data,
+        }, 'station')
+        .then((msg) => resolve(msg))
+        .catch((error) => reject(error));
+      }
     });
   }
 }

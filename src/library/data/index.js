@@ -4,6 +4,27 @@ export default class {
     this.service = service;
   }
 
+  getWmdQueryTimeFormat() {
+    const periodMilliseconds = parseInt(
+      this.config.RECORDS_PERIOD.slice(1, -1),
+      10
+    ) * 24 * 60 * 60 * 1000;
+
+    const now = new Date();
+    const start = new Date(Date.parse(now) - periodMilliseconds);
+
+    const begin = start.getFullYear() + '-' + start.getMonth() + '-'
+    + start.getDate() + start.getHours() + ':' + start.getMinutes() + ':00:000';
+
+    const end = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate()
+    + now.getHours() + ':' + now.getMinutes() + ':00:000';
+
+    return {
+      begin: begin,
+      end: end,
+    };
+  }
+
   check(properties, conditions) {
     for (let condition of conditions) {
       let comparisonSet = [];
@@ -79,9 +100,9 @@ export default class {
     });
   }
 
-  getStoredObservations(agency, uid) {
+  getStoredObservations(agency, id, type) {
     return new Promise((resolve, reject) => {
-      this.service.getSensors(agency, uid)
+      this.service.getSensors(agency, id, type)
       .then((body) => {
         let storedObservations;
         let storedObsCheckPassed = false;
@@ -103,53 +124,48 @@ export default class {
           dataId = latestRow.dataId;
         }
 
-        if (storedObsCheckPassed) {
-          resolve({
-            storedObservations: storedObservations,
-            dataId: dataId,
-          });
-        }
+        resolve({
+          checksPassed: storedObsCheckPassed,
+          storedObservations: storedObservations,
+          dataId: dataId,
+        });
       }).catch((error) => reject(error));
     });
   }
 
   loadObservations(sensor, data, name) {
     return new Promise((resolve, reject) => {
-      if (sensor.hasOwnProperty('log')) {
-        resolve(sensor);
-      } else {
-        this.service.postSensors(sensor.sensorId, {
-          properties: data,
-        })
-        .then((body) => {
-          if (body.statusCode !== 200) {
-            reject(body);
-          } else {
-            const sensorID = body.result.dataId;
+      this.service.postSensors(sensor.id, {
+        properties: data,
+      })
+      .then((body) => {
+        if (body.statusCode !== 200) {
+          reject(body);
+        } else {
+          const sensorId = body.result.dataId;
 
-            if (sensor.dataId
-              && Number.isInteger(parseInt(sensor.dataId, 10))
-            ) {
-              this.service.deleteObservations(sensor.sensorId, sensor.dataId)
-              .then(() => {
-                resolve({
-                  success: sensorID + ': Data for ' + name + ' updated',
-                });
-              })
-              .catch((error) => {
-                resolve({
-                  log: sensorID + ': Failed to remove previous observations',
-                });
-              });
-            } else {
+          if (sensor.dataId
+            && Number.isInteger(parseInt(sensor.dataId, 10))
+          ) {
+            this.service.deleteObservations(sensor.id, sensor.dataId)
+            .then(() => {
               resolve({
-                success: sensorID + ': Data for ' + name + ' stored',
+                success: sensorId + ': Data for ' + name + ' updated',
               });
-            }
+            })
+            .catch((error) => {
+              resolve({
+                log: sensorId + ': Failed to remove previous observations',
+              });
+            });
+          } else {
+            resolve({
+              success: sensorId + ': Data for ' + name + ' stored',
+            });
           }
-        })
-        .catch((error) => reject(error));
-      }
+        }
+      })
+      .catch((error) => reject(error));
     });
   }
 }

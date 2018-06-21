@@ -29,23 +29,19 @@ exports.handler = (event, context, callback) => {
                 etl.loadSensor(sensor)
                 .then((result) => {
                   if (result.hasOwnProperty('log')) {
+                    console.log(result.log);
                     resolve(result.log);
-                  } else {
+                  } else if (result.hasOwnProperty('success')) {
+                    console.log(result.success);
                     updateCount += 1;
                     resolve(result.success);
                   }
                 })
-                .catch((error) => {
-                  reject(error);
-                });
+                .catch((error) => reject(error));
               })
-              .catch((error) => {
-                reject(error);
-              });
+              .catch((error) => reject(error));
             })
-            .catch((error) => {
-              reject(error);
-            });
+            .catch((error) => reject(error));
           })
         );
       }
@@ -58,15 +54,9 @@ exports.handler = (event, context, callback) => {
         };
         callback(null, result);
       })
-      .catch((error) => {
-        callback(error);
-      });
+      .catch((error) => callback(error));
     })
-    .catch((error) => {
-      callback(error);
-    });
+    .catch((error) => callback(error));
   })
-  .catch((error) => {
-    callback(error);
-  });
+  .catch((error) => callback(error));
 };

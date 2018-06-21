@@ -47,38 +47,41 @@ export class EtlData {
     });
   }
 
-  checkStoredObservations(sensorId, uid) {
+  checkStoredObservations(id, uid) {
     return new Promise((resolve, reject) => {
-      this.sensors.getStoredObservations('usgs', sensorId)
+      this.sensors.getStoredObservations('usgs', id)
       .then(({
+        checksPassed,
         storedObservations,
         dataId,
       }) => {
         let lastUpdated;
         let hasStoredObs = false;
 
-        // process.env passes true / false values as strings
-        if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'true'
-        && storedObservations.upstream.length
-        && storedObservations.upstream[
-          storedObservations.upstream.length - 1
-        ].hasOwnProperty('dateTime')) {
-          lastUpdated = storedObservations.upstream[
-            storedObservations.upstream.length - 1].dateTime;
-          hasStoredObs = true;
-        } else if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'false'
-          && storedObservations.length
-          && storedObservations[
-              storedObservations.length - 1
-            ].hasOwnProperty('dateTime')
-        ) {
-          lastUpdated = storedObservations[
-            storedObservations.length - 1].dateTime;
-          hasStoredObs = true;
+        if (checksPassed) {
+          // process.env passes true / false values as strings
+          if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'true'
+          && storedObservations.upstream.length
+          && storedObservations.upstream[
+            storedObservations.upstream.length - 1
+          ].hasOwnProperty('dateTime')) {
+            lastUpdated = storedObservations.upstream[
+              storedObservations.upstream.length - 1].dateTime;
+            hasStoredObs = true;
+          } else if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'false'
+            && storedObservations.length
+            && storedObservations[
+                storedObservations.length - 1
+              ].hasOwnProperty('dateTime')
+          ) {
+            lastUpdated = storedObservations[
+              storedObservations.length - 1].dateTime;
+            hasStoredObs = true;
+          }
         }
 
         resolve({
-          sensorId: sensorId, // 'id' property in metadata, 'sensorId' in data
+          id: id, // 'id' property in metadata, 'sensorId' in data
           uid: uid, // 'uid' property in metadata
           dataId: dataId ? dataId : null,
           lastUpdated: hasStoredObs ? lastUpdated : null,
@@ -94,7 +97,7 @@ export class EtlData {
     + '&sites=' + sensor.uid
     + '&period=' + self.config.RECORDS_PERIOD;
     const logMessage = {
-      log: sensor.sensorId
+      log: sensor.id
       + ': Sensor is inactive or has no new observations in past '
       + self.config.RECORDS_INTERVAL.slice(2, -1) + ' minute(s).',
     };
@@ -167,7 +170,7 @@ export class EtlData {
               }
             }
             resolve({
-              sensorId: sensor.sensorId,
+              id: sensor.id,
               dataId: sensor.dataId,
               data: transformedData,
               lastUpdated: sensor.lastUpdated,
@@ -182,7 +185,7 @@ export class EtlData {
               });
             }
             resolve({
-              sensorId: sensor.sensorId,
+              id: sensor.id,
               dataId: sensor.dataId,
               data: transformedData,
               lastUpdated: sensor.lastUpdated,
@@ -190,7 +193,7 @@ export class EtlData {
           }
         } else {
           resolve({
-            log: sensor.sensorId + ': No valid data available',
+            log: sensor.id + ': No valid data available',
           });
         }
       }
@@ -199,7 +202,7 @@ export class EtlData {
 
   compareSensorObservations(sensor) {
     const logMessage = {
-      log: sensor.sensorId
+      log: sensor.id
       + ': Sensor has no new observations',
     };
 
@@ -239,11 +242,15 @@ export class EtlData {
   // TODO: move to index.js
   loadObservations(sensor) {
     return new Promise((resolve, reject) => {
-      this.sensors.loadObservations(sensor, {
-        observations: sensor.data,
-      }, 'sensor')
-      .then((msg) => resolve(msg))
-      .catch((error) => reject(error));
+      if (sensor.hasOwnProperty('log')) {
+        resolve(sensor);
+      } else {
+        this.sensors.loadObservations(sensor, {
+          observations: sensor.data,
+        }, 'sensor')
+        .then((msg) => resolve(msg))
+        .catch((error) => reject(error));
+      }
     });
   }
 }
