@@ -205,7 +205,7 @@ export default {
         basin: 'C14',
         class: 'C',
         site: 'S37A',
-        stationId: 'S37A-C-Q',
+        stationId: 'S37A-S-Q',
         units: 'ft3/s',
       },
       location: {

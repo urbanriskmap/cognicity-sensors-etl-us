@@ -205,7 +205,7 @@ functions:
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT30M
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
-    timeout: 60
+    timeout: 120
     events:
       - schedule:
         rate: ${self:custom.sfwmdTimeseriesSchedule}
@@ -222,7 +222,7 @@ functions:
       RECORDS_PERIOD: P7D
       RECORDS_INTERVAL: PT6H
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
-    timeout: 60
+    timeout: 120
     events:
       - schedule:
         rate: ${self:custom.sfwmdAggregateSchedule}
