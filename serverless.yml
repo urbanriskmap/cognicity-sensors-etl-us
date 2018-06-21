@@ -213,7 +213,7 @@ functions:
 
   # SFWMD calulated daily mean data
   etlWmdAggregateData:
-    handler: bin/functions/etl-data/sfwmd/agggregate.handler
+    handler: bin/functions/etl-data/sfwmd/aggregate.handler
     package:
       include:
         - bin/functions/etl-data/sfwmd/aggregate/**

@@ -78,9 +78,9 @@ export class EtlData {
         json: true,
       }, (error, response, body) => {
         if (error) {
-          reject(error);
+          resolve({log: error});
         } else if (body.timeSeriesResponse.status.statusCode !== 0) {
-          reject(body);
+          resolve({log: body});
         } else {
           if (body.timeSeriesResponse.timeSeries.length) {
             resolve({

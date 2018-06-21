@@ -72,7 +72,7 @@ export class EtlSensors {
         json: true,
       }, (error, response, body) => {
         if (error) {
-          reject(error);
+          resolve({log: error});
         } else {
           if (body.value.timeSeries.length) {
             resolve({
