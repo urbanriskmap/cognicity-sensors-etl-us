@@ -142,7 +142,8 @@ export default class {
         if (body.statusCode !== 200) {
           reject(body);
         } else {
-          const sensorId = body.result.dataId;
+          const sensorId = body.result.sensorId;
+          const dataId = body.result.dataId;
 
           if (sensor.dataId
             && Number.isInteger(parseInt(sensor.dataId, 10))
@@ -150,7 +151,8 @@ export default class {
             this.service.deleteObservations(sensor.id, sensor.dataId)
             .then(() => {
               resolve({
-                success: sensorId + ': Data for ' + name + ' updated',
+                success: sensorId + ': Data for ' + name + ' updated '
+                + '(dataId: ' + dataId + ')',
               });
             })
             .catch((error) => {
@@ -160,7 +162,8 @@ export default class {
             });
           } else {
             resolve({
-              success: sensorId + ': Data for ' + name + ' stored',
+              success: sensorId + ': Data for ' + name + ' stored '
+              + '(dataId: ' + dataId + ')',
             });
           }
         }
