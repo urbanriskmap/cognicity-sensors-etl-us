@@ -60,17 +60,17 @@ export default () => {
       .withArgs(5, {properties: {observations: {}}})
       .resolves({
         statusCode: 200,
-        result: {dataId: 5},
+        result: {sensorId: 5, dataId: 500},
       })
       .withArgs(7, {properties: {observations: {}}})
       .resolves({
         statusCode: 200,
-        result: {dataId: 7},
+        result: {sensorId: 7, dataId: 700},
       })
       .withArgs(9, {properties: {observations: {}}})
       .resolves({
         statusCode: 200,
-        result: {dataId: 9},
+        result: {sensorId: 9, dataId: 900},
       })
       .withArgs(11, {properties: {observations: {}}})
       .resolves({
@@ -380,7 +380,7 @@ export default () => {
       .then((result) => {
         test
         .value(result.success)
-        .is('5: Data for sensor stored');
+        .is('5: Data for sensor stored (dataId: 500)');
       })
       .catch((error) => {
         test.fail(error.message);
@@ -399,7 +399,7 @@ export default () => {
       .then((result) => {
         test
         .value(result.success)
-        .is('7: Data for sensor updated');
+        .is('7: Data for sensor updated (dataId: 700)');
       })
       .catch((error) => {
         test.fail(error.message);
