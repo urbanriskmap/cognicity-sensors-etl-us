@@ -50,7 +50,7 @@ export default () => {
           timeSeries: [],
         },
       })
-      .withArgs({
+      .withArgs({ // use this to test graceful failure
         url: mockUsgsQuery('errorId'),
         json: true,
       })
@@ -132,8 +132,11 @@ export default () => {
             id: 9,
             lastUpdated: null,
           })
-          .then((result) => reject(result))
-          .catch((error) => resolve(error));
+          .then((result) => {
+            console.log(result);
+            resolve(result);
+          })
+          .catch((error) => reject(error));
         }),
         new Promise((resolve, reject) => {
           etl.loadObservations({
@@ -151,7 +154,7 @@ export default () => {
         test.value(result).is({
           '0': {message: 'filterSensors'},
           '1': {message: 'checkStoredObservations'},
-          '2': {message: 'extractSensorObservations'},
+          '2': {log: {message: 'extractSensorObservations'}},
           '3': {message: 'loadObservations'},
         });
       })

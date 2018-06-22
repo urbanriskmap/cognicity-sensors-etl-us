@@ -50,7 +50,7 @@ export default () => {
           timeSeries: [],
         },
       })
-      .withArgs({
+      .withArgs({ // use this to test graceful failure
         url: mockUsgsQuery('errorCode'),
         json: true,
       })
@@ -298,10 +298,14 @@ export default () => {
           .then((result) => reject(result))
           .catch((error) => resolve(error));
         }),
+        // extract from external server to fail gracefully
         new Promise((resolve, reject) => {
-          etl.extractUsgsSensors(['foo'])
-          .then((result) => reject(result))
-          .catch((error) => resolve(error));
+          etl.extractUsgsSensors()
+          .then((result) => {
+            console.log(result);
+            resolve(result);
+          })
+          .catch((error) => reject(error));
         }),
         new Promise((resolve, reject) => {
           etl.loadSensor({properties: 3})
@@ -315,7 +319,7 @@ export default () => {
       .then((result) => {
         test.value(result).is({
           '0': {message: 'getExistingSensors'},
-          '1': {message: 'extractUsgsSensors'},
+          '1': {log: {message: 'extractUsgsSensors'}},
           '2': {message: 'loadSensor'},
         });
 
