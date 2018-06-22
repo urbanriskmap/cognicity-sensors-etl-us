@@ -21,7 +21,7 @@ exports.callEtlMethods = (etl) => {
         for (let station of filteredStationList) {
           processEtl.push(
             new Promise((resolve, reject) => {
-              etl.checkStoredObservations(station.sensorId, station.uid)
+              etl.checkStoredObservations(station.id, station.uid)
               .then((station) => {
                 etl.extractStationObservations(station)
                 .then((data) => {

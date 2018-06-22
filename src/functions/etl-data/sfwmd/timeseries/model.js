@@ -27,7 +27,7 @@ export class EtlData {
 
   checkStoredObservations(id, uid) {
     return new Promise((resolve, reject) => {
-      this.stations.getStoredObservations('sfwmd', id, 'timeseries')
+      this.stations.getStoredObservations('sfwmd', id, this.config.DATA_TYPE)
       .then(({
         checksPassed,
         storedObservations,
@@ -172,7 +172,7 @@ export class EtlData {
         resolve(station);
       } else {
         this.stations.loadObservations(station, {
-          type: 'timeseries',
+          type: this.config.DATA_TYPE,
           observations: station.data,
         }, 'station')
         .then((msg) => resolve(msg))

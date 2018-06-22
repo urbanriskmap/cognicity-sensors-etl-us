@@ -9,7 +9,6 @@ export class EtlData {
     this.stations = new Stations(this.config, new Service(this.config));
   }
 
-  // TODO: move to index.js
   filterStations() {
     const conditions = [
       {
@@ -27,7 +26,7 @@ export class EtlData {
 
   checkStoredObservations(id, uid) {
     return new Promise((resolve, reject) => {
-      this.stations.getStoredObservations('sfwmd', id, 'aggregate')
+      this.stations.getStoredObservations('sfwmd', id, this.config.DATA_TYPE)
       .then(({
         checksPassed,
         storedObservations,
@@ -155,14 +154,13 @@ export class EtlData {
     });
   }
 
-  // TODO: move to index.js
   loadObservations(station) {
     return new Promise((resolve, reject) => {
       if (station.hasOwnProperty('log')) {
         resolve(station);
       } else {
         this.stations.loadObservations(station, {
-          type: 'mean',
+          type: this.config.DATA_TYPE,
           observations: station.data,
         }, 'station')
         .then((msg) => resolve(msg))
