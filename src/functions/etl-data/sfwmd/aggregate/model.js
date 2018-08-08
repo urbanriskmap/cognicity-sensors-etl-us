@@ -79,7 +79,7 @@ export class EtlData {
         if (error) {
           resolve({log: error});
         } else {
-          if (body.list && body.list.length) {
+          if (body && body.list && body.list.length) {
             resolve({
               storedProperties: station,
               sfwmdData: body.list,
