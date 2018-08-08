@@ -9,6 +9,7 @@ export default {
         site: 'S39',
         stationId: 'S39-H',
         units: 'ft NGVD29',
+        controlElevation: 11,
       },
       location: {
         lat: 26.35621417,
@@ -23,6 +24,7 @@ export default {
         site: 'S39',
         stationId: 'S39-T',
         units: 'ft NGVD29',
+        controlElevation: 9,
       },
       location: {
         lat: 26.35556722,
@@ -51,6 +53,7 @@ export default {
         site: 'G56',
         stationId: 'G56-H',
         units: 'ft NGVD29',
+        controlElevation: 4,
       },
       location: {
         lat: 26.32785528,
@@ -95,6 +98,7 @@ export default {
         site: 'S38',
         stationId: 'S38-H',
         units: 'ft NGVD29',
+        controlElevation: 9.8,
       },
       location: {
         lat: 26.22949556,
@@ -109,6 +113,7 @@ export default {
         site: 'S38',
         stationId: 'S38-T',
         units: 'ft NGVD29',
+        controlElevation: [7, 7.65],
       },
       location: {
         lat: 26.22949500,
@@ -137,6 +142,7 @@ export default {
         site: 'G57',
         stationId: 'G57-H',
         units: 'ft NGVD29',
+        controlElevation: 4.5,
       },
       location: {
         lat: 26.23085056,
@@ -179,6 +185,7 @@ export default {
         site: 'S37A',
         stationId: 'S37A-H',
         units: 'ft NGVD29',
+        controlElevation: 3,
       },
       location: {
         lat: 26.20620806,
@@ -307,6 +314,7 @@ export default {
         site: 'S36',
         stationId: 'S36-H',
         units: 'ft NGVD29',
+        controlElevation: 5.6,
       },
       location: {
         lat: 26.17316694,
@@ -351,6 +359,7 @@ export default {
         site: 'S33',
         stationId: 'S33-H',
         units: 'ft NGVD29',
+        controlElevation: 5.9,
       },
       location: {
         lat: 26.13578611,
@@ -437,6 +446,7 @@ export default {
         site: 'S124',
         stationId: 'S124-H',
         units: 'ft NGVD29',
+        controlElevation: 7.02,
       },
       location: {
         lat: 26.12948750,
@@ -451,6 +461,7 @@ export default {
         site: 'S124',
         stationId: 'S124-T',
         units: 'ft NGVD29',
+        controlElevation: 6.57,
       },
       location: {
         lat: 26.12920222,
@@ -479,6 +490,7 @@ export default {
         site: 'G54',
         stationId: 'G54-H',
         units: 'ft NGVD29',
+        controlElevation: 3.5,
       },
       location: {
         lat: 26.09497167,
@@ -523,6 +535,7 @@ export default {
         site: 'S9',
         stationId: 'S9-H',
         units: 'ft NGVD29',
+        controlElevation: 14.4,
       },
       location: {
         lat: 26.06163722,
@@ -537,6 +550,7 @@ export default {
         site: 'S9',
         stationId: 'S9-T',
         units: 'ft NGVD29',
+        controlElevation: 4,
       },
       location: {
         lat: 26.06159861,
@@ -607,6 +621,7 @@ export default {
         site: 'S13AW',
         stationId: 'S13AW-H',
         units: 'ft NGVD29',
+        controlElevation: 2.5,
       },
       location: {
         lat: 26.06461417,
@@ -621,6 +636,7 @@ export default {
         site: 'S13AW',
         stationId: 'S13AW-T',
         units: 'ft NGVD29',
+        controlElevation: 2,
       },
       location: {
         lat: 26.06462917,
@@ -649,6 +665,7 @@ export default {
         site: 'S13',
         stationId: 'S13-H',
         units: 'ft NGVD29',
+        controlElevation: 2.5,
       },
       location: {
         lat: 26.06625667,
@@ -707,6 +724,7 @@ export default {
         site: 'S30',
         stationId: 'S30-H',
         units: 'ft NGVD29',
+        controlElevation: 6,
       },
       location: {
         lat: 25.95680139,
@@ -721,6 +739,7 @@ export default {
         site: 'S30',
         stationId: 'S30-T',
         units: 'ft NGVD29',
+        controlElevation: 4,
       },
       location: {
         lat: 25.95679583,
@@ -749,6 +768,7 @@ export default {
         site: 'S29',
         stationId: 'S29-H',
         units: 'ft NGVD29',
+        controlElevation: 3,
       },
       location: {
         lat: 25.92920917,
