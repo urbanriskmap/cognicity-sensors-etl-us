@@ -210,7 +210,7 @@ functions:
     events:
       - schedule:
         rate: ${self:custom.sfwmdTimeseriesSchedule}
-        enabled: false
+        enabled: true
 
   # SFWMD calulated daily mean data
   etlWmdAggregateData:
@@ -228,4 +228,4 @@ functions:
     events:
       - schedule:
         rate: ${self:custom.sfwmdAggregateSchedule}
-        enabled: false
+        enabled: true
