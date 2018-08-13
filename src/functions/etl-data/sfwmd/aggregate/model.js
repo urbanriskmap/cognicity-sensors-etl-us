@@ -1,8 +1,8 @@
 import request from 'request';
 
-import HttpService from '../../../services/http.service';
-import DataService from '../../../services/data.service';
-import TimeService from '../../../services/time.service';
+import HttpService from '../../../../services/http.service';
+import DataService from '../../../../services/data.service';
+import TimeService from '../../../../services/time.service';
 
 export class EtlData {
   constructor(config) {

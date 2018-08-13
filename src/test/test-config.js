@@ -10,7 +10,7 @@ export default {
   RECORDS_INTERVAL: 'PT15M',
 
   SENSOR_AGENCY: 'someAgency',
-  SENSOR_UID_PROPERTY: 'uid',
+  SENSOR_UID_PROPERTY: 'uniqueIdKey',
   DATA_TYPE: 'data_type',
 
   DEBUG_HTTP_REQUESTS: false,

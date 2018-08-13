@@ -13,11 +13,13 @@ export default () => {
       service = new Service(testConfig);
 
       sinon.stub(request, 'get')
-        .yields(null, null, testData.getSensors())
-      .withArgs({
-        url: 'someEndpoint/sensorId',
-        json: true,
-      })
+        .onFirstCall()
+        .yields(null, null, testData.getSensorsWithAgency())
+        .onSecondCall()
+        .yields(null, null, testData.getSensorsWithId())
+        .onThirdCall()
+        .yields(null, null, testData.getSensorsWithType())
+        .onCall(3) // nth call, n = 0 : firstCall
         .yields({message: 'Get sensors error'}, null, null);
 
       sinon.stub(request, 'post')
@@ -57,7 +59,7 @@ export default () => {
       request.delete.restore();
     });
 
-    it('Gets sensors', (done) => {
+    it('Gets all sensors', (done) => {
       test.promise
       .given(service.getSensors('usgs'))
       .then((body) => {
@@ -73,10 +75,45 @@ export default () => {
       .done();
     });
 
+    it('Gets all sensor data rows for specified id', (done) => {
+      test.promise
+      .given(service.getSensors('sfwmd', 42))
+      .then((body) => {
+        request.get.called.should.be.equal(true);
+        test
+          .value(body.result[1].properties.type)
+          .is('aggregate');
+      })
+      .catch((error) => {
+        test.fail(error.message);
+      })
+      .finally(done)
+      .done();
+    });
+
+    it('Gets sensor data for specified id and data type', (done) => {
+      test.promise
+      .given(service.getSensors('sfwmd', 52, 'timeseries'))
+      .then((body) => {
+        request.get.called.should.be.equal(true);
+        test
+          .value(body.result[0].properties.observations[0].value)
+          .is(5);
+      })
+      .catch((error) => {
+        test.fail(error.message);
+      })
+      .finally(done)
+      .done();
+    });
+
     it('Catches get sensors error', (done) => {
       test.promise
-      .given(service.getSensors('sensorId'))
-      .then()
+      .given(service.getSensors('sfwmd'))
+      .then((result) => {
+        test.fail('Promise was unexpectedly fulfilled. Result: '
+        + result);
+      })
       .catch((error) => {
         test.value(error.message).is('Get sensors error');
       })
@@ -103,7 +140,10 @@ export default () => {
     it('Catches post sensors error', (done) => {
       test.promise
       .given(service.postSensors('sensorId', {}))
-      .then()
+      .then((result) => {
+        test.fail('Promise was unexpectedly fulfilled. Result: '
+        + result);
+      })
       .catch((error) => {
         test.value(error.message).is('Post sensors error');
       })
@@ -128,7 +168,10 @@ export default () => {
     it('Catches delete data error', (done) => {
       test.promise
       .given(service.deleteObservations(3, 4))
-      .then()
+      .then((result) => {
+        test.fail('Promise was unexpectedly fulfilled. Result: '
+        + result);
+      })
       .catch((error) => {
         test.value(error.message).is('Delete error');
       })

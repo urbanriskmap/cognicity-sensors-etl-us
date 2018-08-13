@@ -26,9 +26,9 @@ export default class {
                 comparisonSet.push(this.config[value.value]);
                 break;
 
-              case 'value':
-                comparisonSet.push(value.value);
-                break;
+              // case 'value':
+              //   comparisonSet.push(value.value);
+              //   break;
 
               default:
                 return false;

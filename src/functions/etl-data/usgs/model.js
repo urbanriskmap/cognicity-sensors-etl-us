@@ -34,7 +34,7 @@ export class EtlData {
             type: 'configVariable',
             value: 'SENSOR_CODE',
           },
-          // other types:
+          // Other type of comparisons
           // {
           //   type: 'value',
           //   value: 'usgs',

@@ -7,7 +7,7 @@ export default {
             properties: {
               id: 5,
               properties: {
-                uid: 'uniqueId',
+                uniqueIdKey: 'uniqueId',
                 class: 'sensorCode',
                 agency: 'someAgency',
               },
@@ -16,7 +16,7 @@ export default {
           {
             properties: {
               id: 6,
-              otherProperty: 'foo',
+              noProperties: 'foo',
             },
           },
           {
@@ -32,8 +32,8 @@ export default {
             properties: {
               id: 8,
               properties: {
-                uid: 'foo',
-                class: 'foo',
+                uniqueIdKey: 'foo',
+                class: 'otherClass',
                 agency: 'someAgency',
               },
             },
