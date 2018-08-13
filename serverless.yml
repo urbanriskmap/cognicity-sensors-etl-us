@@ -176,8 +176,10 @@ functions:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
-      SENSOR_CODE: '00045'
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
+      SENSOR_CODE: '00045'
+      SENSOR_AGENCY: usgs
+      SENSOR_UID_PROPERTY: uid
       HAS_UPSTREAM_DOWNSTREAM: 'false'
     timeout: 24
     events:
@@ -206,6 +208,8 @@ functions:
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT30M
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
+      SENSOR_AGENCY: sfwmd
+      SENSOR_UID_PROPERTY: stationId
       DATA_TYPE: timeseries
     timeout: 120
     events:
@@ -224,6 +228,8 @@ functions:
       RECORDS_PERIOD: P7D
       RECORDS_INTERVAL: PT6H
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
+      SENSOR_AGENCY: sfwmd
+      SENSOR_UID_PROPERTY: stationId
       DATA_TYPE: aggregate
     timeout: 120
     events:
@@ -241,3 +247,43 @@ functions:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
     timeout: 24
+
+  # NOAA water_level records
+  etlNoaaWaterLevelRecordsData:
+    handler: bin/functions/etl-data/noaa.handler
+    package:
+      include:
+        - bin/functions/etl-data/noaa/**
+    environment:
+      API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      RECORDS_PERIOD: P1D
+      RECORDS_INTERVAL: PT6H
+      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
+      SENSOR_AGENCY: noaa
+      SENSOR_UID_PROPERTY: station
+      DATA_TYPE: water_level
+    timeout: 120
+    events:
+      - schedule:
+        rate: ${self:custom.noaaWaterLevelSchedule}
+        enabled: true
+
+  # NOAA water_level predictions
+  etlNoaaWaterLevelPredictionsData:
+    handler: bin/functions/etl-data/noaa.handler
+    package:
+      include:
+        - bin/functions/etl-data/noaa/**
+    environment:
+      API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      RECORDS_PERIOD: P1D
+      RECORDS_INTERVAL: PT6H
+      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
+      SENSOR_AGENCY: noaa
+      SENSOR_UID_PROPERTY: station
+      DATA_TYPE: predictions
+    timeout: 120
+    events:
+      - schedule:
+        rate: ${self:custom.noaaWaterLevelSchedule}
+        enabled: true
