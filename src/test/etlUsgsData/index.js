@@ -2,7 +2,7 @@ import * as test from 'unit.js';
 import sinon from 'sinon';
 import request from 'request';
 
-import {Service} from '../../services';
+import Service from '../../services/http.service';
 import {EtlData} from '../../functions/etl-data/usgs/model';
 import testData from './test-data';
 import testConfig from '../test-config';
@@ -17,16 +17,16 @@ export default () => {
       etl = new EtlData(testConfig);
 
       sinon.stub(Service.prototype, 'getSensors')
-      .withArgs('usgs')
+      .withArgs('someAgency')
         .onFirstCall()
           .resolves(testData.getSensorsNoArgs())
         .onSecondCall()
           .rejects({message: 'filterSensors'})
-      .withArgs('usgs', 5)
+      .withArgs('someAgency', 5)
         .resolves(testData.getDataWithObs())
-      .withArgs('usgs', 3)
+      .withArgs('someAgency', 3)
         .resolves(testData.getDataNoObs())
-      .withArgs('usgs', 404)
+      .withArgs('someAgency', 404)
         .rejects({message: 'checkStoredObservations'});
 
       let mockUsgsQuery = (uid) => {
@@ -133,7 +133,6 @@ export default () => {
             lastUpdated: null,
           })
           .then((result) => {
-            console.log(result);
             resolve(result);
           })
           .catch((error) => reject(error));

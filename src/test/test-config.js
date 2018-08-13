@@ -9,6 +9,10 @@ export default {
   RECORDS_PERIOD: 'P1D',
   RECORDS_INTERVAL: 'PT15M',
 
+  SENSOR_AGENCY: 'someAgency',
+  SENSOR_UID_PROPERTY: 'uid',
+  DATA_TYPE: 'data_type',
+
   DEBUG_HTTP_REQUESTS: false,
 
   SERVER_ENDPOINT: 'someEndpoint/',

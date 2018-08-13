@@ -1,36 +1,7 @@
 export default class {
   constructor(config, service) {
     this.config = config;
-    this.service = service;
-  }
-
-  getWmdQueryTimeFormat() {
-    const formatDateString = (date) => {
-      return date.getFullYear()
-      + '-' + // getMonth returns integer between 0 & 11, required 01 & 12
-      (date.getMonth() < 9 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1)
-      + '-' + // getDate returns integer between 1 & 31, required 01 & 31
-      (date.getDate() < 10 ? '0' + date.getDate() : date.getDate())
-      + // getHours returns integer between 0 & 23, required 00 & 23
-      (date.getHours() < 10 ? '0' + date.getHours() : date.getHours())
-      + ':00:00:000';
-    };
-
-    const periodMilliseconds = parseInt(
-      this.config.RECORDS_PERIOD.slice(1, -1),
-      10
-    ) * 24 * 60 * 60 * 1000;
-
-    const now = new Date();
-    const start = new Date(Date.parse(now) - periodMilliseconds);
-
-    const begin = formatDateString(start);
-    const end = formatDateString(now);
-
-    return {
-      begin: begin,
-      end: end,
-    };
+    this.httpService = service;
   }
 
   check(properties, conditions) {
@@ -81,11 +52,13 @@ export default class {
     return true;
   }
 
-  filter(conditions, agency, uid) {
+  filter(conditions) {
     let filteredList = [];
+    const agency = this.config.SENSOR_AGENCY;
+    const uid = this.config.SENSOR_UID_PROPERTY;
 
     return new Promise((resolve, reject) => {
-      this.service.getSensors(agency)
+      this.httpService.getSensors(agency)
       .then((body) => {
         const features = body.result.features;
 
@@ -108,9 +81,13 @@ export default class {
     });
   }
 
-  getStoredObservations(agency, id, type) {
+  getStoredObservations(id) {
     return new Promise((resolve, reject) => {
-      this.service.getSensors(agency, id, type)
+      this.httpService.getSensors(
+        this.config.SENSOR_AGENCY,
+        id,
+        this.config.DATA_TYPE
+      )
       .then((body) => {
         let storedObservations;
         let storedObsCheckPassed = false;
@@ -143,7 +120,7 @@ export default class {
 
   loadObservations(sensor, data, name) {
     return new Promise((resolve, reject) => {
-      this.service.postSensors(sensor.id, {
+      this.httpService.postSensors(sensor.id, {
         properties: data,
       })
       .then((body) => {
@@ -156,7 +133,7 @@ export default class {
           if (sensor.dataId
             && Number.isInteger(parseInt(sensor.dataId, 10))
           ) {
-            this.service.deleteObservations(sensor.id, sensor.dataId)
+            this.httpService.deleteObservations(sensor.id, sensor.dataId)
             .then(() => {
               resolve({
                 success: sensorId + ': Data for ' + name + ' updated '

@@ -1,5 +1,6 @@
-import {Service} from '../../../services';
 import request from 'request';
+
+import HttpService from '../../../services/http.service';
 
 export class EtlSensors {
   constructor(config) {
@@ -15,7 +16,7 @@ export class EtlSensors {
    */
   getExistingSensors() {
     const self = this;
-    const service = new Service(self.config);
+    const service = new HttpService(self.config);
 
     return new Promise((resolve, reject) => {
       service.getSensors('usgs')
@@ -162,7 +163,7 @@ export class EtlSensors {
 
   loadSensor(metadata) {
     const self = this;
-    const service = new Service(self.config);
+    const service = new HttpService(self.config);
 
     return new Promise((resolve, reject) => {
       if (metadata.hasOwnProperty('log')) {

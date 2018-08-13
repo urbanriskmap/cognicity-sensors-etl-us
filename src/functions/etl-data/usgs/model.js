@@ -1,20 +1,23 @@
-import {Service} from '../../../services';
 import request from 'request';
-import Sensors from '../../../library/data';
+
+import HttpService from '../../../services/http.service';
+import DataService from '../../../services/data.service';
 
 export class EtlData {
   constructor(config) {
     this.config = config;
     request.debug = this.config.DEBUG_HTTP_REQUESTS;
-    this.sensors = new Sensors(this.config, new Service(this.config));
+
+    this.dataService = new DataService(
+      this.config, new HttpService(this.config)
+    );
   }
 
-  // TODO: move to index.js
   filterSensors() {
     const conditions = [
       {
         type: 'hasProperty',
-        values: ['uid'],
+        values: [this.config.SENSOR_UID_PROPERTY],
       },
       {
         type: 'hasProperty',
@@ -41,7 +44,7 @@ export class EtlData {
     ];
 
     return new Promise((resolve, reject) => {
-      this.sensors.filter(conditions, 'usgs', 'uid')
+      this.dataService.filter(conditions)
       .then((list) => resolve(list))
       .catch((error) => reject(error));
     });
@@ -49,7 +52,7 @@ export class EtlData {
 
   checkStoredObservations(id, uid) {
     return new Promise((resolve, reject) => {
-      this.sensors.getStoredObservations('usgs', id)
+      this.dataService.getStoredObservations(id)
       .then(({
         checksPassed,
         storedObservations,
@@ -96,6 +99,7 @@ export class EtlData {
     const usgsQuery = self.config.USGS_BASE_URL
     + '&sites=' + sensor.uid
     + '&period=' + self.config.RECORDS_PERIOD;
+
     const logMessage = {
       log: sensor.id
       + ': Sensor is inactive or has no new observations in past '
@@ -239,13 +243,12 @@ export class EtlData {
     });
   }
 
-  // TODO: move to index.js
   loadObservations(sensor) {
     return new Promise((resolve, reject) => {
       if (sensor.hasOwnProperty('log')) {
         resolve(sensor);
       } else {
-        this.sensors.loadObservations(sensor, {
+        this.dataService.loadObservations(sensor, {
           observations: sensor.data,
         }, 'sensor')
         .then((msg) => resolve(msg))

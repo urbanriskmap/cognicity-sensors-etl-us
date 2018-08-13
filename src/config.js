@@ -20,6 +20,10 @@ export default {
   SFWMD_TIMESERIES_ENDPOINT: 'http://api.sfwmd.gov/v1/data/timeseries?format=json',
   SFWMD_AGGREGATE_ENDPOINT: 'http://api.sfwmd.gov/v1/data/aggregate?format=json&timespanUnit=DAY&calculation=MEAN',
 
+  NOAA_ENDPOINT: 'https://tidesandcurrents.noaa.gov/api/datagetter?format=json&units=english',
+
+  SENSOR_AGENCY: process.env.SENSOR_AGENCY,
+  SENSOR_UID_PROPERTY: process.env.SENSOR_UID_PROPERTY,
   DATA_TYPE: process.env.DATA_TYPE,
 
   DEBUG_HTTP_REQUESTS: false,

@@ -1,7 +1,8 @@
 import * as test from 'unit.js';
 import sinon from 'sinon';
 import request from 'request';
-import {Service} from '../../services';
+
+import Service from '../../services/http.service';
 import {EtlSensors} from '../../functions/etl-sensors/usgs/model';
 import testData from './test-data';
 import testConfig from '../test-config';
@@ -302,7 +303,6 @@ export default () => {
         new Promise((resolve, reject) => {
           etl.extractUsgsSensors()
           .then((result) => {
-            console.log(result);
             resolve(result);
           })
           .catch((error) => reject(error));

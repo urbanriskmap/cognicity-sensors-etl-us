@@ -1,6 +1,7 @@
 import * as test from 'unit.js';
 import sinon from 'sinon';
-import {Service} from '../../services';
+
+import Service from '../../services/http.service';
 import {UploadStations} from '../../functions/etl-sensors/sfwmd/model';
 import testData from './test-data';
 import testConfig from '../test-config';

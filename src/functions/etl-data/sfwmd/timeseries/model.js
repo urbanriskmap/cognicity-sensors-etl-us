@@ -1,25 +1,30 @@
-import {Service} from '../../../../services';
 import request from 'request';
-import Stations from '../../../../library/data';
+
+import HttpService from '../../../services/http.service';
+import DataService from '../../../services/data.service';
+import TimeService from '../../../services/time.service';
 
 export class EtlData {
   constructor(config) {
     this.config = config;
     request.debug = this.config.DEBUG_HTTP_REQUESTS;
-    this.stations = new Stations(this.config, new Service(this.config));
+
+    this.dataService = new DataService(
+      this.config, new HttpService(this.config)
+    );
+    this.timeService = new TimeService(this.config);
   }
 
-  // TODO: move to index.js
   filterStations() {
     const conditions = [
       {
         type: 'hasProperty',
-        values: ['stationId'],
+        values: [this.config.SENSOR_UID_PROPERTY],
       },
     ];
 
     return new Promise((resolve, reject) => {
-      this.stations.filter(conditions, 'sfwmd', 'stationId')
+      this.dataService.filter(conditions)
       .then((list) => resolve(list))
       .catch((error) => reject(error));
     });
@@ -27,7 +32,7 @@ export class EtlData {
 
   checkStoredObservations(id, uid) {
     return new Promise((resolve, reject) => {
-      this.stations.getStoredObservations('sfwmd', id, this.config.DATA_TYPE)
+      this.dataService.getStoredObservations(id)
       .then(({
         checksPassed,
         storedObservations,
@@ -60,7 +65,7 @@ export class EtlData {
   }
 
   extractStationObservations(station) {
-    const period = this.stations.getWmdQueryTimeFormat();
+    const period = this.timeService.getWmdQueryTimeFormat();
     const sfwmdQuery = this.config.SFWMD_TIMESERIES_ENDPOINT
     + '&beginDateTime=' + period.begin
     + '&endDateTime=' + period.end
@@ -165,13 +170,12 @@ export class EtlData {
     });
   }
 
-  // TODO: move to index.js
   loadObservations(station) {
     return new Promise((resolve, reject) => {
       if (station.hasOwnProperty('log')) {
         resolve(station);
       } else {
-        this.stations.loadObservations(station, {
+        this.dataService.loadObservations(station, {
           type: this.config.DATA_TYPE,
           observations: station.data,
         }, 'station')

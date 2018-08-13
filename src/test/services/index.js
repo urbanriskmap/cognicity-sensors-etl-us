@@ -1,8 +1,9 @@
 import * as test from 'unit.js';
-import sinon from 'sinon';
-import {Service} from '../../services';
-import testData from './test-data';
 import request from 'request';
+import sinon from 'sinon';
+
+import Service from '../../services/http.service';
+import testData from './test-data';
 import testConfig from '../test-config';
 
 export default () => {

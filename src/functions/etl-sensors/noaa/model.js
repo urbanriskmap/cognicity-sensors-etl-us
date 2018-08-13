@@ -1,5 +1,6 @@
-import {Service} from '../../../services';
 import request from 'request';
+
+import HttpService from '../../../services';
 
 export class UploadStations {
   constructor(config) {
@@ -14,7 +15,7 @@ export class UploadStations {
    * @return {Promise} Array of uids (strings)
    */
   getExistingStations() {
-    const service = new Service(this.config);
+    const service = new HttpService(this.config);
 
     return new Promise((resolve, reject) => {
       service.getSensors('noaa')
@@ -73,7 +74,7 @@ export class UploadStations {
   }
 
   loadStation(metadata) {
-    const service = new Service(this.config);
+    const service = new HttpService(this.config);
 
     return new Promise((resolve, reject) => {
       if (metadata.hasOwnProperty('log')) {
