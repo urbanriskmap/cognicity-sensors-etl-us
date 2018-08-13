@@ -2,12 +2,12 @@ import * as test from 'unit.js';
 import sinon from 'sinon';
 
 import Service from '../../services/http.service';
-import {UploadStations} from '../../functions/etl-sensors/sfwmd/model';
+import {UploadStations} from '../../functions/etl-sensors/noaa/model';
 import testData from './test-data';
 import testConfig from '../test-config';
 
 export default () => {
-  describe('Upload SFWMD Stations', () => {
+  describe('Upload NOAA Stations', () => {
     let upload;
     before(() => {
       sinon.stub(UploadStations.prototype, 'constructor')
@@ -55,15 +55,14 @@ export default () => {
       UploadStations.prototype.constructor.restore();
     });
 
-    it('Returns filtered list of SFWMD stations', (done) => {
+    it('Returns filtered list of NOAA stations', (done) => {
       test.promise
       .given(upload.getExistingStations())
       .then((existingStationIds) => {
         Service.prototype.getSensors.called.should.be.equal(true);
         test.value(existingStationIds)
         .is({
-          '0': 'S9-H',
-          '1': 'S30-S-Q',
+          '0': 8722956,
         });
       })
       .catch((error) => {
@@ -92,12 +91,12 @@ export default () => {
       test.promise
       .given(upload.compareStations(
         testData.stationToCompare(),
-        ['S30-H', 'S30-T', 'S30-S-Q']
+        [8000000, 9000000]
       ))
       .then((station) => {
         test
-        .value(station.properties.stationId)
-        .is('S39-H');
+        .value(station.properties.station)
+        .is(8722956);
       })
       .catch((error) => {
         test.fail(error.message);
@@ -114,8 +113,8 @@ export default () => {
       ))
       .then((station) => {
         test
-        .value(station.properties.stationId)
-        .is('S39-H');
+        .value(station.properties.station)
+        .is(8722956);
       })
       .catch((error) => {
         test.fail(error.message);
@@ -128,11 +127,11 @@ export default () => {
       test.promise
       .given(upload.compareStations(
         testData.stationToCompare(),
-        ['S39-H', 'S39-T', 'S39-S-Q']
+        [8722956, 9000000]
       ))
       .then(({log}) => {
         test.value(log)
-        .is('S39-H: Station already exists');
+        .is('8722956: Station already exists');
       })
       .catch((error) => {
         test.fail(error.message);
@@ -158,10 +157,10 @@ export default () => {
 
     it('Skips upload if station exists', (done) => {
       test.promise
-      .given(upload.loadStation({log: 'S39-H: Station already exists'}))
+      .given(upload.loadStation({log: '8722956: Station already exists'}))
       .then((result) => {
         test.value(result.log)
-        .is('S39-H: Station already exists');
+        .is('8722956: Station already exists');
       })
       .catch((error) => {
         test.fail(error.message);

@@ -1,6 +1,6 @@
 import request from 'request';
 
-import HttpService from '../../../services';
+import HttpService from '../../../services/http.service';
 
 export class UploadStations {
   constructor(config) {
