@@ -6,6 +6,7 @@ custom:
   usgsDataSchedule: rate(15 minutes)
   sfwmdTimeseriesSchedule: rate(30 minutes)
   sfwmdAggregateSchedule: rate(6 hours)
+  noaaWaterLevelSchedule: rate(6 hours)
 
 provider:
   name: aws
@@ -229,3 +230,14 @@ functions:
       - schedule:
         rate: ${self:custom.sfwmdAggregateSchedule}
         enabled: true
+
+  # NOAA Upload Stations
+  noaaUploadStations:
+    handler: bin/functions/etl-sensors/noaa.handler
+    package:
+      include:
+        - bin/functions/etl-sensors/noaa/**
+    environment:
+      API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
+    timeout: 24
