@@ -53,13 +53,13 @@ exports.checks = (properties, conditions) => {
 
 /**
  * Utility function to compare sensor values
- * @function sensors
+ * @function filter
  * @param {string} baseUrl - CogniCity Sensors API base url
  * @param {{type: string, values: string[]}[]} conditions - Array of conditions
  * @param {string} [agency] - Optional 'agency' query param
- * @return {object[]} - List of stored sensors matching query
+ * @return {Promise<object[]>} - List of stored sensors matching query
  */
-exports.sensors = (baseUrl, conditions, agency) => {
+exports.filter = (baseUrl, conditions, agency) => {
   let filteredList = [];
 
   return new Promise((resolve, reject) => {

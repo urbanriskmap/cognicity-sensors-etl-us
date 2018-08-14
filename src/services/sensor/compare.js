@@ -5,10 +5,10 @@
  * @param {object} sensor - Sensor interface
  * @param {string} uniqueIdKey - Sensor unique id property
  * @param {string[]} existingSensorUids - list of sensor uid's
- * @return {Promise} Promise object
+ * @return {Promise<object>} Promise object
  */
 export default (sensor, uniqueIdKey, existingSensorUids) => {
-  return new Promise(function(resolve, reject) {
+  return new Promise((resolve, reject) => {
     if (sensor.hasOwnProperty('log')) {
       resolve(sensor);
     } else {
