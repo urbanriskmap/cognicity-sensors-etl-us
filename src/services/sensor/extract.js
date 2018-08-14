@@ -27,11 +27,13 @@ exports.checks = (body, conditions) => {
 };
 
 /**
- * Utility function to compare sensor values
- * @function extract
+ * This method extracts sensors by querying an agency's API
+ * @function extractSensors
  * @param {string} baseUrl - Agency API base url for sensors
  * @param {{object}[]} querySets - Query sets in the form of key/value pairs
  * @param {string[]} conditions - Array of conditions, see exports.checks
+ * @external {XMLHttpRequest}
+ * @abstract
  * @return {Promise<object>}
  */
 exports.extract = (baseUrl, querySets, conditions) => {

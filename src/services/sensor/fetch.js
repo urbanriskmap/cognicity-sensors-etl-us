@@ -52,14 +52,16 @@ exports.checks = (properties, conditions) => {
 };
 
 /**
- * Utility function to compare sensor values
- * @function filter
+ * This method fetches sensors stored in the CogniCity database
+ * @function fetchSensors
  * @param {string} baseUrl - CogniCity Sensors API base url
- * @param {{type: string, values: string[]}[]} conditions - Array of conditions
+ * @param {{type: {string}, values: {string}[]}[]} conditions
  * @param {string} [agency] - Optional 'agency' query param
+ * @external {XMLHttpRequest}
+ * @abstract
  * @return {Promise<object[]>} - List of stored sensors matching query
  */
-exports.filter = (baseUrl, conditions, agency) => {
+exports.fetch = (baseUrl, conditions, agency) => {
   let filteredList = [];
 
   return new Promise((resolve, reject) => {
