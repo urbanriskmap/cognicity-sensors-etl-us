@@ -30,9 +30,9 @@ export class EtlData {
     });
   }
 
-  checkStoredObservations(id, uid) {
+  checkStoredObservations(station) {
     return new Promise((resolve, reject) => {
-      this.dataService.getStoredObservations(id)
+      this.dataService.getStoredObservations(station.id)
       .then(({
         checksPassed,
         storedObservations,
@@ -53,12 +53,10 @@ export class EtlData {
           hasStoredObs = true;
         }
 
-        resolve({
-          id: id, // 'id' property in metadata, 'sensorId' in data
-          uid: uid, // 'station' property in metadata
-          dataId: dataId ? dataId : null,
-          lastUpdated: hasStoredObs ? lastUpdated : null,
-        });
+        station.dataId = dataId ? dataId : null;
+        station.lastUpdated = hasStoredObs ? lastUpdated : null;
+
+        resolve(station);
       })
       .catch((error) => reject(error));
     });
@@ -67,24 +65,33 @@ export class EtlData {
   extractStationObservations(station) {
     const period = this.timeService.getNoaaQueryTimeFormat();
     let endDate;
-    if (this.config.NOAA_PRODUCT === 'water_level') {
+    if (this.config.DATA_TYPE === 'water_level') {
       endDate = period.now;
-    } else if (this.confign.NOAA_PRODUCT === 'predictions') {
+    } else if (this.config.DATA_TYPE === 'predictions') {
       endDate = period.end;
     }
 
     const noaaQuery = this.config.NOAA_ENDPOINT
-    + '&product=' + this.config.NOAA_PRODUCT
+    + '&product=' + this.config.DATA_TYPE
     + '&begin_date=' + period.begin
     + '&end_date=' + endDate
-    + '&station=' + station.station
+    + '&station=' + station[this.config.SENSOR_UID_PROPERTY]
     + '&datum=' + station.datum
     + '&time_zone=' + station.time_zone;
 
+    let intervalUnit;
+    const intervalChar = this.config.RECORDS_INTERVAL.slice(-1);
+    if (intervalChar === 'H') {
+      intervalUnit = ' hour(s).';
+    } else if (intervalChar === 'M') {
+      intervalUnit = ' minute(s).';
+    }
+
     const logMessage = {
-      log: station.uid
+      log: station[this.config.SENSOR_UID_PROPERTY]
       + ': Station is inactive or has no new observations in past '
-      + this.config.RECORDS_INTERVAL.slice(2, -1) + ' minutes.',
+      + this.config.RECORDS_INTERVAL.slice(2, -1)
+      + intervalUnit,
     };
 
     return new Promise((resolve, reject) => {
@@ -99,6 +106,11 @@ export class EtlData {
             resolve({
               storedProperties: station,
               noaaStationData: body.data,
+            });
+          } else if (body && body.predictions && body.predictions.length) {
+            resolve({
+              storedProperties: station,
+              noaaStationData: body.predictions,
             });
           } else {
             resolve(logMessage);
@@ -129,12 +141,9 @@ export class EtlData {
             });
           }
 
-          resolve({
-            id: station.id,
-            dataId: station.dataId,
-            data: transformedData,
-            lastUpdated: station.lastUpdated,
-          });
+          station.data = transformedData;
+
+          resolve(station);
         } else {
           resolve({
             log: station.id + ': No valid data available',
@@ -146,7 +155,7 @@ export class EtlData {
 
   compareStationObservations(station) {
     const logMessage = {
-      log: station.uid
+      log: station[this.config.SENSOR_UID_PROPERTY]
       + ': Station has no new observations',
     };
 

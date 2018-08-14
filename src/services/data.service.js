@@ -55,7 +55,6 @@ export default class {
   filter(conditions) {
     let filteredList = [];
     const agency = this.config.SENSOR_AGENCY;
-    const uid = this.config.SENSOR_UID_PROPERTY;
 
     return new Promise((resolve, reject) => {
       this.httpService.getSensors(agency)
@@ -65,12 +64,10 @@ export default class {
         for (let feature of features) {
           if (feature.properties.hasOwnProperty('properties')) {
             const properties = feature.properties.properties;
+            properties.id = feature.properties.id;
 
             if (this.check(properties, conditions)) {
-              filteredList.push({
-                id: feature.properties.id,
-                uid: properties[uid],
-              });
+              filteredList.push(properties);
             }
           }
         }

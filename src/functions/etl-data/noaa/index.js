@@ -1,5 +1,5 @@
 import {EtlData} from './model';
-import config from '../../../../config';
+import config from '../../../config';
 
 /**
  * ETL script for adding station data
@@ -21,15 +21,15 @@ exports.callEtlMethods = (etl) => {
         for (let station of filteredStationList) {
           processEtl.push(
             new Promise((resolve, reject) => {
-              etl.checkStoredObservations(station.id, station.uid)
-              .then((station) => {
-                etl.extractStationObservations(station)
+              etl.checkStoredObservations(station)
+              .then((stationUpdated) => {
+                etl.extractStationObservations(stationUpdated)
                 .then((data) => {
                   etl.transform(data)
-                  .then((station) => {
-                    etl.compareStationObservations(station)
-                    .then((station) => {
-                      etl.loadObservations(station)
+                  .then((stationWithFetchedData) => {
+                    etl.compareStationObservations(stationWithFetchedData)
+                    .then((stationWithNewData) => {
+                      etl.loadObservations(stationWithNewData)
                       .then((result) => {
                         if (result.hasOwnProperty('log')) {
                           console.log(result.log);

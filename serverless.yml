@@ -213,9 +213,7 @@ functions:
       DATA_TYPE: timeseries
     timeout: 120
     events:
-      - schedule:
-        rate: ${self:custom.sfwmdTimeseriesSchedule}
-        enabled: true
+      - schedule: ${self:custom.sfwmdTimeseriesSchedule}
 
   # SFWMD calulated daily mean data
   etlWmdAggregateData:
@@ -233,9 +231,7 @@ functions:
       DATA_TYPE: aggregate
     timeout: 120
     events:
-      - schedule:
-        rate: ${self:custom.sfwmdAggregateSchedule}
-        enabled: true
+      - schedule: ${self:custom.sfwmdAggregateSchedule}
 
   # NOAA Upload Stations
   noaaUploadStations:
@@ -249,7 +245,7 @@ functions:
     timeout: 24
 
   # NOAA water_level records
-  etlNoaaWaterLevelRecordsData:
+  etlNoaaRecordsData:
     handler: bin/functions/etl-data/noaa.handler
     package:
       include:
@@ -258,18 +254,17 @@ functions:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT6H
+      PREDICTION_PERIOD: P1D
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
       SENSOR_AGENCY: noaa
       SENSOR_UID_PROPERTY: station
       DATA_TYPE: water_level
     timeout: 120
     events:
-      - schedule:
-        rate: ${self:custom.noaaWaterLevelSchedule}
-        enabled: true
+      - schedule: ${self:custom.noaaWaterLevelSchedule}
 
   # NOAA water_level predictions
-  etlNoaaWaterLevelPredictionsData:
+  etlNoaaPredictionsData:
     handler: bin/functions/etl-data/noaa.handler
     package:
       include:
@@ -278,12 +273,11 @@ functions:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT6H
+      PREDICTION_PERIOD: P1D
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
       SENSOR_AGENCY: noaa
       SENSOR_UID_PROPERTY: station
       DATA_TYPE: predictions
     timeout: 120
     events:
-      - schedule:
-        rate: ${self:custom.noaaWaterLevelSchedule}
-        enabled: true
+      - schedule: ${self:custom.noaaWaterLevelSchedule}

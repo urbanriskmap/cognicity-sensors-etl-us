@@ -16,6 +16,7 @@ export default {
 
   RECORDS_PERIOD: process.env.RECORDS_PERIOD,
   RECORDS_INTERVAL: process.env.RECORDS_INTERVAL,
+  PREDICTION_PERIOD: process.env.PREDICTION_PERIOD,
 
   SFWMD_TIMESERIES_ENDPOINT: 'http://api.sfwmd.gov/v1/data/timeseries?format=json',
   SFWMD_AGGREGATE_ENDPOINT: 'http://api.sfwmd.gov/v1/data/aggregate?format=json&timespanUnit=DAY&calculation=MEAN',
