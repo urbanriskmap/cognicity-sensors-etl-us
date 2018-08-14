@@ -31,8 +31,8 @@ export class EtlData {
             value: 'class',
           },
           {
-            type: 'configVariable',
-            value: 'SENSOR_CODE',
+            type: 'configVariable', // TODO: use value instead
+            value: 'SENSOR_CODE', // TODO: this.config.SENSOR_CODE
           },
           // Other type of comparisons
           // {
