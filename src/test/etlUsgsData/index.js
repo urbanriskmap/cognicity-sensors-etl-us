@@ -101,7 +101,12 @@ export default () => {
         Service.prototype.getSensors.called.should.be.equal(true);
         let sensor = filteredSensorList[0];
         test.value(sensor)
-        .is({id: 5, uid: 'uniqueId'});
+        .is({
+          id: 5,
+          uniqueIdKey: 'uniqueId',
+          class: 'sensorCode',
+          agency: 'someAgency',
+        });
       })
       .catch((error) => {
         test.fail(error.message);
