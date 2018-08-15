@@ -61,7 +61,7 @@ exports.checks = (properties, conditions) => {
  * @abstract
  * @return {Promise<object[]>} - List of stored sensors matching query
  */
-exports.fetch = (baseUrl, conditions, agency) => {
+exports._fetch = (baseUrl, conditions, agency) => {
   let filteredList = [];
 
   return new Promise((resolve, reject) => {

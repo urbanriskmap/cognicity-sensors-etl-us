@@ -36,12 +36,12 @@ exports.checks = (body, conditions) => {
  * @abstract
  * @return {Promise<object>}
  */
-exports.extract = (baseUrl, querySets, conditions) => {
+exports._extract = (baseUrl, querySets, conditions) => {
   let queryUrl = baseUrl;
 
   // Append query params in key value pairs
   for (const querySet of querySets) {
-    queryUrl += '?' + Object.keys(querySet)[0]
+    queryUrl += '&' + Object.keys(querySet)[0]
     + '=' + querySet[Object.keys(querySet)[0]];
   }
 
@@ -50,12 +50,15 @@ exports.extract = (baseUrl, querySets, conditions) => {
       url: queryUrl,
       json: true,
     }, (error, response, body) => {
-      if (error) resolve({log: error});
+      if (error) reject(error);
 
       if (body && exports.checks(body, conditions)) {
         resolve(body);
       } else {
-        resolve({log: 'Error fetching sensors, or incompatible format'});
+        resolve({
+          log: 'Error fetching sensors, or incompatible format',
+          error: body,
+        });
       }
     });
   });

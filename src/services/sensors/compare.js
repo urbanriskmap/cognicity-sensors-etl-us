@@ -12,7 +12,7 @@ export default (sensor, uniqueIdKey, existingSensorUids) => {
     if (sensor.hasOwnProperty('log')) resolve(sensor);
 
     let sensorExists = false;
-    const sensorUid = sensor[uniqueIdKey];
+    const sensorUid = sensor.properties[uniqueIdKey];
 
     if (existingSensorUids.length) {
       for (const uidExisting of existingSensorUids) {
