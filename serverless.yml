@@ -20,19 +20,24 @@ provider:
 package:
   individually: true
   exclude: # Specify the directories and files which should be excluded in the deployment package
-    - bin/functions/** # Include functions individually
-    - bin/test/**
-    - src/**
     - .git/**
     - .nyc_output/**
+    - bin/functions/** # Include functions individually
+    - bin/test/**
     - coverage/**
     - esdoc/**
+    - src/**
     - .babelrc
     - .env
     - .eslintrc.js
     - .gitignore
     - .travis.yml
+    - package.json
+    - package-lock.json
     - README.md
+    - sample.env
+    - sample.env.yml
+
 
 # Add one function for each Lambda
 functions:
@@ -94,7 +99,7 @@ functions:
       - schedule: ${self:custom.usgsSensorSchedule}
 
   etlPrecipitationSensor:
-    handler: bin/functions/sensors/usgs.handler
+    handler: bin/functions/sensors/usgs/index.handler
     package:
       include:
         - bin/functions/sensors/usgs/**
@@ -259,7 +264,7 @@ functions:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT6H
-      PREDICTION_PERIOD: P1D
+      PREDICTION_PERIOD: PT12H
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
       SENSOR_AGENCY: noaa
       SENSOR_UID_PROPERTY: station
@@ -278,7 +283,7 @@ functions:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT6H
-      PREDICTION_PERIOD: P1D
+      PREDICTION_PERIOD: PT12H
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
       SENSOR_AGENCY: noaa
       SENSOR_UID_PROPERTY: station

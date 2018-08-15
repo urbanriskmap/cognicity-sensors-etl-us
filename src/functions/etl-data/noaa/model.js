@@ -64,16 +64,19 @@ export class EtlData {
 
   extractStationObservations(station) {
     const period = this.timeService.getNoaaQueryTimeFormat();
+    let beginDate;
     let endDate;
     if (this.config.DATA_TYPE === 'water_level') {
+      beginDate = period.begin;
       endDate = period.now;
     } else if (this.config.DATA_TYPE === 'predictions') {
+      beginDate = period.begin;
       endDate = period.end;
     }
 
     const noaaQuery = this.config.NOAA_ENDPOINT
     + '&product=' + this.config.DATA_TYPE
-    + '&begin_date=' + period.begin
+    + '&begin_date=' + beginDate
     + '&end_date=' + endDate
     + '&station=' + station[this.config.SENSOR_UID_PROPERTY]
     + '&datum=' + station.datum

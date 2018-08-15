@@ -14,10 +14,10 @@ export default class {
 
     const recordsPeriodMs = parseInt(
       this.config.RECORDS_PERIOD.slice(1, -1), 10
-    ) * 24 * 60 * 60 * 1000;
+    ) * 24 * 60 * 60 * 1000; // In days
     const predictPeriodMs = parseInt(
-      this.config.PREDICTION_PERIOD.slice(1, -1), 10
-    ) * 24 * 60 * 60 * 1000;
+      this.config.PREDICTION_PERIOD.slice(2, -1), 10
+    ) * 60 * 60 * 1000; // In hours
 
     const now = new Date();
     const start = new Date(Date.parse(now) - recordsPeriodMs);
