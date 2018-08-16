@@ -19,7 +19,8 @@ export default () => {
         json: true,
       })
         .yields(null, null, {
-          statusCode: 404,
+          statusCode: 400,
+          result: 'Foo error message',
         })
       .withArgs({
         url: 'https://some.base.url/?agency=usgs',
@@ -54,7 +55,7 @@ export default () => {
       .done();
     });
 
-    it('Filters sensors based by equating property values', (done) => {
+    it('Filters sensors by equating property values', (done) => {
       const conditions = [
         {
           type: 'equate',
@@ -149,6 +150,24 @@ export default () => {
         test.value(!!filteredList).is(true);
       })
       .catch((error) => test.fail(error))
+      .finally(done)
+      .done();
+    });
+
+    it('Rejects with log and error if query fails with known error', (done) => {
+      test.promise
+      .given(filter(testData.baseUrl, [], 'failingStatus'))
+      .then(() => test.fail('Promise was unexpectedly fulfilled'))
+      .catch((result) => {
+        test.value(result)
+        .is({
+          log: 'Error fetching sensors',
+          error: {
+            statusCode: 400,
+            result: 'Foo error message',
+          },
+        });
+      })
       .finally(done)
       .done();
     });
