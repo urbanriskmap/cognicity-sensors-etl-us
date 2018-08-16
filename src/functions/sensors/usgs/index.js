@@ -24,8 +24,5 @@ exports.handler = (event, context, callback) => {
     })
     .catch((nonFatalLogs) => callback(null, nonFatalLogs));
   })
-  .catch((processes) => {
-    Promise.all(processes)
-    .catch((fatalLogs) => callback(fatalLogs));
-  });
+  .catch((error) => callback(error));
 };

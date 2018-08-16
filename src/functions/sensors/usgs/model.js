@@ -1,5 +1,5 @@
-import {_extract} from '../../../services/sensors/extract';
-import {_fetch} from '../../../services/sensors/fetch';
+import {extract as _extract} from '../../../services/sensors/extract';
+import {filter as _filter} from '../../../services/sensors/fetch';
 import _compare from '../../../services/sensors/compare';
 import _load from '../../../services/sensors/load';
 
@@ -60,12 +60,12 @@ export default class {
       .then((body) => {
         if (body.hasOwnProperty('log')) {
           // Fatal: Failed to extract sensors from USGS API
-          _resolve(body.error);
+          _reject(body.error);
         }
 
         // Fetch and store a list of existing sensor uniqueId's
         let existingSensorUids = [];
-        _fetch(
+        _filter(
           this.config.SERVER_ENDPOINT,
           conditions,
           'usgs'
@@ -116,6 +116,7 @@ export default class {
                       resolve(result);
                     }
 
+                    // Non-fatal: Error uploading sensor
                     resolve('Unknown error while loading sensor');
                   })
                   .catch((error) => {

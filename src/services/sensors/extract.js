@@ -36,7 +36,7 @@ exports.checks = (body, conditions) => {
  * @abstract
  * @return {Promise<object>}
  */
-exports._extract = (baseUrl, querySets, conditions) => {
+exports.extract = (baseUrl, querySets, conditions) => {
   let queryUrl = baseUrl;
 
   // Append query params in key value pairs

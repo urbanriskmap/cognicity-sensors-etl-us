@@ -6,7 +6,7 @@ custom:
   usgsDataSchedule: rate(15 minutes)
   sfwmdTimeseriesSchedule: rate(30 minutes)
   sfwmdAggregateSchedule: rate(6 hours)
-  noaaWaterLevelSchedule: rate(6 hours)
+  noaaWaterLevelSchedule: rate(1 hour)
 
 provider:
   name: aws
@@ -263,7 +263,7 @@ functions:
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       RECORDS_PERIOD: P1D
-      RECORDS_INTERVAL: PT6H
+      RECORDS_INTERVAL: PT1H
       PREDICTION_PERIOD: PT12H
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
       SENSOR_AGENCY: noaa
@@ -282,7 +282,7 @@ functions:
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       RECORDS_PERIOD: P1D
-      RECORDS_INTERVAL: PT6H
+      RECORDS_INTERVAL: PT1H
       PREDICTION_PERIOD: PT12H
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
       SENSOR_AGENCY: noaa
