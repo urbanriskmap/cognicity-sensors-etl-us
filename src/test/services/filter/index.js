@@ -49,9 +49,7 @@ export default () => {
         // Test if 3 sensors are returned, array as an object
         test.value(filteredList.hasOwnProperty('2')).is(true);
       })
-      .catch((error) => {
-        test.fail(error);
-      })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });
@@ -75,9 +73,7 @@ export default () => {
           && filteredList['0'].type === 'GW'
         ).is(true);
       })
-      .catch((error) => {
-        test.fail(error);
-      })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });
@@ -95,9 +91,7 @@ export default () => {
       .then((filteredList) => {
         test.value(!!filteredList).is(true);
       })
-      .catch((error) => {
-        test.fail(error);
-      })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });
@@ -114,9 +108,7 @@ export default () => {
       .then((filteredList) => {
         test.value(!!filteredList).is(true);
       })
-      .catch((error) => {
-        test.fail(error);
-      })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });
@@ -136,9 +128,7 @@ export default () => {
       .then((filteredList) => {
         test.value(!!filteredList).is(true);
       })
-      .catch((error) => {
-        test.fail(error);
-      })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });
@@ -158,9 +148,7 @@ export default () => {
       .then((filteredList) => {
         test.value(!!filteredList).is(true);
       })
-      .catch((error) => {
-        test.fail(error);
-      })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });

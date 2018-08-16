@@ -44,9 +44,7 @@ export default () => {
           'https://some.base.url/?firstParam=1&secondParam=2&thirdParam=3'
         );
       })
-      .catch((error) => {
-        test.fail(error);
-      })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });
@@ -60,9 +58,7 @@ export default () => {
           body.propertyA.propertyB[0].propertyC
         ).is('foo');
       })
-      .catch((error) => {
-        test.fail(error);
-      })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });
@@ -75,9 +71,7 @@ export default () => {
         test.value(body.log)
         .is('Error fetching sensors, or incompatible format');
       })
-      .catch((error) => {
-        test.fail(error);
-      })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });

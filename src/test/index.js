@@ -6,6 +6,7 @@
 // import testNoaaUploadStations from './noaaUploadStations';
 import testExtractService from './services/extract';
 import testFilterService from './services/filter';
+import testCompareService from './services/compare';
 
 // testServices();
 // testWmdUploadStations();
@@ -15,3 +16,4 @@ import testFilterService from './services/filter';
 // testFullFlow();
 testExtractService();
 testFilterService();
+testCompareService();
