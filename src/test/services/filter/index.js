@@ -9,14 +9,30 @@ export default () => {
   describe('Test filter service', () => {
     before(() => {
       sinon.stub(request, 'get')
-      .onFirstCall()
-        .yields(null, null, {})
-      .onSecondCall()
-        .yields(null, null, {})
-      .onThirdCall()
-        .yields(null, null, {})
       .withArgs({
-        url: 'https://some.base.url/?agency=someAgency_5',
+        url: 'https://some.base.url/',
+        json: true,
+      })
+        .yields(null, null, testData.mockGetAllSensorsResponse())
+      .withArgs({
+        url: 'https://some.base.url/?agency=failingStatus',
+        json: true,
+      })
+        .yields(null, null, {
+          statusCode: 404,
+        })
+      .withArgs({
+        url: 'https://some.base.url/?agency=usgs',
+        json: true,
+      })
+        .yields(null, null, testData.mockGetUsgsResponse())
+      .withArgs({
+        url: 'https://some.base.url/?agency=sfwmd',
+        json: true,
+      })
+        .yields(null, null, testData.mockGetSfwmdResponse())
+      .withArgs({
+        url: 'https://some.base.url/?agency=serverError',
         json: true,
       })
         .yields({message: 'API endpoint or connection error'});
@@ -26,11 +42,12 @@ export default () => {
       request.get.restore();
     });
 
-    it('', (done) => {
+    it('Fetches all sensors from server', (done) => {
       test.promise
-      .given(filter(testData.baseUrl, [], 'someAgency'))
-      .then((body) => {
-
+      .given(filter(testData.baseUrl, [], ''))
+      .then((filteredList) => {
+        // Test if 3 sensors are returned, array as an object
+        test.value(filteredList.hasOwnProperty('2')).is(true);
       })
       .catch((error) => {
         test.fail(error);
@@ -39,11 +56,24 @@ export default () => {
       .done();
     });
 
-    it('', (done) => {
-      test.promise
-      .given(filter(testData.baseUrl, [], 'someAgency'))
-      .then((body) => {
+    it('Filters sensors based by equating property values', (done) => {
+      const conditions = [
+        {
+          type: 'equate',
+          values: [
+            {type: 'property', value: 'type'},
+            {type: 'value', value: 'GW'},
+          ],
+        },
+      ];
 
+      test.promise
+      .given(filter(testData.baseUrl, conditions, 'usgs'))
+      .then((filteredList) => {
+        test.value(
+          !filteredList.hasOwnProperty('1')
+          && filteredList['0'].type === 'GW'
+        ).is(true);
       })
       .catch((error) => {
         test.fail(error);
@@ -52,11 +82,18 @@ export default () => {
       .done();
     });
 
-    it('', (done) => {
+    it('Returns empty list if sensor lacks queried property', (done) => {
+      const conditions = [
+        {
+          type: 'hasProperty',
+          values: ['uid'],
+        },
+      ];
+
       test.promise
-      .given(filter(testData.baseUrl, [], 'someAgency'))
-      .then((body) => {
-        //
+      .given(filter(testData.baseUrl, conditions, 'sfwmd'))
+      .then((filteredList) => {
+        test.value(!!filteredList).is(true);
       })
       .catch((error) => {
         test.fail(error);
@@ -65,11 +102,61 @@ export default () => {
       .done();
     });
 
-    it('', (done) => {
+    it('Returns empty list if condition type is unsupported', (done) => {
+      const conditions = [
+        {
+          type: 'foo',
+        },
+      ];
+
       test.promise
-      .given(filter(testData.baseUrl, [], 'someAgency'))
-      .then((body) => {
-        //
+      .given(filter(testData.baseUrl, conditions, 'sfwmd'))
+      .then((filteredList) => {
+        test.value(!!filteredList).is(true);
+      })
+      .catch((error) => {
+        test.fail(error);
+      })
+      .finally(done)
+      .done();
+    });
+
+    it('Returns empty list if equate.values.type is unsupported', (done) => {
+      const conditions = [
+        {
+          type: 'equate',
+          values: [
+            {type: 'foo'},
+          ],
+        },
+      ];
+
+      test.promise
+      .given(filter(testData.baseUrl, conditions, 'sfwmd'))
+      .then((filteredList) => {
+        test.value(!!filteredList).is(true);
+      })
+      .catch((error) => {
+        test.fail(error);
+      })
+      .finally(done)
+      .done();
+    });
+
+    it('Returns empty list if equate.values.length is not 2', (done) => {
+      const conditions = [
+        {
+          type: 'equate',
+          values: [
+            {type: 'value', value: 'foo'},
+          ],
+        },
+      ];
+
+      test.promise
+      .given(filter(testData.baseUrl, conditions, 'sfwmd'))
+      .then((filteredList) => {
+        test.value(!!filteredList).is(true);
       })
       .catch((error) => {
         test.fail(error);
@@ -80,7 +167,7 @@ export default () => {
 
     it('Rejects with error message if query fails', (done) => {
       test.promise
-      .given(filter(testData.baseUrl, [], 'someAgency_5'))
+      .given(filter(testData.baseUrl, [], 'serverError'))
       .then(() => test.fail('Promise was unexpectedly fulfilled'))
       .catch((error) => {
         test.value(error.message)

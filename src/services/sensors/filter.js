@@ -76,20 +76,32 @@ exports.filter = (baseUrl, conditions, agency) => {
     }, (error, response, body) => {
       if (error) reject(error);
 
-      const features = body.result.features;
+      if (body
+        && body.hasOwnProperty('statusCode')
+        && body.statusCode === 200
+        && body.hasOwnProperty('result')
+        && body.result.hasOwnProperty('features')
+      ) {
+        const features = body.result.features;
 
-      for (const feature of features) {
-        if (feature.properties.hasOwnProperty('properties')) {
-          const properties = feature.properties.properties;
-          properties.id = feature.properties.id;
+        for (const feature of features) {
+          if (feature.properties.hasOwnProperty('properties')) {
+            const properties = feature.properties.properties;
+            properties.id = feature.properties.id;
 
-          if (exports.checks(properties, conditions)) {
-            filteredList.push(properties);
+            if (exports.checks(properties, conditions)) {
+              filteredList.push(properties);
+            }
           }
         }
-      }
 
-      resolve(filteredList);
+        resolve(filteredList);
+      } else {
+        reject({
+          log: 'Error fetching sensors',
+          error: body,
+        });
+      }
     });
   });
 };
