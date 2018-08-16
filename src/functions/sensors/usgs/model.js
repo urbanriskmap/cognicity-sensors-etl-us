@@ -1,5 +1,5 @@
 import {extract as _extract} from '../../../services/sensors/extract';
-import {filter as _filter} from '../../../services/sensors/fetch';
+import {filter as _filter} from '../../../services/sensors/filter';
 import _compare from '../../../services/sensors/compare';
 import _load from '../../../services/sensors/load';
 

@@ -8,7 +8,8 @@ import request from 'request';
  * @return {boolean}
  */
 exports.checks = (properties, conditions) => {
-  for (let condition of conditions) {
+  if (conditions.length) {
+    for (let condition of conditions) {
       let comparisonSet = [];
 
       switch (condition.type) {
@@ -47,13 +48,14 @@ exports.checks = (properties, conditions) => {
           return false;
       }
     }
+  }
 
-    return true;
+  return true;
 };
 
 /**
- * This method fetches sensors stored in the CogniCity database
- * @function fetchSensors
+ * This method fetches and filters sensors stored in the CogniCity database
+ * @function filterSensors
  * @param {string} baseUrl - CogniCity Sensors API base url
  * @param {{type: {string}, values: {string}[]}[]} conditions
  * @param {string} [agency] - Optional 'agency' query param
@@ -61,7 +63,7 @@ exports.checks = (properties, conditions) => {
  * @abstract
  * @return {Promise<object[]>} - List of stored sensors matching query
  */
-exports._fetch = (baseUrl, conditions, agency) => {
+exports.filter = (baseUrl, conditions, agency) => {
   let filteredList = [];
 
   return new Promise((resolve, reject) => {
