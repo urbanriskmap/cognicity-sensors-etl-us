@@ -49,6 +49,7 @@ functions:
         - bin/functions/sensors/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      SENSOR_AGENCY: usgs
       SENSOR_CODE: '62610'
       SENSOR_UID_PROPERTY: uid
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
@@ -63,6 +64,7 @@ functions:
         - bin/functions/sensors/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      SENSOR_AGENCY: usgs
       SENSOR_CODE: '00065'
       SENSOR_UID_PROPERTY: uid
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
@@ -77,6 +79,7 @@ functions:
         - bin/functions/sensors/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      SENSOR_AGENCY: usgs
       SENSOR_CODE: '00060'
       SENSOR_UID_PROPERTY: uid
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
@@ -91,6 +94,7 @@ functions:
         - bin/functions/sensors/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      SENSOR_AGENCY: usgs
       SENSOR_CODE: '63160'
       SENSOR_UID_PROPERTY: uid
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
@@ -105,6 +109,7 @@ functions:
         - bin/functions/sensors/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      SENSOR_AGENCY: usgs
       SENSOR_CODE: '00045'
       SENSOR_UID_PROPERTY: uid
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
@@ -120,11 +125,13 @@ functions:
         - bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      HAS_UPSTREAM_DOWNSTREAM: 'false'
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
+      SENSOR_AGENCY: usgs
       SENSOR_CODE: '62610'
+      SENSOR_UID_PROPERTY: uid
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
-      HAS_UPSTREAM_DOWNSTREAM: 'false'
     timeout: 24
     events:
       - schedule: ${self:custom.usgsDataSchedule}
@@ -136,11 +143,13 @@ functions:
         - bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      HAS_UPSTREAM_DOWNSTREAM: 'false'
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
+      SENSOR_AGENCY: usgs
       SENSOR_CODE: '00065'
+      SENSOR_UID_PROPERTY: uid
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
-      HAS_UPSTREAM_DOWNSTREAM: 'false'
     timeout: 24
     events:
       - schedule: ${self:custom.usgsDataSchedule}
@@ -152,11 +161,13 @@ functions:
         - bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      HAS_UPSTREAM_DOWNSTREAM: 'false'
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
+      SENSOR_AGENCY: usgs
       SENSOR_CODE: '00060'
+      SENSOR_UID_PROPERTY: uid
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
-      HAS_UPSTREAM_DOWNSTREAM: 'false'
     timeout: 24
     events:
       - schedule: ${self:custom.usgsDataSchedule}
@@ -168,11 +179,13 @@ functions:
         - bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      HAS_UPSTREAM_DOWNSTREAM: 'true'
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
+      SENSOR_AGENCY: usgs
       SENSOR_CODE: '63160'
+      SENSOR_UID_PROPERTY: uid
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
-      HAS_UPSTREAM_DOWNSTREAM: 'true'
     timeout: 24
     events:
       - schedule: ${self:custom.usgsDataSchedule}
@@ -184,25 +197,27 @@ functions:
         - bin/functions/etl-data/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      HAS_UPSTREAM_DOWNSTREAM: 'false'
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT15M
-      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
-      SENSOR_CODE: '00045'
       SENSOR_AGENCY: usgs
+      SENSOR_CODE: '00045'
       SENSOR_UID_PROPERTY: uid
-      HAS_UPSTREAM_DOWNSTREAM: 'false'
+      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
     timeout: 24
     events:
       - schedule: ${self:custom.usgsDataSchedule}
 
   # SFWMD Upload Stations
   wmdUploadStations:
-    handler: bin/functions/etl-sensors/sfwmd.handler
+    handler: bin/functions/sensors/sfwmd/index.handler
     package:
       include:
-        - bin/functions/etl-sensors/sfwmd/**
+        - bin/functions/sensors/sfwmd/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      SENSOR_AGENCY: sfwmd
+      SENSOR_UID_PROPERTY: stationId
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
     timeout: 24
     # Use 'ManualTrigger' Test in lambda function console after updating stations.js
@@ -215,12 +230,12 @@ functions:
         - bin/functions/etl-data/sfwmd/timeseries/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      DATA_TYPE: timeseries
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT30M
-      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
       SENSOR_AGENCY: sfwmd
       SENSOR_UID_PROPERTY: stationId
-      DATA_TYPE: timeseries
+      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
     timeout: 120
     events:
       - schedule: ${self:custom.sfwmdTimeseriesSchedule}
@@ -233,24 +248,26 @@ functions:
         - bin/functions/etl-data/sfwmd/aggregate/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      DATA_TYPE: aggregate
       RECORDS_PERIOD: P7D
       RECORDS_INTERVAL: PT6H
-      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
       SENSOR_AGENCY: sfwmd
       SENSOR_UID_PROPERTY: stationId
-      DATA_TYPE: aggregate
+      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
     timeout: 120
     events:
       - schedule: ${self:custom.sfwmdAggregateSchedule}
 
   # NOAA Upload Stations
   noaaUploadStations:
-    handler: bin/functions/etl-sensors/noaa.handler
+    handler: bin/functions/sensors/noaa/index.handler
     package:
       include:
-        - bin/functions/etl-sensors/noaa/**
+        - bin/functions/sensors/noaa/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      SENSOR_AGENCY: noaa
+      SENSOR_UID_PROPERTY: station
       SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
     timeout: 24
 
@@ -262,13 +279,13 @@ functions:
         - bin/functions/etl-data/noaa/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      DATA_TYPE: water_level
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT1H
       PREDICTION_PERIOD: PT12H
-      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
       SENSOR_AGENCY: noaa
       SENSOR_UID_PROPERTY: station
-      DATA_TYPE: water_level
+      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
     timeout: 120
     events:
       - schedule: ${self:custom.noaaWaterLevelSchedule}
@@ -281,13 +298,13 @@ functions:
         - bin/functions/etl-data/noaa/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
+      DATA_TYPE: predictions
       RECORDS_PERIOD: P1D
       RECORDS_INTERVAL: PT1H
       PREDICTION_PERIOD: PT12H
-      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
       SENSOR_AGENCY: noaa
       SENSOR_UID_PROPERTY: station
-      DATA_TYPE: predictions
+      SERVER_ENDPOINT: ${file(./.env.yml):${opt:stage}-serverEndPoint}
     timeout: 120
     events:
       - schedule: ${self:custom.noaaWaterLevelSchedule}

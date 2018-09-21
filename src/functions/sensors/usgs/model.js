@@ -22,7 +22,7 @@ export default class {
     return {
       properties: {
         uid: uid,
-        agency: 'usgs',
+        agency: this.config.SENSOR_AGENCY,
         type: sensorType,
         class: this.config.SENSOR_CODE,
         units: units,
@@ -37,7 +37,7 @@ export default class {
   execute() {
     const etlProcesses = [];
     const conditions = [
-      {type: 'hasProperty', values: ['uid']},
+      {type: 'hasProperty', values: [this.config.SENSOR_UID_PROPERTY]},
       {type: 'hasProperty', values: ['class']},
       {type: 'equate', values: [
         {type: 'property', value: 'class'},
@@ -68,7 +68,7 @@ export default class {
         _filter(
           this.config.SERVER_ENDPOINT,
           conditions,
-          'usgs'
+          this.config.SENSOR_AGENCY
         )
         .then((existingSensors) => {
           for (const existingSensor of existingSensors) {

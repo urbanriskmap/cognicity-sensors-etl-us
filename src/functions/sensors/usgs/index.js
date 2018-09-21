@@ -20,9 +20,16 @@ exports.handler = (event, context, callback) => {
 
       logs.unshift(updateCount + ' sensor(s) added');
 
+      console.log(logs);
       callback(null, logs);
     })
-    .catch((nonFatalLogs) => callback(null, nonFatalLogs));
+    .catch((nonFatalLogs) => {
+      console.log(nonFatalLogs);
+      callback(null, nonFatalLogs);
+    });
   })
-  .catch((error) => callback(error));
+  .catch((error) => {
+    console.log(error);
+    callback(error);
+  });
 };

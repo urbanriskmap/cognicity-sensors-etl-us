@@ -20,7 +20,7 @@ export default class {
       _filter(
         this.config.SERVER_ENDPOINT,
         conditions,
-        this.config.SENSOR_AGENCY
+        'sfwmd'
       )
       .then((existingStations) => {
         for (const existingStation of existingStations) {
