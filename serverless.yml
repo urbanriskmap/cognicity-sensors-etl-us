@@ -119,10 +119,10 @@ functions:
 
   # USGS Sensor Data
   etlGroundwaterData:
-    handler: bin/functions/etl-data/usgs.handler
+    handler: bin/functions/data/usgs/index.handler
     package:
       include:
-        - bin/functions/etl-data/usgs/**
+        - bin/functions/data/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       HAS_UPSTREAM_DOWNSTREAM: 'false'
@@ -137,10 +137,10 @@ functions:
       - schedule: ${self:custom.usgsDataSchedule}
 
   etlGaugeHeightData:
-    handler: bin/functions/etl-data/usgs.handler
+    handler: bin/functions/data/usgs/index.handler
     package:
       include:
-        - bin/functions/etl-data/usgs/**
+        - bin/functions/data/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       HAS_UPSTREAM_DOWNSTREAM: 'false'
@@ -155,10 +155,10 @@ functions:
       - schedule: ${self:custom.usgsDataSchedule}
 
   etlDischargeRateData:
-    handler: bin/functions/etl-data/usgs.handler
+    handler: bin/functions/data/usgs/index.handler
     package:
       include:
-        - bin/functions/etl-data/usgs/**
+        - bin/functions/data/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       HAS_UPSTREAM_DOWNSTREAM: 'false'
@@ -173,10 +173,10 @@ functions:
       - schedule: ${self:custom.usgsDataSchedule}
 
   etlStreamElevationData:
-    handler: bin/functions/etl-data/usgs.handler
+    handler: bin/functions/data/usgs/index.handler
     package:
       include:
-        - bin/functions/etl-data/usgs/**
+        - bin/functions/data/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       HAS_UPSTREAM_DOWNSTREAM: 'true'
@@ -191,10 +191,10 @@ functions:
       - schedule: ${self:custom.usgsDataSchedule}
 
   etlPrecipitationData:
-    handler: bin/functions/etl-data/usgs.handler
+    handler: bin/functions/data/usgs/index.handler
     package:
       include:
-        - bin/functions/etl-data/usgs/**
+        - bin/functions/data/usgs/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       HAS_UPSTREAM_DOWNSTREAM: 'false'

@@ -18,7 +18,7 @@ export default (endpoint, id, dataType) => {
       let latestRow;
 
       if (body.result && body.result.length) {
-        latestRow = body.result[body.result.length - 1];
+        latestRow = body.result[0];
       }
 
       if (latestRow
@@ -34,7 +34,7 @@ export default (endpoint, id, dataType) => {
       resolve({
         checksPassed: storedObsCheckPassed,
         storedObservations: storedObservations,
-        dataId: dataId,
+        lastStoredDataId: dataId,
       });
     });
   });

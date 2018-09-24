@@ -37,14 +37,11 @@ export default class {
     return lastUpdated;
   }
 
-  transform({storedProperties, data}) {
+  transform(sensor, sensorData) {
     let observations;
     let transformedData;
 
     return new Promise((resolve, reject) => {
-      const sensor = storedProperties;
-      const sensorData = data;
-
       if (sensorData.length
         && sensorData[0].hasOwnProperty('values')
         && sensorData[0].values.length
@@ -78,6 +75,7 @@ export default class {
               });
             }
           }
+
           resolve(transformedData);
         } else {
           observations = sensorData[0].values[0].value;
@@ -88,10 +86,11 @@ export default class {
               value: observation.value,
             });
           }
+
           resolve(transformedData);
         }
       } else {
-        resolve({
+        reject({
           log: sensor.id + ': No valid data available',
         });
       }
@@ -135,7 +134,10 @@ export default class {
           etlProcesses.push(
             new Promise((resolve, reject) => {
               // Get stored observations for sensor
-              _getStoredObservations(sensor.id)
+              _getStoredObservations(
+                this.config.SERVER_ENDPOINT,
+                sensor.id
+              )
               .then(({
                 checksPassed,
                 storedObservations,
@@ -160,35 +162,26 @@ export default class {
                   ['value', 'timeSeries', 'length']
                 )
                 .then((body) => {
-                  if (body.hasOwnProperty('log')) {
-                    // Non-fatal
-                    resolve({
-                      log: 'Error fetching sensor data',
-                      error: body.log,
-                    });
-                  }
-
-                  this.transform({
-                    storedProperties: sensor,
-                    // NOTE: change according to observations
-                    // format as retrieved from API
-                    data: body.value.timeSeries,
-                  })
+                  // NOTE: change second parameter according to
+                  // sensor format as retrieved from API
+                  this.transform(sensor, body.value.timeSeries)
                   .then((transformedData) => {
-                    if (transformedData.hasOwnProperty('log')) {
-                      // Non-fatal
-                      resolve(transformedData.log);
+                    let childProperty;
+                    // NOTE: set to null if transformedData is an array
+                    if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'true') {
+                      childProperty = 'upstream';
                     }
 
                     _compare(
                       sensor.id,
                       transformedData,
-                      // NOTE: set to null if transformedData is an array
-                      'upstream',
+                      childProperty,
                       lastUpdated
                     )
                     .then((compareResult) => {
-                      if (compareResult.hasOwnProperty('log')) {
+                      if (compareResult
+                        && compareResult.hasOwnProperty('log')
+                      ) {
                         // Non-fatal
                         resolve(compareResult.log);
                       }
@@ -196,30 +189,31 @@ export default class {
                       _load(
                         this.config.SERVER_ENDPOINT,
                         this.config.API_KEY,
-                        transformedData,
+                        {properties: {
+                          observations: transformedData,
+                        }},
                         sensor.id
                       )
                       .then((updatedDataId) => {
-                        if (updatedDataId.hasOwnProperty('log')) {
-                          // Non-fatal
-                          resolve(compareResult.log);
-                        }
-
-                        if (lastStoredDataId) {
-                          _delete(sensor.id, lastStoredDataId)
-                          .then((deleteResult) => {
-                            if (deleteResult.hasOwnProperty('log')) {
-                              // Non-fatal
-                              resolve({
-                                log: sensor.id +
-                                ': Failed to remove previous observations',
-                                error: deleteResult.log,
-                              });
-                            }
-
+                        if (lastUpdated && lastStoredDataId) {
+                          _delete(
+                            this.config.SERVER_ENDPOINT,
+                            this.config.API_KEY,
+                            sensor.id,
+                            lastStoredDataId
+                          )
+                          .then(() => {
                             resolve({
                               success: sensor.id + ': Data for sensor updated '
                               + '(dataId: ' + updatedDataId + ')',
+                            });
+                          })
+                          // Non-fatal: Delete request error
+                          .catch((error) => {
+                            reject({
+                              log: sensor.id +
+                              ': Failed to remove previous observations',
+                              error: error.log,
                             });
                           });
                         } else {
@@ -228,20 +222,32 @@ export default class {
                             + '(dataId: ' + updatedDataId + ')',
                           });
                         }
-                      });
+                      })
+                      // Print: Load data logs
+                      .catch((error) => resolve(error.log));
                     })
                     // Non-fatal: Incongruent data formatting, unable to compare
-                    .catch((error) => reject(error));
-                  });
+                    .catch((error) => reject(error.log));
+                  })
+                  // Print: Transform new data logs
+                  .catch((error) => resolve(error.log));
                 })
                 // Non-fatal: Failed to receive response from agency API
-                .catch((error) => reject(error));
+                .catch((error) => {
+                  reject({
+                    log: 'Error fetching sensor data',
+                    error: error.log,
+                  });
+                });
               })
               // Non-fatal: Failed to receive response from sensors/id endpoint
               .catch((error) => reject(error));
             })
           );
         }
+
+        // Return list of promises with either 'log' or 'success' message
+        _resolve(etlProcesses);
       })
       // Fatal: Failed to receive response from sensors endpoint
       .catch((error) => _reject(error));

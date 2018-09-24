@@ -6,7 +6,7 @@
  * @param {string|null} childProperty - Child property to lookup observations
  * @param {object} data - extracted data
  * @param {string} lastUpdated - dateTime string
- * @return {Promise<object>} Promise object
+ * @return {Promise<object|null>} Promise object
  */
 export default (id, childProperty, data, lastUpdated) => {
   const logMessage = {
@@ -21,25 +21,29 @@ export default (id, childProperty, data, lastUpdated) => {
     } else {
       let lastExtractedObservation;
 
-      if (childProperty
-        && data[childProperty].length
-        && data[childProperty][
-          data[childProperty].length - 1
-        ].hasOwnProperty('dateTime')
-      ) {
-        lastExtractedObservation = data[childProperty][
-          data[childProperty].length - 1
-        ].dateTime;
-      } else if (!childProperty
-        && data.length
-        && data[data.length - 1].hasOwnProperty('dateTime')
-      ) {
-        data[data.length - 1].dateTime;
-      } else {
-        reject('Incongruent data formats, error comparing');
+      if (data) {
+        if (childProperty
+          && data[childProperty].length
+          && data[childProperty][
+            data[childProperty].length - 1
+          ].hasOwnProperty('dateTime')
+        ) {
+          lastExtractedObservation = data[childProperty][
+            data[childProperty].length - 1
+          ].dateTime;
+        } else if (!childProperty
+          && data.length
+          && data[data.length - 1].hasOwnProperty('dateTime')
+        ) {
+          data[data.length - 1].dateTime;
+        }
+
+        reject({log: 'Incongruent data formats, error comparing'});
       }
 
-      if (lastExtractedObservation === lastUpdated) {
+      if (lastExtractedObservation
+        && lastExtractedObservation === lastUpdated
+      ) {
         resolve(logMessage);
       } else {
         // New data, continue to upload

@@ -15,6 +15,8 @@ exports.handler = (event, context, callback) => {
         if (log.hasOwnProperty('success')) {
           updateCount += 1;
           logs.push(log.success);
+        } else {
+          logs.push(log);
         }
       }
 

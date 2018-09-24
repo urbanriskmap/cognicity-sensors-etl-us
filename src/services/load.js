@@ -26,9 +26,9 @@ export default (baseUrl, apiKey, data, id) => {
     };
 
     request.post(requestOptions, (error, response, body) => {
-      if (error) resolve({log: error});
+      if (error) reject({log: error});
 
-      if (body.statusCode !== 200) resolve({log: error});
+      if (body.statusCode !== 200) reject({log: body});
 
       if (!id) {
         // Post sensor metadata
@@ -40,19 +40,20 @@ export default (baseUrl, apiKey, data, id) => {
         ) {
           const sensorId = body.result.features[0].properties.id;
           resolve({success: sensorId + ': Success adding sensor'});
-        } else {
-          resolve({log: body});
         }
+
+        // Non-fatal, unknown error
+        reject({log: body});
       } else {
         // Post sensor data
         if (body.result
           && body.result.dataId
         ) {
           resolve(body.result.dataId);
-        } else {
-          // Non-fatal, unknown error
-          resolve({log: body});
         }
+
+        // Non-fatal, unknown error
+        reject({log: body});
       }
     });
   });

@@ -1,7 +1,7 @@
 import request from 'request';
 
 /**
- * This method loads sensors in to the CogniCity database
+ * This method deletes sensor data row for given sensor and data id's
  * @function deleteData
  * @param {string} baseUrl - CogniCity Sensors API base url
  * @param {string} apiKey - API key for post endpoint
@@ -9,7 +9,7 @@ import request from 'request';
  * @param {string} dataId - Id of sensor data row to delete
  * @external {XMLHttpRequest}
  * @abstract
- * @return {Promise<object>}
+ * @return {Promise<object|null>}
  */
 export default (baseUrl, apiKey, sensorId, dataId) => {
   const requestOptions = {
@@ -22,9 +22,9 @@ export default (baseUrl, apiKey, sensorId, dataId) => {
 
   return new Promise((resolve, reject) => {
     request.delete(requestOptions, (error, response, body) => {
-      if (error) resolve({log: error});
+      if (error) reject({log: error});
 
-      if (body.statusCode !== 200) resolve({log: error});
+      if ((JSON.parse(body)).statusCode !== 200) reject({log: body});
 
       resolve();
     });
