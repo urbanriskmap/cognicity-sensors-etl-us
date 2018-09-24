@@ -2,7 +2,7 @@ import * as test from 'unit.js';
 import request from 'request';
 import sinon from 'sinon';
 
-import {filter} from '../../../services/sensors/filter';
+import {filter} from '../../../services/filter';
 import testData from './test-data';
 
 export default () => {

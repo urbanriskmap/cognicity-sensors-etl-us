@@ -30,49 +30,49 @@ export default {
             },
           },
           {
-            "type": "Feature",
-            "geometry": {
-              "type": "Point",
-              "coordinates": [
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [
                 -80.5069444,
-                26.09333333
-              ]
+                26.09333333,
+              ],
             },
-            "properties": {
-              "id": "3",
-              "created": "2018-06-19T20:32:52.230Z",
-              "properties": {
-                "uid": "260536080302501",
-                "type": "ST",
-                "class": "00065",
-                "units": "ft",
-                "agency": "usgs"
-              }
-            }
+            'properties': {
+              'id': '3',
+              'created': '2018-06-19T20:32:52.230Z',
+              'properties': {
+                'uid': '260536080302501',
+                'type': 'ST',
+                'class': '00065',
+                'units': 'ft',
+                'agency': 'usgs',
+              },
+            },
           },
           {
-                "type": "Feature",
-                "geometry": {
-                    "type": "Point",
-                    "coordinates": [
-                        -80.29726111,
-                        26.35556722
-                    ]
-                },
-                "properties": {
-                    "id": "114",
-                    "created": "2018-08-09T17:54:23.201Z",
-                    "properties": {
-                        "site": "S39",
-                        "basin": "HILLS",
-                        "class": "T",
-                        "units": "ft NGVD29",
-                        "agency": "sfwmd",
-                        "stationId": "S39-T",
-                        "controlElevation": 9
-                    }
-                }
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Point',
+              'coordinates': [
+                -80.29726111,
+                26.35556722,
+              ],
             },
+            'properties': {
+              'id': '114',
+              'created': '2018-08-09T17:54:23.201Z',
+              'properties': {
+                'site': 'S39',
+                'basin': 'HILLS',
+                'class': 'T',
+                'units': 'ft NGVD29',
+                'agency': 'sfwmd',
+                'stationId': 'S39-T',
+                'controlElevation': 9,
+              },
+            },
+          },
         ],
       },
     };

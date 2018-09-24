@@ -1,7 +1,7 @@
-import {extract as _extract} from '../../../services/sensors/extract';
-import {filter as _filter} from '../../../services/sensors/filter';
+import _extract from '../../../services/extract';
+import _filter from '../../../services/filter';
 import _compare from '../../../services/sensors/compare';
-import _load from '../../../services/sensors/load';
+import _load from '../../../services/load';
 
 export default class {
   constructor(config) {
@@ -60,7 +60,7 @@ export default class {
       .then((body) => {
         if (body.hasOwnProperty('log')) {
           // Fatal: Failed to extract sensors from USGS API
-          _reject(body.error);
+          _reject(body.log);
         }
 
         // Fetch and store a list of existing sensor uniqueId's
@@ -108,7 +108,6 @@ export default class {
                   .then((result) => {
                     if (result.hasOwnProperty('log')) {
                       // Non-fatal: Error uploading sensor
-                      // Or bubbled up log message; continue iterating
                       resolve(result.log);
                     }
 
@@ -120,12 +119,12 @@ export default class {
                     resolve('Unknown error while loading sensor');
                   })
                   .catch((error) => {
-                    // Fatal: unexpected promise failure
+                    // Non-fatal: Unexpected promise failure
                     reject(error);
                   });
                 })
                 .catch((error) => {
-                  // Fatal: unexpected promise failure
+                  // Non-fatal: Unexpected promise failure
                   reject(error);
                 });
               })

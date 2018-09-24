@@ -1,7 +1,7 @@
 import stations from './stations';
-import {filter as _filter} from '../../../services/sensors/filter';
+import _filter from '../../../services/filter';
 import _compare from '../../../services/sensors/compare';
-import _load from '../../../services/sensors/load';
+import _load from '../../../services/load';
 
 export default class {
   constructor(config) {
@@ -69,12 +69,12 @@ export default class {
                   resolve('Unknown error while loading station');
                 })
                 .catch((error) => {
-                  // Fatal: unexpected promise failure
+                  // Non-fatal: Unexpected promise failure
                   reject(error);
                 });
               })
               .catch((error) => {
-                // Fatal: unexpected promise failure
+                // Non-fatal: Unexpected promise failure
                 reject(error);
               });
             })
