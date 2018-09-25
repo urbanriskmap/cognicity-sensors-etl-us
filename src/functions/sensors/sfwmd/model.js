@@ -10,6 +10,8 @@ export default class {
 
   execute() {
     const etlProcesses = [];
+
+    // NOTE: change according to sensor data format
     const conditions = [
       {type: 'hasProperty', values: [this.config.SENSOR_UID_PROPERTY]},
     ];
@@ -20,7 +22,7 @@ export default class {
       _filter(
         this.config.SERVER_ENDPOINT,
         conditions,
-        'sfwmd'
+        this.config.SENSOR_AGENCY
       )
       .then((existingStations) => {
         for (const existingStation of existingStations) {
@@ -30,6 +32,8 @@ export default class {
         }
 
         // Store extracted stations
+        // NOTE: change value according to
+        // sensor format as retrieved from API
         const extractedStations = stations.metadata;
 
         // Iterate over extracted stations
@@ -44,7 +48,7 @@ export default class {
               )
               .then((metadata) => {
                 if (metadata.hasOwnProperty('log')) {
-                  // Non-fatal: Station already exists
+                  // Log: Station already exists
                   resolve(metadata.log);
                 }
 
@@ -55,26 +59,21 @@ export default class {
                   metadata
                 )
                 .then((result) => {
-                  if (result.hasOwnProperty('log')) {
-                    // Non-fatal: Error uploading station
-                    // Or bubbled up log message; continue iterating
-                    resolve(result.log);
-                  }
-
                   if (result.hasOwnProperty('success')) {
                     resolve(result);
                   }
 
-                  // Non-fatal: Error uploading station
+                  // Log: Error uploading sensor,
+                  // continue with remaining sensors
                   resolve('Unknown error while loading station');
                 })
                 .catch((error) => {
-                  // Non-fatal: Unexpected promise failure
-                  reject(error);
+                  // Fatal: Unexpected promise failure from _load service
+                  reject(error.log);
                 });
               })
               .catch((error) => {
-                // Non-fatal: Unexpected promise failure
+                // Fatal: Unexpected promise failure from _compare service
                 reject(error);
               });
             })

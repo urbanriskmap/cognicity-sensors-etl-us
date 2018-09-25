@@ -22,18 +22,18 @@ exports.handler = (event, context, callback) => {
 
       logs.unshift('Data for ' + updateCount + ' sensor(s) updated');
 
-      // Success logs
+      // Print logs
       console.log(logs);
       callback(null, logs);
     })
     .catch((nonFatalLogs) => {
-      // Log error, continue with next sensor
+      // Log error, Promise.all(processes) will exit
       console.log(nonFatalLogs);
       callback(null, nonFatalLogs);
     });
   })
   .catch((error) => {
-    // Log error and terminate process
+    // Log error and terminate
     console.log(error);
     callback(error);
   });

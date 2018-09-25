@@ -121,11 +121,12 @@ export default class {
         if (!sensors.length) {
           etlProcesses.push(
             new Promise((resolve, reject) => {
+              // Fatal: Exit process
               reject('No sensors found');
             })
           );
 
-          // Resolve with non-fatal log
+          // Resolve with log
           _resolve(etlProcesses);
         }
 
@@ -182,7 +183,7 @@ export default class {
                       if (compareResult
                         && compareResult.hasOwnProperty('log')
                       ) {
-                        // Non-fatal
+                        // Log: Sensor has no new observations
                         resolve(compareResult.log);
                       }
 
@@ -208,7 +209,7 @@ export default class {
                               + '(dataId: ' + updatedDataId + ')',
                             });
                           })
-                          // Non-fatal: Delete request error
+                          // Fatal: Delete request error
                           .catch((error) => {
                             reject({
                               log: sensor.id +
@@ -223,16 +224,16 @@ export default class {
                           });
                         }
                       })
-                      // Print: Load data logs
+                      // Non-fatal: Load data logs
                       .catch((error) => resolve(error.log));
                     })
-                    // Non-fatal: Incongruent data formatting, unable to compare
+                    // Fatal: Incongruent data formatting, unable to compare
                     .catch((error) => reject(error.log));
                   })
-                  // Print: Transform new data logs
+                  // Non-fatal: Transform new data logs
                   .catch((error) => resolve(error.log));
                 })
-                // Non-fatal: Failed to receive response from agency API
+                // Fatal: Failed to receive response from agency API
                 .catch((error) => {
                   reject({
                     log: 'Error fetching sensor data',
@@ -240,7 +241,7 @@ export default class {
                   });
                 });
               })
-              // Non-fatal: Failed to receive response from sensors/id endpoint
+              // Fatal: Failed to receive response from sensors/id endpoint
               .catch((error) => reject(error));
             })
           );

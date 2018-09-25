@@ -36,6 +36,8 @@ export default class {
 
   execute() {
     const etlProcesses = [];
+
+    // NOTE: change according to sensor data format
     const conditions = [
       {type: 'hasProperty', values: [this.config.SENSOR_UID_PROPERTY]},
       {type: 'hasProperty', values: ['class']},
@@ -44,6 +46,8 @@ export default class {
         {type: 'value', value: this.config.SENSOR_CODE},
       ]},
     ];
+
+    // NOTE: change according to sensor data format
     const querySets = [
       {countyCd: this.config.USGS_COUNTY_CODE},
       {parameterCd: this.config.SENSOR_CODE},
@@ -52,17 +56,14 @@ export default class {
 
     return new Promise((_resolve, _reject) => {
       // Extract sensors from USGS API
+      // NOTE: change parameters according to sensor format
+      // as received from API
       _extract(
         this.config.USGS_BASE_URL,
         querySets,
         ['value', 'timeSeries', 'length'] // Properties to check for
       )
       .then((body) => {
-        if (body.hasOwnProperty('log')) {
-          // Fatal: Failed to extract sensors from USGS API
-          _reject(body.log);
-        }
-
         // Fetch and store a list of existing sensor uniqueId's
         let existingSensorUids = [];
         _filter(
@@ -78,6 +79,8 @@ export default class {
           }
 
           // Store extracted sensors
+          // NOTE: change value according to
+          // sensor format as retrieved from API
           const extractedSensors = body.value.timeSeries;
 
           // Iterate over extracted sensors
@@ -95,7 +98,7 @@ export default class {
                 )
                 .then((metadata) => {
                   if (metadata.hasOwnProperty('log')) {
-                    // Non-fatal: Sensor already exists
+                    // Log: Sensor already exists
                     resolve(metadata.log);
                   }
 
@@ -106,25 +109,21 @@ export default class {
                     metadata
                   )
                   .then((result) => {
-                    if (result.hasOwnProperty('log')) {
-                      // Non-fatal: Error uploading sensor
-                      resolve(result.log);
-                    }
-
                     if (result.hasOwnProperty('success')) {
                       resolve(result);
                     }
 
-                    // Non-fatal: Error uploading sensor
+                    // Log: Error uploading sensor,
+                    // continue with remaining sensors
                     resolve('Unknown error while loading sensor');
                   })
                   .catch((error) => {
-                    // Non-fatal: Unexpected promise failure
-                    reject(error);
+                    // Fatal: Unexpected promise failure from _load service
+                    reject(error.log);
                   });
                 })
                 .catch((error) => {
-                  // Non-fatal: Unexpected promise failure
+                  // Fatal: Unexpected promise failure from _compare service
                   reject(error);
                 });
               })

@@ -22,15 +22,18 @@ exports.handler = (event, context, callback) => {
 
       logs.unshift(updateCount + ' station(s) added');
 
+      // Print logs
       console.log(logs);
       callback(null, logs);
     })
     .catch((nonFatalLogs) => {
+      // Log error, Promise.all(processes) will exit
       console.log(nonFatalLogs);
       callback(null, nonFatalLogs);
     });
   })
   .catch((error) => {
+    // Log error and terminate
     console.log(error);
     callback(error);
   });

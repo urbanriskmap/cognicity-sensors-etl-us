@@ -42,7 +42,7 @@ export default (baseUrl, apiKey, data, id) => {
           resolve({success: sensorId + ': Success adding sensor'});
         }
 
-        // Non-fatal, unknown error
+        // Fatal, unknown error
         reject({log: body});
       } else {
         // Post sensor data
@@ -52,7 +52,7 @@ export default (baseUrl, apiKey, data, id) => {
           resolve(body.result.dataId);
         }
 
-        // Non-fatal, unknown error
+        // Fatal, unknown error
         reject({log: body});
       }
     });

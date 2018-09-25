@@ -9,8 +9,6 @@
  */
 export default (sensor, uniqueIdKey, existingSensorUids) => {
   return new Promise((resolve, reject) => {
-    if (sensor.hasOwnProperty('log')) resolve(sensor);
-
     let sensorExists = false;
     const sensorUid = sensor.properties[uniqueIdKey];
 
