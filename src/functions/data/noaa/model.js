@@ -1,9 +1,16 @@
-import EtlData from '../../../../services/data/etl.data';
+import EtlData from '../../../services/data/etl.data';
 
 export default class {
   constructor(config) {
     this.config = config;
-    this.config.API_ENDPOINT = config.SFWMD_TIMESERIES_ENDPOINT;
+    this.config.API_ENDPOINT = config.NOAA_ENDPOINT;
+
+    let dataStructureKeys;
+    if (this.config.DATA_TYPE === 'water_level') {
+      dataStructureKeys = ['data', 'length'];
+    } else if (this.config.DATA_TYPE === 'predictions') {
+      dataStructureKeys = ['predictions', 'length'];
+    }
 
     this.sensorParameters = {
       // Refer services/utility.filterChecks method
@@ -12,7 +19,7 @@ export default class {
       ],
 
       // Refer services/utility.extractChecks method
-      dataStructureKeys: ['timeSeriesResponse', 'timeSeries', 'length'],
+      dataStructureKeys: dataStructureKeys,
 
       // Add nested property key for properties.observations
       // in sensors.data table; else keep null or ''
@@ -23,10 +30,23 @@ export default class {
       // Refer services/extract method
       getSensorQuerySets: (sensor) => {
         const period = this.getQueryTimeFormat();
+        let beginDate;
+        let endDate;
+        if (this.config.DATA_TYPE === 'water_level') {
+          beginDate = period.begin;
+          endDate = period.now;
+        } else if (this.config.DATA_TYPE === 'predictions') {
+          beginDate = period.begin;
+          endDate = period.end;
+        }
+
         return [
-          {stationId: sensor[this.config.SENSOR_UID_PROPERTY]},
-          {beginDateTime: period.begin},
-          {endDateTime: period.end},
+          {station: sensor[this.config.SENSOR_UID_PROPERTY]},
+          {product: this.config.DATA_TYPE},
+          {begin_date: beginDate},
+          {end_date: endDate},
+          {datum: sensor.datum},
+          {time_zone: sensor.time_zone},
         ];
       },
 
@@ -51,23 +71,27 @@ export default class {
       },
 
       transform: (sensor, result) => {
-        const sensorData = result.timeSeriesResponse.timeSeries;
+        let sensorData;
         let observations;
         let transformedData;
+        if (this.config.DATA_TYPE === 'water_level') {
+          sensorData = result.data;
+        } else if (this.config.DATA_TYPE === 'predictions') {
+          sensorData = result.predictions;
+        }
 
         return new Promise((resolve, reject) => {
           if (sensorData.length
-            && sensorData[0].hasOwnProperty('values')
-            && sensorData[0].values.length
-            && sensorData[0].values[0].hasOwnProperty('dateTime')
-            && sensorData[0].values[0].hasOwnProperty('value')
+            && sensorData[0].hasOwnProperty('v')
+            && sensorData[0].hasOwnProperty('t')
           ) {
-            observations = sensorData[0].values;
+            observations = sensorData;
             transformedData = [];
             for (let observation of observations) {
+              const dateTime = new Date(observation.t);
               transformedData.push({
-                dateTime: observation.dateTime,
-                value: observation.value,
+                dateTime: dateTime.toISOString(),
+                value: observation.v,
               });
             }
 
@@ -100,7 +124,7 @@ export default class {
       },
       apiError: (querySets, err) => {
         return {
-          log: 'Error connecting SFWMD API',
+          log: 'Error connecting NOAA API',
           queryParameters: JSON.stringify(querySets),
           error: JSON.stringify(err),
         };
@@ -135,30 +159,28 @@ export default class {
 
   getQueryTimeFormat() {
     const formatDateString = (date) => {
-      return date.getFullYear()
-      + '-' + // getMonth returns integer between 0 & 11, required 01 & 12
+      return date.getFullYear() +
       (date.getMonth() < 9 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1)
-      + '-' + // getDate returns integer between 1 & 31, required 01 & 31
-      (date.getDate() < 10 ? '0' + date.getDate() : date.getDate())
-      + // getHours returns integer between 0 & 23, required 00 & 23
-      (date.getHours() < 10 ? '0' + date.getHours() : date.getHours())
-      + ':00:00:000';
+      + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + '%20'
+      + (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + '%3A'
+      + '00';
     };
 
-    const periodMilliseconds = parseInt(
-      this.config.RECORDS_PERIOD.slice(1, -1),
-      10
-    ) * 24 * 60 * 60 * 1000;
+    const recordsPeriodMs = parseInt(
+      this.config.RECORDS_PERIOD.slice(1, -1), 10
+    ) * 24 * 60 * 60 * 1000; // In days
+    const predictPeriodMs = parseInt(
+      this.config.PREDICTION_PERIOD.slice(2, -1), 10
+    ) * 60 * 60 * 1000; // In hours
 
     const now = new Date();
-    const start = new Date(Date.parse(now) - periodMilliseconds);
-
-    const begin = formatDateString(start);
-    const end = formatDateString(now);
+    const start = new Date(Date.parse(now) - recordsPeriodMs);
+    const predict = new Date(Date.parse(now) + predictPeriodMs);
 
     return {
-      begin: begin,
-      end: end,
+      begin: formatDateString(start),
+      now: formatDateString(now),
+      end: formatDateString(predict),
     };
   }
 }
