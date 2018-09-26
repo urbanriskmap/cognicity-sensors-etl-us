@@ -94,6 +94,10 @@ export default class {
         },
       };
 
+      if (this.config.DATA_TYPE) {
+        data.properties.type = this.config.DATA_TYPE;
+      }
+
       _load(
         this.config.SERVER_ENDPOINT,
         this.config.API_KEY,

@@ -23,13 +23,11 @@ export default (etl, callback, msg) => {
 
     // Log error, Promise.all(processes) will exit
     }).catch((fatalLog) => {
-      console.log(fatalLog);
       callback(fatalLog);
     });
 
   // Log error and terminate
   }).catch((error) => {
-    console.log(error);
     callback(error);
   });
 };
