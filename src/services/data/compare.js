@@ -6,48 +6,47 @@
  * @param {string|null} childProperty - Child property to lookup observations
  * @param {object} data - extracted data
  * @param {string} lastUpdated - dateTime string
+ * @param {boolean} initializing
  * @return {Promise<object|null>} Promise object
  */
-export default (id, childProperty, data, lastUpdated) => {
-  const logMessage = {
-    log: id
-    + ': Sensor has no new observations',
-  };
-
+export default (id, childProperty, data, lastUpdated, initializing) => {
   return new Promise((resolve, reject) => {
-    if (!lastUpdated) {
-      // New data, continue to upload
-      resolve();
+    if (initializing) {
+      // No previously stored sensor data, continue
+      resolve(false);
     } else {
-      let lastExtractedObservation;
+      if (!data) {
+        // No data object, exit process
+        resolve(true);
+      } else {
+        let lastObservationDateTime;
 
-      if (data) {
         if (childProperty
           && data[childProperty].length
           && data[childProperty][
             data[childProperty].length - 1
           ].hasOwnProperty('dateTime')
         ) {
-          lastExtractedObservation = data[childProperty][
+          lastObservationDateTime = data[childProperty][
             data[childProperty].length - 1
           ].dateTime;
         } else if (!childProperty
           && data.length
           && data[data.length - 1].hasOwnProperty('dateTime')
         ) {
-          data[data.length - 1].dateTime;
+          lastObservationDateTime = data[data.length - 1].dateTime;
         }
 
-        reject({log: 'Incongruent data formats, error comparing'});
-      }
-
-      if (lastExtractedObservation
-        && lastExtractedObservation === lastUpdated
-      ) {
-        resolve(logMessage);
-      } else {
-        // New data, continue to upload
-        resolve();
+        if (!lastObservationDateTime) {
+          // No extracted data available, exit process
+          resolve(true);
+        } else if (lastObservationDateTime === lastUpdated) {
+          // Data not updated yet, exit process
+          resolve(true);
+        } else {
+          // New data, continue to upload
+          resolve(false);
+        }
       }
     }
   });

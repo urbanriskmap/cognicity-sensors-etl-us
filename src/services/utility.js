@@ -1,5 +1,6 @@
 /**
  * Utility function to compare sensor values
+ * and filter sensors retrieved from cognicity sensors API
  * @function filterChecks
  * @param {object} properties - Sensor properties returned from sensors API
  * @param {{type: string, values: string[]}[]} conditions - Array of conditions

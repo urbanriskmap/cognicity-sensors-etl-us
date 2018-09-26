@@ -22,22 +22,24 @@ export default (baseUrl, conditions, agency) => {
       url: queryUrl,
       json: true,
     }, (error, response, body) => {
-      if (error) reject(error);
+      if (error) {
+        reject(error);
+      } else {
+        const features = body.result.features;
 
-      const features = body.result.features;
+        for (const feature of features) {
+          if (feature.properties.hasOwnProperty('properties')) {
+            const properties = feature.properties.properties;
+            properties.id = feature.properties.id;
 
-      for (const feature of features) {
-        if (feature.properties.hasOwnProperty('properties')) {
-          const properties = feature.properties.properties;
-          properties.id = feature.properties.id;
-
-          if (filterChecks(properties, conditions)) {
-            filteredList.push(properties);
+            if (filterChecks(properties, conditions)) {
+              filteredList.push(properties);
+            }
           }
         }
-      }
 
-      resolve(filteredList);
+        resolve(filteredList);
+      }
     });
   });
 };

@@ -14,27 +14,30 @@ export default (endpoint, id, dataType) => {
 
       let storedObservations;
       let storedObsCheckPassed = false;
-      let dataId;
+      let lastStoredDataId;
       let latestRow;
 
-      if (body.result && body.result.length) {
-        latestRow = body.result[0];
+      if (body.result) {
+        if (Array.isArray(body.result) && body.result.length) {
+          latestRow = body.result[0];
+        }
+      } else {
+        reject(body);
       }
 
       if (latestRow
         && latestRow.hasOwnProperty('properties')
         && latestRow.properties
-        && latestRow.properties.hasOwnProperty('observations')
       ) {
         storedObsCheckPassed = true;
         storedObservations = latestRow.properties.observations;
-        dataId = latestRow.dataId;
+        lastStoredDataId = latestRow.dataId;
       }
 
       resolve({
         checksPassed: storedObsCheckPassed,
-        storedObservations: storedObservations,
-        lastStoredDataId: dataId,
+        storedObs: storedObservations,
+        lastDataId: lastStoredDataId,
       });
     });
   });

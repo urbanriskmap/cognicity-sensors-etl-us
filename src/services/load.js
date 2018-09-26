@@ -26,34 +26,38 @@ export default (baseUrl, apiKey, data, id) => {
     };
 
     request.post(requestOptions, (error, response, body) => {
-      if (error) reject({log: error});
-
-      if (body.statusCode !== 200) reject({log: body});
-
-      if (!id) {
-        // Post sensor metadata
-        if (body.result
-          && body.result.features
-          && body.result.features[0]
-          && body.result.features[0].properties
-          && body.result.features[0].properties.id
-        ) {
-          const sensorId = body.result.features[0].properties.id;
-          resolve({success: sensorId + ': Success adding sensor'});
-        }
-
-        // Fatal, unknown error
-        reject({log: body});
+      if (error) {
+        reject({log: error});
       } else {
-        // Post sensor data
-        if (body.result
-          && body.result.dataId
-        ) {
-          resolve(body.result.dataId);
-        }
+        if (body.statusCode !== 200) {
+          reject({log: body});
+        } else {
+          if (!id) {
+            // Post sensor metadata
+            if (body.result
+              && body.result.features
+              && body.result.features[0]
+              && body.result.features[0].properties
+              && body.result.features[0].properties.id
+            ) {
+              const sensorId = body.result.features[0].properties.id;
+              resolve({success: sensorId + ': Success adding sensor'});
+            }
 
-        // Fatal, unknown error
-        reject({log: body});
+            // Fatal, unknown error
+            reject({log: body});
+          } else {
+            // Post sensor data
+            if (body.result
+              && body.result.dataId
+            ) {
+              resolve(body.result.dataId);
+            }
+
+            // Fatal, unknown error
+            reject({log: body});
+          }
+        }
       }
     });
   });

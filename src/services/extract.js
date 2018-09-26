@@ -25,12 +25,14 @@ export default (baseUrl, querySets, conditions) => {
       url: queryUrl,
       json: true,
     }, (error, response, body) => {
-      if (error) reject({log: error});
-
-      if (body && extractChecks(body, conditions)) {
-        resolve(body);
+      if (error) {
+        reject({log: error});
       } else {
-        reject({log: body});
+        if (body && extractChecks(body, conditions)) {
+          resolve(body);
+        } else {
+          reject({log: body});
+        }
       }
     });
   });

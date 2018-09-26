@@ -22,11 +22,15 @@ export default (baseUrl, apiKey, sensorId, dataId) => {
 
   return new Promise((resolve, reject) => {
     request.delete(requestOptions, (error, response, body) => {
-      if (error) reject({log: error});
-
-      if ((JSON.parse(body)).statusCode !== 200) reject({log: body});
-
-      resolve();
+      if (error) {
+        reject({log: error});
+      } else {
+        if ((JSON.parse(body)).statusCode !== 200) {
+          reject({log: body});
+        } else {
+          resolve();
+        }
+      }
     });
   });
 };
