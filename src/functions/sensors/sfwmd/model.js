@@ -19,11 +19,11 @@ export default class {
 
     this.logMessages = {
       noSensors: 'Error in stations list',
-      compareError: 'Unknown error, failed to compare sensors',
-      sensorExists: (id) => 'Sensor already stored. Id: ' + id,
+      compareError: 'Unknown error, failed to compare stations',
+      sensorExists: (id) => 'Station already stored. Id: ' + id,
       sensorLoaded: (id) => {
         return {
-          success: 'Sensor stored. Id: ' + id,
+          success: 'Station stored. Id: ' + id,
         };
       },
       serverError: (err) => {
