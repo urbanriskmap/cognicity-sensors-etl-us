@@ -95,8 +95,9 @@ export default class {
         .then((storedSensorUids) => {
           // ITERATE over extracted sensors
           for (const sensor of extractedSensors) {
-            // TRANSFORM
-            const transformedSensor = this.utilityMethods.transform(sensor);
+            // TRANSFORM if extracted, else pass if from file
+            const transformedSensor = this.config.API_ENDPOINT ?
+            this.utilityMethods.transform(sensor) : sensor;
 
             etlProcesses.push(
               new Promise((res, rej) => {
