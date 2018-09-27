@@ -41,7 +41,7 @@ export default (baseUrl, apiKey, data, id) => {
               && body.result.features[0].properties.id
             ) {
               const sensorId = body.result.features[0].properties.id;
-              resolve({success: sensorId + ': Success adding sensor'});
+              resolve({id: sensorId});
             }
 
             // Fatal, unknown error

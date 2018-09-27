@@ -128,9 +128,7 @@ export default class {
 
     this.logMessages = {
       noSensors: 'No sensors found matching the given conditions',
-      notUpdated: (id) => {
-        return id + ': No new data available';
-      },
+      notUpdated: (id) => id + ': No new data available',
       serverError: (err) => {
         return {
           log: 'Error connecting congnicity sensors API',

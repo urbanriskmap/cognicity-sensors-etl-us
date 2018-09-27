@@ -5,9 +5,15 @@ import _load from '../load';
 
 export default class {
   constructor(
-    config
+    config,
+    sensorParameters,
+    utilityMethods,
+    logMessages
   ) {
     this.config = config;
+    this.sensorParams = sensorParameters;
+    this.utilityMethods = utilityMethods;
+    this.msgs = logMessages;
   }
 
   extractSensors(querySets, sensors) {
@@ -103,7 +109,7 @@ export default class {
                   } else {
                     // LOAD
                     this.loadNewSensors(sensorToLoad)
-                    .then((result) => res(result))
+                    .then((result) => res(this.msgs.sensorLoaded(result.id)))
 
                     // non-fatal: failed to load, continue with rest
                     .catch((err) => res(err.log));
