@@ -12,7 +12,7 @@ export default class {
         {type: 'hasProperty', values: ['class']},
         {type: 'equate', values: [
           {type: 'property', value: 'class'},
-          {type: 'value', value: this.config.SENSOR_CODE},
+          {type: 'value', value: this.config.USGS_SENSOR_CODE},
         ]},
       ],
 
@@ -22,7 +22,7 @@ export default class {
       // Add nested property key for properties.observations
       // in sensors.data table; else keep null or ''
       // NOTE: config variables from process.env are strings
-      childProperty: this.config.HAS_UPSTREAM_DOWNSTREAM === 'true'
+      childProperty: this.config.SENSOR_CHILD_PROPERTY === 'true'
       ? 'upstream' : '',
     };
 
@@ -41,12 +41,12 @@ export default class {
 
         if (obs) {
           // process.env passes true / false values as strings
-          if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'true'
+          if (this.config.SENSOR_CHILD_PROPERTY === 'true'
             && obs.upstream.length
             && obs.upstream[obs.upstream.length - 1].hasOwnProperty('dateTime')
           ) {
             lastUpdated = obs.upstream[obs.upstream.length - 1].dateTime;
-          } else if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'false'
+          } else if (this.config.SENSOR_CHILD_PROPERTY === 'false'
             && obs.length
             && obs[obs.length - 1].hasOwnProperty('dateTime')
           ) {
@@ -75,7 +75,7 @@ export default class {
             && sensorData[0].values.length
             && sensorData[0].values[0].hasOwnProperty('value')
           ) {
-            if (this.config.HAS_UPSTREAM_DOWNSTREAM === 'true') {
+            if (this.config.SENSOR_CHILD_PROPERTY === 'true') {
               observations = {
                 upstream: sensorData[0].values[0].value,
                 downstream: sensorData[0].values[1].value,

@@ -170,7 +170,7 @@ export default class {
       this.config.RECORDS_PERIOD.slice(1, -1), 10
     ) * 24 * 60 * 60 * 1000; // In days
     const predictPeriodMs = parseInt(
-      this.config.PREDICTION_PERIOD.slice(2, -1), 10
+      this.config.NOAA_PREDICTION_PERIOD.slice(2, -1), 10
     ) * 60 * 60 * 1000; // In hours
 
     const now = new Date();

@@ -31,7 +31,7 @@ export default () => {
 
       sinon.stub(request, 'get')
       .withArgs({
-        url: mockUsgsQuery(testConfig.SENSOR_CODE),
+        url: mockUsgsQuery(testConfig.USGS_SENSOR_CODE),
         json: true,
       })
       .yields(null, null, {
@@ -123,7 +123,7 @@ export default () => {
     });
 
     it('Resolves with a log if no sensors found', (done) => {
-      let configStub = sinon.stub(testConfig, 'SENSOR_CODE')
+      let configStub = sinon.stub(testConfig, 'USGS_SENSOR_CODE')
       .value('nullCode');
 
       test.promise
@@ -206,7 +206,7 @@ export default () => {
             uid: 'someUniqueId',
             agency: 'usgs',
             type: 'sensorType',
-            class: testConfig.SENSOR_CODE,
+            class: testConfig.USGS_SENSOR_CODE,
             units: 'ft',
           },
           location: {
@@ -288,7 +288,7 @@ export default () => {
     });
 
     it('Catches http request errors', (done) => {
-      let configStub = sinon.stub(testConfig, 'SENSOR_CODE')
+      let configStub = sinon.stub(testConfig, 'USGS_SENSOR_CODE')
       .value('errorCode');
 
       // Swap resolve & reject callbacks to catch rejected

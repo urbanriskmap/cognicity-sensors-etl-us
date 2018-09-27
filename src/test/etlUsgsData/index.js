@@ -293,7 +293,7 @@ export default () => {
     });
 
     it('Transforms extracted data (w/o up, down)', (done) => {
-      let configStub = sinon.stub(testConfig, 'HAS_UPSTREAM_DOWNSTREAM')
+      let configStub = sinon.stub(testConfig, 'SENSOR_CHILD_PROPERTY')
       .value(false);
       let argData = testData.getUsgsObs(false);
 

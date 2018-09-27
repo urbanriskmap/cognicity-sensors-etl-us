@@ -12,7 +12,7 @@ export default class {
         {type: 'hasProperty', values: ['class']},
         {type: 'equate', values: [
           {type: 'property', value: 'class'},
-          {type: 'value', value: this.config.SENSOR_CODE},
+          {type: 'value', value: this.config.USGS_SENSOR_CODE},
         ]},
       ],
 
@@ -22,7 +22,7 @@ export default class {
       // Refer services/extract method
       querySets: [
         {countyCd: this.config.USGS_COUNTY_CODE},
-        {parameterCd: this.config.SENSOR_CODE},
+        {parameterCd: this.config.USGS_SENSOR_CODE},
         {siteStatus: this.config.USGS_SITE_STATUS},
       ],
     };
@@ -44,7 +44,7 @@ export default class {
             uid: uid,
             agency: this.config.SENSOR_AGENCY,
             type: sensorType,
-            class: this.config.SENSOR_CODE,
+            class: this.config.USGS_SENSOR_CODE,
             units: units,
           },
           location: {

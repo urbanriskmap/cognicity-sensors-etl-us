@@ -3,8 +3,8 @@ export default {
 
   USGS_COUNTY_CODE: 12011,
   USGS_SITE_STATUS: 'all',
-  SENSOR_CODE: 'sensorCode',
-  HAS_UPSTREAM_DOWNSTREAM: 'true',
+  USGS_SENSOR_CODE: 'sensorCode',
+  SENSOR_CHILD_PROPERTY: 'true',
 
   RECORDS_PERIOD: 'P1D',
   RECORDS_INTERVAL: 'PT15M',
