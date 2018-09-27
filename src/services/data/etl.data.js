@@ -133,7 +133,7 @@ export default class {
           _resolve([new Promise((res, rej) => rej(this.msgs.noSensors))]);
         }
 
-        // iterate over sensors, chain etl processes as promises
+        // ITERATE over sensors, chain etl processes as promises
         for (const sensor of sensors) {
           const id = sensor.id;
           const querySets = this.utilityMethods.getSensorQuerySets(sensor);

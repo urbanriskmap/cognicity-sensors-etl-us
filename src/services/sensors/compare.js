@@ -24,7 +24,7 @@ export default (sensor, uniqueIdKey, existingSensorUids) => {
         resolve(sensor);
       } else {
         resolve({
-          log: sensorUid + ': Sensor already exists',
+          log: sensorUid,
         });
       }
     } else {
