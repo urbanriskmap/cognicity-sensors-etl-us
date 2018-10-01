@@ -16,8 +16,8 @@ export default (baseUrl, querySets, conditions) => {
 
   // Append query params in key value pairs
   for (const querySet of querySets) {
-    queryUrl += '&' + Object.keys(querySet)[0]
-    + '=' + querySet[Object.keys(querySet)[0]];
+    queryUrl += '&' + Object.keys(querySet)[0] + '='
+    + encodeURIComponent(querySet[Object.keys(querySet)[0]]);
   }
 
   return new Promise((resolve, reject) => {
@@ -26,7 +26,7 @@ export default (baseUrl, querySets, conditions) => {
       json: true,
     }, (error, response, body) => {
       if (error) {
-        reject({log: error});
+        reject(error);
       } else {
         if (body && extractChecks(body, conditions)) {
           resolve(body);

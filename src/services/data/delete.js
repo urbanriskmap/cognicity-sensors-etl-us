@@ -23,10 +23,10 @@ export default (baseUrl, apiKey, sensorId, dataId) => {
   return new Promise((resolve, reject) => {
     request.delete(requestOptions, (error, response, body) => {
       if (error) {
-        reject({log: error});
+        reject(error);
       } else {
         if ((JSON.parse(body)).statusCode !== 200) {
-          reject({log: body});
+          reject(body);
         } else {
           resolve();
         }

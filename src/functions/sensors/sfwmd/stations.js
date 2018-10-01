@@ -427,38 +427,6 @@ export default {
       properties: {
         agency: 'sfwmd',
         basin: 'NNRC',
-        class: 'H',
-        site: 'S34',
-        stationId: 'S34-H',
-        units: 'ft NGVD29',
-        controlElevation: 9.791,
-        warningElevation: 10.691,
-      },
-      location: {
-        lat: 26.14991389,
-        lng: -80.44262222,
-      },
-    },
-    {
-      properties: {
-        agency: 'sfwmd',
-        basin: 'NNRC',
-        class: 'T',
-        site: 'S34',
-        stationId: 'S34-T',
-        units: 'ft NGVD29',
-        controlElevation: 4.377,
-        warningElevation: 4.807,
-      },
-      location: {
-        lat: 26.14592222,
-        lng: -80.44127778,
-      },
-    },
-    {
-      properties: {
-        agency: 'sfwmd',
-        basin: 'NNRC',
         class: 'C',
         site: 'S34',
         stationId: 'S34-C-Q',

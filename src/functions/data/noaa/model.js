@@ -129,9 +129,17 @@ export default class {
           error: JSON.stringify(err),
         };
       },
-      deleteError: (id, err) => {
+      apiErrorNonFatal: (querySets, err) => {
         return {
-          log: 'Failed to remove previous observations for sensor id: ' + id,
+          log: 'No data, or incongruent format',
+          queryParameters: JSON.stringify(querySets),
+          error: JSON.stringify(err),
+        };
+      },
+      deleteError: (id, dataId, err) => {
+        return {
+          log: 'Failed to remove previous observations for sensor id: ' + id
+          + ', data id: ' + dataId,
           error: JSON.stringify(err),
         };
       },
@@ -159,11 +167,17 @@ export default class {
 
   getQueryTimeFormat() {
     const formatDateString = (date) => {
-      return date.getFullYear() +
-      (date.getMonth() < 9 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1)
-      + (date.getDate() < 10 ? '0' + date.getDate() : date.getDate()) + '%20'
-      + (date.getHours() < 10 ? '0' + date.getHours() : date.getHours()) + '%3A'
-      + '00';
+      return date.getFullYear().toString()
+      + (date.getMonth() < 9
+        ? '0' + (date.getMonth() + 1)
+        : (date.getMonth() + 1).toString())
+      + (date.getDate() < 10
+        ? '0' + date.getDate()
+        : date.getDate().toString())
+      + ' ' + (date.getHours() < 10 // URI encoding in extract service
+        ? '0' + date.getHours()
+        : date.getHours().toString())
+      + ':' + '00'; // URI encoding in extract service
     };
 
     const recordsPeriodMs = parseInt(

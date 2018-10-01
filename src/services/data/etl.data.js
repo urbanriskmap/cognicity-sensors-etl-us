@@ -34,7 +34,8 @@ export default class {
     return new Promise((resolve, reject) => {
       _getObs(
         this.config.SERVER_ENDPOINT,
-        sensorId
+        sensorId,
+        this.config.DATA_TYPE
       )
       .then(({
         checksPassed,
@@ -164,7 +165,8 @@ export default class {
                             .then(() => {
                               res(this.msgs.dataUpdated(id, newDataId));
                             }).catch((err) => {
-                              rej(this.msgs.deleteError(id, err.log));
+                              // non-fatal: log failed delete on :id/:dataId
+                              res(this.msgs.deleteError(id, lastDataId, err));
                             });
                           } else {
                             res(this.msgs.dataStored(id, newDataId));
@@ -178,10 +180,18 @@ export default class {
                     }).catch((err) => rej(err.log));
 
                   // non-fatal: no valid data to transform
-                  }).catch((err) => rej(err.log));
+                }).catch((err) => res(err.log));
 
-                // fatal: failed to receive response from agency api
-              }).catch((err) => rej(this.msgs.apiError(querySets, err)));
+              // extract errors
+              }).catch((err) => {
+                if (err.hasOwnProperty('log')) {
+                  // non-fatal: incongruent format or no-data
+                  res(this.msgs.apiErrorNonFatal(querySets, err.log));
+                } else {
+                  // fatal: failed to receive response from agency api
+                  rej(this.msgs.apiError(querySets, err));
+                }
+              });
 
               // fatal: failed to retrieve stored data for queried sensor
             }).catch((err) => rej(this.msgs.sensorError(id, err)));

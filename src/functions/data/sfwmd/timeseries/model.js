@@ -24,7 +24,7 @@ export default class {
       getSensorQuerySets: (sensor) => {
         const period = this.getQueryTimeFormat();
         return [
-          {stationId: sensor[this.config.SENSOR_UID_PROPERTY]},
+          {names: sensor[this.config.SENSOR_UID_PROPERTY]},
           {beginDateTime: period.begin},
           {endDateTime: period.end},
         ];
@@ -105,9 +105,17 @@ export default class {
           error: JSON.stringify(err),
         };
       },
-      deleteError: (id, err) => {
+      apiErrorNonFatal: (querySets, err) => {
         return {
-          log: 'Failed to remove previous observations for sensor id: ' + id,
+          log: 'No data, or incongruent format',
+          queryParameters: JSON.stringify(querySets),
+          error: JSON.stringify(err),
+        };
+      },
+      deleteError: (id, dataId, err) => {
+        return {
+          log: 'Failed to remove previous observations for sensor id: ' + id
+          + ', data id: ' + dataId,
           error: JSON.stringify(err),
         };
       },
