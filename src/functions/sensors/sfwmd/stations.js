@@ -741,8 +741,8 @@ export default {
         warningElevation: 3.735,
       },
       location: {
-        lat: 26.06625667,
-        lng: -80.20901639,
+        lat: 26.06317694,
+        lng: -80.36353250,
       },
     },
 
