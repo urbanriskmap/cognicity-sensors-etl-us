@@ -24,7 +24,9 @@ export default class {
           querySets,
           this.sensorParams.dataStructureKeys
         )
-        .then((result) => resolve(result))
+        .then((result) => {
+          resolve(this.utilityMethods.parseSensors(result));
+        })
         .catch((error) => reject(error));
       } else if (sensors) {
         resolve(sensors);

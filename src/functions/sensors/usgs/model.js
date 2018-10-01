@@ -28,6 +28,10 @@ export default class {
     };
 
     this.utilityMethods = {
+      parseSensors: (response) => {
+        return response.value.timeSeries;
+      },
+
       transform: (sensor) => {
         const uid = sensor.sourceInfo.siteCode[0].value;
         const units = sensor.variable.unit.unitCode;

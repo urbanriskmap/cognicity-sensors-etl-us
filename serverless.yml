@@ -295,7 +295,7 @@ functions:
     handler: bin/functions/data/noaa/index.handler
     package:
       include:
-        - bin/functions/etl-data/noaa/**
+        - bin/functions/data/noaa/**
     environment:
       API_KEY: ${file(./.env.yml):${opt:stage}-apikey}
       DATA_TYPE: predictions
