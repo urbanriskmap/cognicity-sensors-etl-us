@@ -1,5 +1,8 @@
 export default {
-  baseUrl: 'https://some.base.url/?firstParam=1',
+  baseUrl_1: 'https://first.base.url/?firstParam=1',
+  baseUrl_2: 'https://second.base.url/?firstParam=1',
+  baseUrl_3: 'https://third.base.url/?firstParam=1',
+  baseUrl_4: 'https://fourth.base.url/?firstParam=1',
 
   querySet_1: [
     {secondParam: 2},
@@ -10,7 +13,7 @@ export default {
     {fifthParam: 5},
   ],
   querySet_3: [
-    {stringParam: 'foo'},
-    {otherStringParam: 'bar'},
+    {sixthParam: 6},
+    {seventhParam: 7},
   ],
 };
