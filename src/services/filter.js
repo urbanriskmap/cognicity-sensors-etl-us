@@ -12,8 +12,6 @@ import {filterChecks} from './utility';
  * @return {Promise<object[]>} - List of stored sensors matching query
  */
 export default (baseUrl, conditions, agency) => {
-  let filteredList = [];
-
   return new Promise((resolve, reject) => {
     let queryUrl = baseUrl;
     queryUrl += agency ? '?agency=' + agency : '';
@@ -25,15 +23,28 @@ export default (baseUrl, conditions, agency) => {
       if (error) {
         reject(error);
       } else {
-        const features = body.result.features;
+        if (body.statusCode !== 200) {
+          reject(body);
+        }
 
-        for (const feature of features) {
-          if (feature.properties.hasOwnProperty('properties')) {
-            const properties = feature.properties.properties;
-            properties.id = feature.properties.id;
+        const filteredList = [];
+        let features = [];
 
-            if (filterChecks(properties, conditions)) {
-              filteredList.push(properties);
+        if (body.hasOwnProperty('result')
+          && body.result.hasOwnProperty('features')
+        ) {
+          features = body.result.features;
+
+          if (features.length) {
+            for (const feature of features) {
+              if (feature.properties.hasOwnProperty('properties')) {
+                const properties = feature.properties.properties;
+                properties.id = feature.properties.id;
+
+                if (filterChecks(properties, conditions)) {
+                  filteredList.push(properties);
+                }
+              }
             }
           }
         }

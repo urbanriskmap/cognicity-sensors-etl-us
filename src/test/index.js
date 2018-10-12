@@ -5,7 +5,7 @@
 // import testWmdUploadStations from './wmdUploadStations';
 // import testNoaaUploadStations from './noaaUploadStations';
 import testExtractService from './services/extract';
-// import testFilterService from './services/filter';
+import testFilterService from './services/filter';
 
 // testServices();
 // testWmdUploadStations();
@@ -14,4 +14,4 @@ import testExtractService from './services/extract';
 // testEtlUsgsData();
 // testFullFlow();
 testExtractService();
-// testFilterService();
+testFilterService();

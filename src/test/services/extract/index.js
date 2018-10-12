@@ -52,9 +52,7 @@ export default () => {
           'https://first.base.url/?firstParam=1&secondParam=2&thirdParam=3'
         );
       })
-      .catch((error) => {
-        test.fail(error);
-      })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });
@@ -80,23 +78,19 @@ export default () => {
           body.propertyA.propertyB[0].propertyC
         ).is('foo');
       })
-      .catch((error) => {
-        test.fail(error);
-      })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });
 
-    it('Resolves with a log for format mismatch', (done) => {
+    it('Rejects with a log for format mismatch', (done) => {
       const conditions = ['propertyA', 'propertyB'];
       test.promise
       .given(extract(testData.baseUrl_4, testData.querySet_3, conditions))
-      .then((body) => {
-        test.value(body.log.propertyA.propertyC)
-        .is('Error fetching sensors, or incompatible format');
-      })
+      .then(() => test.fail('Promise was unexpectedly fulfilled'))
       .catch((error) => {
-        test.fail(error);
+        test.value(error.log.propertyA.propertyC)
+        .is('Error fetching sensors, or incompatible format');
       })
       .finally(done)
       .done();
