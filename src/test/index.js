@@ -6,6 +6,7 @@
 // import testNoaaUploadStations from './noaaUploadStations';
 import testExtractService from './services/extract';
 import testFilterService from './services/filter';
+import testLoadService from './services/load';
 
 // testServices();
 // testWmdUploadStations();
@@ -15,3 +16,4 @@ import testFilterService from './services/filter';
 // testFullFlow();
 testExtractService();
 testFilterService();
+testLoadService();

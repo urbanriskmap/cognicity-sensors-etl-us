@@ -105,7 +105,7 @@ export default class {
         data,
         sensorId
       )
-      .then((updatedDataId) => resolve(updatedDataId))
+      .then((result) => resolve(result))
       .catch((error) => reject(error));
     });
   }
@@ -158,7 +158,7 @@ export default class {
                       } else {
                         // LOAD
                         this.loadNewObservations(id, obs)
-                        .then((newDataId) => {
+                        .then(({newDataId}) => {
                           // DELETE PREVIOUS if stored
                           if (lastDataId) {
                             this.deleteOldObservations(id, lastDataId)

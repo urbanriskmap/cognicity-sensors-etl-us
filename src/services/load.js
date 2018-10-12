@@ -51,7 +51,7 @@ export default (baseUrl, apiKey, data, id) => {
             if (body.result
               && body.result.dataId
             ) {
-              resolve(body.result.dataId);
+              resolve({newDataId: body.result.dataId});
             }
 
             // Fatal, unknown error
