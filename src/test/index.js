@@ -7,6 +7,7 @@
 import testExtractService from './services/extract';
 import testFilterService from './services/filter';
 import testLoadService from './services/load';
+import testHandlerService from './services/handler';
 
 // testServices();
 // testWmdUploadStations();
@@ -17,3 +18,4 @@ import testLoadService from './services/load';
 testExtractService();
 testFilterService();
 testLoadService();
+testHandlerService();
