@@ -203,7 +203,7 @@ export default class {
         _resolve(etlProcesses);
 
       // fatal: failed to receive response from sensors endpoint
-    }).catch((error) => _reject(this.msgs.serverError(error)));
+      }).catch((error) => _reject(this.msgs.serverError(error)));
     });
   }
 }
