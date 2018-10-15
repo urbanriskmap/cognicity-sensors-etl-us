@@ -2,14 +2,13 @@
  * This method compares a sensor's observations against the
  * last stored observations using the dateTime value
  * @function compareObservations
- * @param {object} id - Sensor id
  * @param {string|null} childProperty - Child property to lookup observations
- * @param {object} data - extracted data
+ * @param {array|object} data - extracted data
  * @param {string} lastUpdated - dateTime string
  * @param {boolean} initializing
  * @return {Promise<object|null>} Promise object
  */
-export default (id, childProperty, data, lastUpdated, initializing) => {
+export default (childProperty, data, lastUpdated, initializing) => {
   return new Promise((resolve, reject) => {
     if (initializing) {
       // No previously stored sensor data, continue

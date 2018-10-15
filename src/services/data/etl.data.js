@@ -73,10 +73,9 @@ export default class {
     });
   }
 
-  compareObservations(sensorId, obs, lastUpdated, initializing) {
+  compareObservations(obs, lastUpdated, initializing) {
     return new Promise((resolve, reject) => {
       _compare(
-        sensorId,
         this.sensorParams.childProperty,
         obs,
         lastUpdated,
@@ -151,7 +150,7 @@ export default class {
                   this.utilityMethods.transform(sensor, result)
                   .then((obs) => {
                     // COMPARE EXTRACTED WITH STORED
-                    this.compareObservations(id, obs, lastUpdated, initializing)
+                    this.compareObservations(obs, lastUpdated, initializing)
                     .then((exitProcess) => {
                       if (exitProcess) {
                         res(this.msgs.notUpdated(id));
