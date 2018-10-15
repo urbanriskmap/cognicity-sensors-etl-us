@@ -3,7 +3,7 @@ import * as test from 'unit.js';
 import compare from '../../../../services/sensors/compare';
 
 export default () => {
-  describe('Test compare service', () => {
+  describe('Test compare sensors service', () => {
     const sensorToCompare = {
       properties: {
         uniqueIdKey: 'testUniqueId',

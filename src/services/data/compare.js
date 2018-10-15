@@ -12,11 +12,11 @@ export default (childProperty, data, lastUpdated, initializing) => {
   return new Promise((resolve, reject) => {
     if (initializing) {
       // No previously stored sensor data, continue
-      resolve(false);
+      resolve({exit: false});
     } else {
       if (!data) {
         // No data object, exit process
-        resolve(true);
+        resolve({exit: true});
       } else {
         let lastObservationDateTime;
 
@@ -38,13 +38,13 @@ export default (childProperty, data, lastUpdated, initializing) => {
 
         if (!lastObservationDateTime) {
           // No extracted data available, exit process
-          resolve(true);
+          resolve({exit: true});
         } else if (lastObservationDateTime === lastUpdated) {
           // Data not updated yet, exit process
-          resolve(true);
+          resolve({exit: true});
         } else {
           // New data, continue to upload
-          resolve(false);
+          resolve({exit: false});
         }
       }
     }

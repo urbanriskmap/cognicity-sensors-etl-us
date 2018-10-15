@@ -151,8 +151,8 @@ export default class {
                   .then((obs) => {
                     // COMPARE EXTRACTED WITH STORED
                     this.compareObservations(obs, lastUpdated, initializing)
-                    .then((exitProcess) => {
-                      if (exitProcess) {
+                    .then(({exit}) => {
+                      if (exit) {
                         res(this.msgs.notUpdated(id));
                       } else {
                         // LOAD
