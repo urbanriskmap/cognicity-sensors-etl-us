@@ -25,10 +25,12 @@ export default (baseUrl, apiKey, sensorId, dataId) => {
       if (error) {
         reject(error);
       } else {
-        if ((JSON.parse(body)).statusCode !== 200) {
+        if ((JSON.parse(body)).hasOwnProperty('statusCode')
+          && (JSON.parse(body)).statusCode !== 200
+        ) {
           reject(body);
         } else {
-          resolve();
+          resolve({deleted: true});
         }
       }
     });
