@@ -5,7 +5,7 @@ import testHandlerService from './services/handler';
 
 import testCompareDataService from './services/data/compare';
 // import testDeleteDataService from './services/data/delete';
-// import testGetStoredObsService from './services/data/storedObservations';
+import testGetStoredObsService from './services/data/storedObservations';
 // import testEtlDataService from './services/data/etl-data';
 
 import testCompareSensorsService from './services/sensors/compare';
@@ -17,12 +17,12 @@ testFilterService();
 testLoadService();
 testHandlerService();
 
-// Tests for sensor data services
-testCompareDataService();
-// testDeleteDataService();
-// testGetStoredObsService();
-// testEtlDataService();
-
 // Tests for sensor services
 testCompareSensorsService();
 // testEtlSensorsService();
+
+// Tests for sensor data services
+testCompareDataService();
+// testDeleteDataService();
+testGetStoredObsService();
+// testEtlDataService();
