@@ -1,5 +1,15 @@
 import request from 'request';
 
+/**
+ * This method deletes sensor data row for given sensor and data id's
+ * @function getStoredObservations
+ * @param {string} endpoint - CogniCity Sensors API base url
+ * @param {string} id - Sensor id to get observations for
+ * @param {string} dataType - Optional datatype to filter observations
+ * @external {XMLHttpRequest}
+ * @abstract
+ * @return {Promise<object>}
+ */
 export default (endpoint, id, dataType) => {
   return new Promise((resolve, reject) => {
     let queryUrl = endpoint + id;

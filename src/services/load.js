@@ -2,7 +2,7 @@ import request from 'request';
 
 /**
  * This method loads sensors in to the CogniCity database
- * @function loadSensor
+ * @function load
  * @param {string} baseUrl - CogniCity Sensors API base url
  * @param {string} apiKey - API key for post endpoint
  * @param {{properties: {object}, location: {object}}} data

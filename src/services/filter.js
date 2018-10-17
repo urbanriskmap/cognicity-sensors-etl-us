@@ -3,7 +3,7 @@ import {filterChecks} from './utility';
 
 /**
  * This method fetches and filters sensors stored in the CogniCity database
- * @function filterSensors
+ * @function filter
  * @param {string} baseUrl - CogniCity Sensors API base url
  * @param {{type: {string}, values: {string}[]}[]} conditions
  * @param {string} [agency] - Optional 'agency' query param

@@ -3,7 +3,7 @@ import {extractChecks} from './utility';
 
 /**
  * This method extracts sensors by querying an agency's API
- * @function extractSensors
+ * @function extract
  * @param {string} baseUrl - Agency API base url for sensors
  * @param {{object}[]} querySets - Query sets in the form of key/value pairs
  * @param {string[]} conditions - Array of conditions, see exports.checks
