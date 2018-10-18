@@ -88,7 +88,7 @@ export default class {
       .then((extractedSensors) => {
         // fatal: if no sensors retrieved, terminate with log message
         if (!extractedSensors.length) {
-          _resolve([new Promise((res, rej) => rej(this.msgs.noSensors))]);
+          _resolve([new Promise((res, rej) => res(this.msgs.noSensors))]);
         }
 
         // GET STORED SENSORS

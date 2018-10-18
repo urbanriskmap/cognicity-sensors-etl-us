@@ -157,11 +157,11 @@ export default () => {
 
       test.promise
       .given(etl.process.execute())
-      .then(() => test.fail('Promise was fulfilled unexpectedly'))
-      .catch((error) => {
-        test.value(error)
+      .then((logs) => {
+        test.value(logs[0])
         .is('No sensors found matching the given conditions');
       })
+      .catch((error) => test.fail(error))
       .finally(done)
       .done();
     });
