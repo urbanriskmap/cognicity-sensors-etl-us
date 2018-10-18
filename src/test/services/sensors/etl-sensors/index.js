@@ -6,7 +6,6 @@ import * as filterService from '../../../../services/filter';
 import * as compareService from '../../../../services/sensors/compare';
 import * as loadService from '../../../../services/load';
 
-// import testData from './test-data';
 import config from './test-config';
 import Etl from './model';
 
@@ -27,7 +26,7 @@ export default () => {
         [{status: 'active'}],
         ['1']
       )
-        .rejects({errorMessage: 'API server error'})
+        .rejects({errorMessage: 'Agency API error'})
       // For test 4
       .withArgs(
         'https://some.agency.api/',
@@ -68,21 +67,17 @@ export default () => {
       // For test 6
       .withArgs(
         'https://sensors.cognicity.com/',
-        [
-          {type: 'hasProperty', values: 'uid'},
-          {type: 'hasProperty', values: 'class'},
-        ],
+        [{type: 'hasProperty', values: 'uid'},
+          {type: 'hasProperty', values: 'class'}],
         'sensorAgency'
       )
         .resolves([{uid: '1'}])
       // For test 7
       .withArgs(
         'https://sensors.cognicity.com/',
-        [
-          {type: 'hasProperty', values: 'uid'},
+        [{type: 'hasProperty', values: 'uid'},
           {type: 'hasProperty', values: 'class'},
-          {type: 'hasProperty', values: 'units'},
-        ],
+          {type: 'hasProperty', values: 'units'}],
         'sensorAgency'
       )
         .resolves([{uid: '1'}]);
@@ -183,7 +178,7 @@ export default () => {
         test.value(error)
         .is({
           log: 'Error connecting Agency API',
-          error: JSON.stringify({errorMessage: 'API server error'}),
+          error: JSON.stringify({errorMessage: 'Agency API error'}),
         });
       })
       .finally(done)

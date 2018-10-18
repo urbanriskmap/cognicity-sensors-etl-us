@@ -47,7 +47,7 @@ export default class {
         if (checksPassed && storedObs) {
           const obsStatus = this.utilityMethods.parseStoredData(storedObs);
           lastUpdated = obsStatus.lastUpdated;
-          initializing = obsStatus.isInitializing;
+          initializing = obsStatus.initializing;
         }
 
         resolve({
@@ -81,8 +81,7 @@ export default class {
         lastUpdated,
         initializing
       )
-      .then((result) => resolve(result))
-      .catch((error) => reject(error));
+      .then((result) => resolve(result));
     });
   }
 
@@ -118,7 +117,9 @@ export default class {
         dataId
       )
       .then(() => resolve())
-      .catch((error) => reject(error));
+      .catch((error) => {
+        reject(error);
+      });
     });
   }
 
@@ -130,7 +131,7 @@ export default class {
       .then((sensors) => {
         // if no sensors retrieved, terminate with log message
         if (!sensors.length) {
-          _resolve([new Promise((res, rej) => rej(this.msgs.noSensors))]);
+          _resolve([new Promise((res, rej) => res(this.msgs.noSensors))]);
         }
 
         // ITERATE over sensors, chain etl processes as promises
@@ -175,25 +176,25 @@ export default class {
                         }).catch((err) => res(err.log));
                       }
 
-                    // fatal: comparison failed, incongruent formats
-                    }).catch((err) => rej(err.log));
+                    // No promise rejection from compare service to catch
+                    });
 
                   // non-fatal: no valid data to transform
-                }).catch((err) => res(err.log));
+                  }).catch((err) => res(err.log));
 
-              // extract errors
-              }).catch((err) => {
-                if (err.hasOwnProperty('log')) {
-                  // non-fatal: incongruent format or no-data
-                  res(this.msgs.apiErrorNonFatal(querySets, err.log));
-                } else {
-                  // fatal: failed to receive response from agency api
-                  rej(this.msgs.apiError(querySets, err));
-                }
-              });
+                // extract errors
+                }).catch((err) => {
+                  if (err.hasOwnProperty('log')) {
+                    // non-fatal: incongruent format or no-data
+                    res(this.msgs.apiErrorNonFatal(querySets, err.log));
+                  } else {
+                    // non-fatal: failed to receive response from agency api
+                    res(this.msgs.apiError(querySets, err));
+                  }
+                });
 
-              // fatal: failed to retrieve stored data for queried sensor
-            }).catch((err) => rej(this.msgs.sensorError(id, err)));
+              // non-fatal: failed to retrieve stored data for queried sensor
+              }).catch((err) => res(this.msgs.sensorError(id, err)));
             })
           );
         }
