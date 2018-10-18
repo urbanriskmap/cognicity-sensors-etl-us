@@ -31,7 +31,7 @@ export default class {
       } else if (sensors) {
         resolve(sensors);
       } else {
-        reject({log: 'Either of query sets or sensors list required'});
+        reject({message: 'Either of query sets or sensors list required'});
       }
     });
   }
@@ -63,8 +63,7 @@ export default class {
         this.config.SENSOR_UID_PROPERTY,
         storedUids
       )
-      .then((result) => resolve(result))
-      .catch((error) => reject(error));
+      .then((result) => resolve(result));
     });
   }
 
@@ -118,8 +117,8 @@ export default class {
                     .catch((err) => res(err.log));
                   }
 
-                // fatal: unknown comparison failed
-                }).catch((err) => res(this.msgs.compareError));
+                // No promise rejection from compare service to catch
+                });
               })
             );
           }
@@ -131,7 +130,14 @@ export default class {
         }).catch((error) => _reject(this.msgs.serverError(error)));
 
       // fatal: failed to receive response from agency api
-    }).catch((error) => _reject(this.msgs.apiError(error)));
+      // or insufficient inputs
+      }).catch((error) => {
+        if (error.hasOwnProperty('message')) {
+          _reject({log: error.message});
+        } else {
+          _reject(this.msgs.apiError(error));
+        }
+      });
     });
   }
 }
