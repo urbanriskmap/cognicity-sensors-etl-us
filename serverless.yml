@@ -10,7 +10,7 @@ custom:
 provider:
   name: aws
   profile: serverless
-  runtime: nodejs6.10
+  runtime: nodejs8.10
   stage: ${opt:stage}
   region: ${file(./.env.yml):region}
   stackTags:
