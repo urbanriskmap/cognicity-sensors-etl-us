@@ -37,7 +37,7 @@ package:
 functions:
   # USGS sensors
   etlGroundwaterSensor:
-    handler: bin/functions/etl-sensors/usgs.handler
+    handler: bin/functions/etl-sensors/usgs/index.handler
     package:
       include:
         - bin/functions/etl-sensors/usgs/**
@@ -50,7 +50,7 @@ functions:
       - schedule: ${self:custom.usgsSensorSchedule}
 
   etlGaugeHeightSensor:
-    handler: bin/functions/etl-sensors/usgs.handler
+    handler: bin/functions/etl-sensors/usgs/index.handler
     package:
       include:
         - bin/functions/etl-sensors/usgs/**
@@ -63,7 +63,7 @@ functions:
       - schedule: ${self:custom.usgsSensorSchedule}
 
   etlDischargeRateSensor:
-    handler: bin/functions/etl-sensors/usgs.handler
+    handler: bin/functions/etl-sensors/usgs/index.handler
     package:
       include:
         - bin/functions/etl-sensors/usgs/**
@@ -76,7 +76,7 @@ functions:
       - schedule: ${self:custom.usgsSensorSchedule}
 
   etlStreamElevationSensor:
-    handler: bin/functions/etl-sensors/usgs.handler
+    handler: bin/functions/etl-sensors/usgs/index.handler
     package:
       include:
         - bin/functions/etl-sensors/usgs/**
@@ -89,7 +89,7 @@ functions:
       - schedule: ${self:custom.usgsSensorSchedule}
 
   etlPrecipitationSensor:
-    handler: bin/functions/etl-sensors/usgs.handler
+    handler: bin/functions/etl-sensors/usgs/index.handler
     package:
       include:
         - bin/functions/etl-sensors/usgs/**
